@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="Take notes aperiodically">
+<meta property="og:type" content="website">
+<meta property="og:title" content="🔭">
+<meta property="og:url" content="https://akatquas.github.io/index.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="Take notes aperiodically">
+<meta property="og:locale" content="en_US">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="akat,programmer,frontend,node,javascript,golang,python">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://akatquas.github.io/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : true,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>🔭</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://akatquas.github.io/2020/12/25/shells.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Akat">
+      <meta itemprop="description" content="Take notes aperiodically">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="🔭">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/12/25/shells.html" class="post-title-link" itemprop="url">Quick learning on Shells</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-12-25 09:45:15" itemprop="dateCreated datePublished" datetime="2020-12-25T09:45:15+08:00">2020-12-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/command-line/" itemprop="url" rel="index"><span itemprop="name">command line</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><a target="_blank" rel="noopener" href="https://github.com/AkatQuas/kiddo-plays/tree/master/shells">Project on GitHub</a></p>
+<h2 id="shell-scripts-examples"><a href="#shell-scripts-examples" class="headerlink" title="Shell scripts examples"></a>Shell scripts examples</h2><ul>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/AkatQuas/kiddo-plays/tree/master/shells/select-job-from-procfile">select job from Procfile</a>: Using scripts to select some job listed in Procfile.</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/AkatQuas/kiddo-plays/blob/master/shells/parsing-arguments.sh">parsing arguments from command line</a>.</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/AkatQuas/kiddo-plays/blob/master/shells/secure-shell-template.sh">secure shell template</a>: Using this template to write your shell scripts.</p>
+</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/12/25/shells.html#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://akatquas.github.io/2020/12/06/wander-in-webpack.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Akat">
+      <meta itemprop="description" content="Take notes aperiodically">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="🔭">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/12/06/wander-in-webpack.html" class="post-title-link" itemprop="url">Wander in webpack</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-12-06 12:40:44" itemprop="dateCreated datePublished" datetime="2020-12-06T12:40:44+08:00">2020-12-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/frontend/" itemprop="url" rel="index"><span itemprop="name">frontend</span></a>
+        </span>
+          , 
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/frontend/javascript/" itemprop="url" rel="index"><span itemprop="name">javascript</span></a>
+        </span>
+          , 
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/frontend/javascript/webpack/" itemprop="url" rel="index"><span itemprop="name">webpack</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="setup-the-project"><a href="#setup-the-project" class="headerlink" title="Setup the project"></a>Setup the project</h2><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> clone https://github.com/webpack/webpack.git <span class="token operator">&amp;&amp;</span> <span class="token builtin class-name">cd</span> webpack
+
+<span class="token comment"># maybe switch to some branch/tag</span>
+
+<span class="token comment"># manually</span>
+<span class="token function">npm</span> <span class="token function">install</span> -g <span class="token function">yarn</span>
+<span class="token function">yarn</span>
+<span class="token function">yarn</span> <span class="token function">link</span>
+<span class="token function">yarn</span> <span class="token function">link</span> webpack
+
+<span class="token comment"># automatically</span>
+<span class="token function">npm</span> run setup
+<span class="token comment"># or</span>
+<span class="token function">yarn</span> setup<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>At webpack, <code>yarn</code> is preferred.</p>
+<p>If you already have <code>yarn</code> installed, do: <code>yarn setup</code>. This will complete all required steps.</p>
+<p>If not, do: <code>npm run setup</code>, the setup will also install <code>yarn</code> for you.</p>
+<p>And you are good to go.</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/12/06/wander-in-webpack.html#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://akatquas.github.io/2020/11/28/docker-n-kubernetes.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Akat">
+      <meta itemprop="description" content="Take notes aperiodically">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="🔭">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/11/28/docker-n-kubernetes.html" class="post-title-link" itemprop="url">Learn some Docker and Kubernetes</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-11-29 06:22:56" itemprop="dateCreated datePublished" datetime="2020-11-29T06:22:56+08:00">2020-11-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/devops/" itemprop="url" rel="index"><span itemprop="name">devops</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>It’s not bad to learn something about <a href="/docker/index.html">Docker</a> and <a href="/kubernetes/index.html">Kubernetes</a> if you want to be a devops engineer.</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://akatquas.github.io/2020/09/23/golang.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Akat">
+      <meta itemprop="description" content="Take notes aperiodically">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="🔭">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/09/23/golang.html" class="post-title-link" itemprop="url">Learn some Golang</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-09-24 02:48:16" itemprop="dateCreated datePublished" datetime="2020-09-24T02:48:16+08:00">2020-09-24</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/programming-language/" itemprop="url" rel="index"><span itemprop="name">programming language</span></a>
+        </span>
+          , 
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/programming-language/golang/" itemprop="url" rel="index"><span itemprop="name">golang</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>I start from <a target="_blank" rel="noopener" href="https://www.digitalocean.com/community/tutorial_series/how-to-code-in-go">this online tutorial</a>, which is a good and comprehensive tutorial.</p>
+<p>Most content is excerpt from <a target="_blank" rel="noopener" href="https://www.packtpub.com/product/mastering-go-second-edition/9781838559335">Mastering Go</a>. You’d better buy one if you like the book.</p>
+<p>You’d really check it out, <a href="/concurrency-in-go/index.html">Concurrency In Depth</a>.</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/AkatQuas/kiddo-plays/tree/master/golanger">Project on GitHub</a>.</p>
+<h1 id="useful-tips"><a href="#useful-tips" class="headerlink" title="Useful tips"></a>Useful tips</h1><p>go version go1.14.4 darwin/amd64</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">go doc --help
+
+<span class="token comment"># go doc fmt</span>
+
+<span class="token comment"># go doc fmt.Printf</span>
+
+go tool compile <span class="token operator">&lt;</span>source.go<span class="token operator">></span>
+
+go tool compile -pack <span class="token operator">&lt;</span>source.go<span class="token operator">></span>
+
+<span class="token comment"># allow to detect race conditions, concurrency</span>
+go tool compile -race <span class="token operator">&lt;</span>source.go<span class="token operator">></span>
+
+<span class="token comment"># go tool compile hello.go</span>
+
+<span class="token comment"># go tool compile -pack hello.go</span>
+
+<span class="token comment"># go tool compile -race hello.go</span>
+
+<span class="token comment"># The -W parameter tells the go tool compile command to</span>
+<span class="token comment"># print the `debug parse tree` after the type checking</span>
+go tool compile -W <span class="token operator">&lt;</span>source.go<span class="token operator">></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/09/23/golang.html#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://akatquas.github.io/2020/09/10/sicp.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Akat">
+      <meta itemprop="description" content="Take notes aperiodically">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="🔭">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/09/10/sicp.html" class="post-title-link" itemprop="url">Structure and Interpretation of Computer Programs</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-09-10 12:08:50" itemprop="dateCreated datePublished" datetime="2020-09-10T12:08:50+08:00">2020-09-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/programming-language/" itemprop="url" rel="index"><span itemprop="name">programming language</span></a>
+        </span>
+          , 
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/programming-language/sicp/" itemprop="url" rel="index"><span itemprop="name">sicp</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><em>Structure and Interpretation of Computer Programs</em> is the most useful (magic) book when you struggle in the computer science / programms / languages.</p>
+<p>It teaches you to think the concepts in programming, rather just executing codes.</p>
+<p>Programme progress is declarative, whilst implementation details is imperative.</p>
+<p>Most contents are excerpts from the book <a target="_blank" rel="noopener" href="https://www.coursehero.com/file/25435823/Structure-and-Interpretation-of-Computer-Programspdf/">Structure and Interpretation of Computer Programs</a>. Follow the original book if you want detailed contents. <a target="_blank" rel="noopener" href="https://mitpress.mit.edu/sites/default/files/sicp/full-text/sicp/book/book.html">Here is one full-text book</a> in html hosted by MIT.</p>
+<h2 id="quick-contents"><a href="#quick-contents" class="headerlink" title="Quick Contents"></a>Quick Contents</h2><ol>
+<li><p><a href="/sicp/01-building-abstractions-with-procedures.html">Building Abstractions with Procedures</a></p>
+</li>
+<li><p><a href="/sicp/02-building-abstractions-with-data.html">Building Abstractions with Data</a></p>
+</li>
+<li><p><a href="/sicp/03-modularity-objects-state.html">Modularity, Objects, and State</a></p>
+</li>
+<li><p><a href="/sicp/04-metalinguistic-abstraction.html">Metalinguistic Abstraction</a></p>
+</li>
+<li><p><a href="/sicp/05-computing-with-register-machines.html">Computing with Register Machines</a></p>
+</li>
+</ol>
+<p>It is not bad to re-read the book from time to time.</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/09/10/sicp.html#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://akatquas.github.io/2020/03/31/fullstack-starter.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Akat">
+      <meta itemprop="description" content="Take notes aperiodically">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="🔭">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/03/31/fullstack-starter.html" class="post-title-link" itemprop="url">Fullstack Starter Project Boilerplate</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-04-01 06:48:56" itemprop="dateCreated datePublished" datetime="2020-04-01T06:48:56+08:00">2020-04-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/frontend/" itemprop="url" rel="index"><span itemprop="name">frontend</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>项目做的多了，所以就抽离出来一个全栈项目模板，前端使用 <code>Angualr</code> ( UI 库 使用 <code>Ng-Zorro</code> ) ，后端使用 <code>Nest</code> 。<a target="_blank" rel="noopener" href="https://github.com/AkatQuas/kiddo-plays/tree/master/fullstack-starter">Project on GitHub</a>.</p>
+<p>有一些好用的脚本来帮助项目的起步、开发、部署。</p>
+<h2 id="foundation"><a href="#foundation" class="headerlink" title="Foundation"></a>Foundation</h2><p>This boilerplate is build on <a target="_blank" rel="noopener" href="https://angular.io/">Angular</a>, <a target="_blank" rel="noopener" href="https://ng.ant.design/docs/introduce/en">Ng-Zorro-Antd</a> and <a target="_blank" rel="noopener" href="https://nestjs.com/">Nest</a>.</p>
+<h2 id="setup"><a href="#setup" class="headerlink" title="Setup"></a>Setup</h2><p><code>setup_all.sh</code> helps to set the development environment up, including:</p>
+<ol>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/commitizen/cz-cli">commitizen</a> for git commit message</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="http://nginx.org/en/download.html">nginx</a> for universal gateway</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/Unitech/pm2">pm2</a> for develop convenience</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/rofl0r/proxychains-ng">proxychains4</a> for proxy</p>
+</li>
+</ol>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">./setup_all.sh<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h2 id="development"><a href="#development" class="headerlink" title="Development"></a>Development</h2><p>Execute the <code>dev_all.sh</code> to develop.</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">./dev_all.sh<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h2 id="build-or-deployment"><a href="#build-or-deployment" class="headerlink" title="Build or Deployment"></a>Build or Deployment</h2><p>Use docker for build. Please check the <a target="_blank" rel="noopener" href="https://github.com/AkatQuas/kiddo-plays/blob/master/fullstack-starter/deploy/server/Dockerfile">DockerFile</a>.</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+  </nav>
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="This is what we’re going to learn today:  Scopes, why scopes useful, how to implement them in code with symbol tables  Nested scopes, how chained scoped symbol tables are used to implement nested scop">
+<meta property="og:type" content="website">
+<meta property="og:title" content="14">
+<meta property="og:url" content="https://akatquas.github.io/lisp-interpreter-in-py/chapter-14.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="This is what we’re going to learn today:  Scopes, why scopes useful, how to implement them in code with symbol tables  Nested scopes, how chained scoped symbol tables are used to implement nested scop">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://akatquas.github.io/lisp-interpreter-in-py/imgs/lsbasi_part14_img04.png">
+<meta property="og:image" content="https://akatquas.github.io/lisp-interpreter-in-py/imgs/lsbasi_part14_img05.png">
+<meta property="og:image" content="https://akatquas.github.io/lisp-interpreter-in-py/imgs/lsbasi_part14_img06.png">
+<meta property="og:image" content="https://akatquas.github.io/lisp-interpreter-in-py/imgs/lsbasi_part14_img07.png">
+<meta property="og:image" content="https://akatquas.github.io/lisp-interpreter-in-py/imgs/lsbasi_part14_img08.png">
+<meta property="og:image" content="https://akatquas.github.io/lisp-interpreter-in-py/imgs/lsbasi_part14_img11.png">
+<meta property="og:image" content="https://akatquas.github.io/lisp-interpreter-in-py/imgs/lsbasi_part14_img12.png">
+<meta property="og:image" content="https://akatquas.github.io/lisp-interpreter-in-py/imgs/lsbasi_part14_img13.png">
+<meta property="og:image" content="https://akatquas.github.io/lisp-interpreter-in-py/imgs/lsbasi_part14_img14.png">
+<meta property="og:image" content="https://akatquas.github.io/lisp-interpreter-in-py/imgs/lsbasi_part14_img16.png">
+<meta property="og:image" content="https://akatquas.github.io/lisp-interpreter-in-py/imgs/lsbasi_part14_img17.png">
+<meta property="og:image" content="https://akatquas.github.io/lisp-interpreter-in-py/imgs/lsbasi_part14_img18.png">
+<meta property="og:image" content="https://akatquas.github.io/lisp-interpreter-in-py/imgs/lsbasi_part14_img19.png">
+<meta property="article:published_time" content="2021-01-15T10:21:08.398Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.398Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="lisp">
+<meta property="article:tag" content="interpreter">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://akatquas.github.io/lisp-interpreter-in-py/imgs/lsbasi_part14_img04.png">
+
+
+<link rel="canonical" href="https://akatquas.github.io/lisp-interpreter-in-py/chapter-14.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>14 | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#scopes-and-scoped-symbol-tables"><span class="nav-text">Scopes and scoped symbol tables</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#procedure-declarations-with-formal-parameters"><span class="nav-text">Procedure declarations with formal parameters</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#procedure-symbols"><span class="nav-text">Procedure Symbols</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#nested-scopes"><span class="nav-text">Nested Scopes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#scope-tree-chaining-scoped-symbol-tables"><span class="nav-text">Scope tree: Chaining scoped symbol tables</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#nested-scopes-and-name-resolution"><span class="nav-text">Nested scopes and name resolution</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#source-to-source-compiler"><span class="nav-text">Source-to-source compiler</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#quick-reference"><span class="nav-text">Quick Reference</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">14
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <p>This is what we’re going to learn today:</p>
+<ol>
+<li><p>Scopes, why scopes useful, how to implement them in code with symbol tables</p>
+</li>
+<li><p>Nested scopes, how chained scoped symbol tables are used to implement nested scopes</p>
+</li>
+<li><p>How to parse procedure declarations with formal parameters and how to represent a procedure symbol in code.</p>
+</li>
+<li><p>How to extend the <em>semantic analyzer</em> to do semantic checks in the presence of nested scopes</p>
+</li>
+<li><p>Learn more about <em>name resolution</em> and how the semantic analyzer resolves names to their declarations when a program has nested scopes.</p>
+</li>
+<li><p>How to build a <em>scope tree</em>.</p>
+</li>
+<li><p>How to write the very own <em>source-to-source compiler</em></p>
+</li>
+</ol>
+<h2 id="scopes-and-scoped-symbol-tables"><a href="#scopes-and-scoped-symbol-tables" class="headerlink" title="Scopes and scoped symbol tables"></a>Scopes and scoped symbol tables</h2><p>A <em>scope</em> is a textual region of a program where a name can be used.</p>
+<pre class="line-numbers language-none"><code class="language-none">program Main;
+    var x, y : integer;
+begin
+    x :&#x3D; x + y;
+end.<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>In Pascal, the <em>PROGRAM</em> keyword (case insensitive) introduces a new scope which is commonly called a <em>global scope</em>, so the program above has one <em>global scope</em> and the declared variables x and y are visible and accessible in the whole program.</p>
+<p>When we talk about the scope of a variable, we actually talk about the scope of its declaration.</p>
+<p>Pascal programs are said to be <em>lexically scoped</em> (or <em>statically scoped</em>) because you can look at the source code, and without even executing the program, determine purely based on the textual rules which names(references) resolve or refer to which declarations. In Pascal, lexcial keywords like <em>program</em> and <em>end</em> demarcate the textual boundaries of a scope:</p>
+<img data-src="./imgs/lsbasi_part14_img04.png" alt="" />
+
+<p>Why are scopes useful?</p>
+<ul>
+<li><p>Every scope creates an isolated namespace, which means that variables declared in a scope cannot be accessed from outside of it.</p>
+</li>
+<li><p>Re-use the same name in different scopes and know exactly, just by looking at the program source code, what declaration the name refers to at every point in the program.</p>
+</li>
+<li><p>In a nested scope you can re-declare a variable with the same name as in the outer scope, thus effectively hiding the outer declaration, which gives you control over access to different variables from the outer scope.</p>
+</li>
+</ul>
+<p>In addition to the <em>global scope</em>, Pascal supports nested procedures, and every procedure declaration introduces a new scope, which means that Pascal supports nested scopes.</p>
+<p>When we talk about nested scopes, it’s convenient to talk about scope levels to show their nesting relationships. It’s also convenient to refer to scopes by name. We’ll use both scope levels and scope names when we start our discussion of nested scopes.</p>
+<p>Let’s take a look at the following sample program and subscript every name in the program to make it clear:</p>
+<ol>
+<li>At what level each variable (symbol) is declared</li>
+<li>To which declaration and at what level a variable name refers to:</li>
+</ol>
+<img data-src="./imgs/lsbasi_part14_img05.png" alt="" />
+
+<p>From the picture above we can see several things:</p>
+<ul>
+<li>We have a single scope, the <em>global</em> scope, introduced by the PROGRAM keyword</li>
+<li>Global <em>scope</em> is at level 1</li>
+<li>Variables (symbols) x and y are declared at level 1 (the <em>global</em> scope).</li>
+<li><em>integer</em> built-in type is also declared at level 1</li>
+<li>The program name Main has a subscript 0. Why is the program’s name at level zero, you might wonder? This is to make it clear that the program’s name is not in the <em>global scope</em> and it’s in some other outer scope, that has level zero.</li>
+<li>The scope of the variables x and y is the whole program, as shown by the vertical lines</li>
+<li>The <em>scope information table</em> shows for every level in the program the corresponding scope level, scope name, and names declared in the scope. The purpose of the table is to summarize and visually show different information about scopes in a program.</li>
+</ul>
+<p>To represent a scope in code, we’ll need a <em>scoped symbol table</em>, which is basically a symbol table with a few modifications.</p>
+<p>From now on, we’ll use the word <em>scope</em> both to mean the concept of a scope as well as to refer to the scoped symbol table which is an implementation of the scope in code.</p>
+<p>Even though in our code a scope is represented by an instance of the <em>ScopedSymbolTable</em> class, we’ll use the variable named <em>scope</em> throughout the code for convenience. So when you see a variable <em>scope</em> in the code of the interpreter, you should know that it actually refers to a <em>scoped symbol table</em>.</p>
+<p>Now, let’s enhance our <em>SymbolTable</em> class by renaming it to <em>ScopedSymbolTable</em> class, adding two new fields <em>scope_level_ and _scope_name</em>, and updating the scoped symbol table’s constructor. And at the same time, let’s update the <code>__str__</code> method to print additional information, namely the <em>scope_level_ and _scope_name</em>.</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">ScopedSymbolTable</span><span class="token punctuation">(</span><span class="token builtin">object</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> scope_name<span class="token punctuation">,</span> scope_level<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>_symbols <span class="token operator">=</span> OrderedDict<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>scope_name <span class="token operator">=</span> scope_name
+        self<span class="token punctuation">.</span>scope_level <span class="token operator">=</span> scope_level
+        self<span class="token punctuation">.</span>_init_builtins<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">_init_builtins</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>insert<span class="token punctuation">(</span>BuiltinTypesSymbol<span class="token punctuation">(</span><span class="token string">'INTEGER'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>insert<span class="token punctuation">(</span>BuiltinTypesSymbol<span class="token punctuation">(</span><span class="token string">'REAL'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">__str__</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        h1 <span class="token operator">=</span> <span class="token string">'SCOPE (SCOPED SYMBOL TABLE)'</span>
+        lines <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">'\n'</span><span class="token punctuation">,</span> h1<span class="token punctuation">,</span> <span class="token string">'='</span> <span class="token operator">*</span> <span class="token builtin">len</span><span class="token punctuation">(</span>h1<span class="token punctuation">)</span><span class="token punctuation">]</span>
+        <span class="token keyword">for</span> header_name<span class="token punctuation">,</span> header_value <span class="token keyword">in</span> <span class="token punctuation">(</span>
+            <span class="token punctuation">(</span><span class="token string">'Scope name'</span> <span class="token punctuation">,</span> self<span class="token punctuation">.</span>scope_name<span class="token punctuation">)</span><span class="token punctuation">,</span>
+            <span class="token punctuation">(</span><span class="token string">'Scope level'</span><span class="token punctuation">,</span> self<span class="token punctuation">.</span>scope_level<span class="token punctuation">)</span>
+        <span class="token punctuation">)</span><span class="token punctuation">:</span>
+            lines<span class="token punctuation">.</span>append<span class="token punctuation">(</span><span class="token string">'%-15s: %s'</span> <span class="token operator">%</span> <span class="token punctuation">(</span>header_name<span class="token punctuation">,</span> header_value<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+        h2 <span class="token operator">=</span> <span class="token string">'Scope (Scoped symbol table) contents'</span>
+        lines<span class="token punctuation">.</span>extend<span class="token punctuation">(</span><span class="token punctuation">[</span>h2<span class="token punctuation">,</span> <span class="token string">'-'</span> <span class="token operator">*</span><span class="token builtin">len</span><span class="token punctuation">(</span>h2<span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+        lines<span class="token punctuation">.</span>extend<span class="token punctuation">(</span>
+            <span class="token punctuation">(</span><span class="token string">'%7s: %r '</span> <span class="token operator">%</span> <span class="token punctuation">(</span>key <span class="token punctuation">,</span> value<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">for</span> key <span class="token punctuation">,</span>value <span class="token keyword">in</span> self<span class="token punctuation">.</span>_symbols<span class="token punctuation">.</span>items<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token punctuation">)</span>
+        lines<span class="token punctuation">.</span>append<span class="token punctuation">(</span><span class="token string">'\n'</span><span class="token punctuation">)</span>
+        s <span class="token operator">=</span> <span class="token string">'\n'</span><span class="token punctuation">.</span>join<span class="token punctuation">(</span>lines<span class="token punctuation">)</span>
+        <span class="token keyword">return</span> s
+
+    __repr__ <span class="token operator">=</span> __str__
+
+    <span class="token keyword">def</span> <span class="token function">insert</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> symbol<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'Insert: %s'</span> <span class="token operator">%</span> symbol<span class="token punctuation">.</span>name<span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>_symbols<span class="token punctuation">[</span>symbol<span class="token punctuation">.</span>name<span class="token punctuation">]</span> <span class="token operator">=</span> symbol
+
+    <span class="token keyword">def</span> <span class="token function">lookup</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> name<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'Lookup: %s'</span> <span class="token operator">%</span> name<span class="token punctuation">)</span>
+        symbol <span class="token operator">=</span> self<span class="token punctuation">.</span>_symbols<span class="token punctuation">.</span>get<span class="token punctuation">(</span>name<span class="token punctuation">)</span>
+        <span class="token comment"># 'symbol' is either an instance of the Symbol class or None</span>
+        <span class="token keyword">return</span> symbol<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>We need to update the semantic analyzer to use the variable <em>scope</em> instead of <em>symtab</em>, and remove the semantic check that was checking source programs for duplicate identifiers from the _visit_VarDecl_ method to reduce the noise in the program output.</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">SemanticAnalyzer</span><span class="token punctuation">(</span>NodeVisitor<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>scope <span class="token operator">=</span> ScopedSymbolTable<span class="token punctuation">(</span>scope_name<span class="token operator">=</span><span class="token string">'global'</span><span class="token punctuation">,</span> scope_level<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span>
+
+    <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="procedure-declarations-with-formal-parameters"><a href="#procedure-declarations-with-formal-parameters" class="headerlink" title="Procedure declarations with formal parameters"></a>Procedure declarations with formal parameters</h2><p>A sample code that contains a procedure declaration:</p>
+<pre class="line-numbers language-none"><code class="language-none">program Main;
+   var x, y: real;
+
+   procedure Alpha(a : integer);
+      var y : integer;
+   begin
+      x :&#x3D; a + x + y;
+   end;
+
+begin &#123; Main &#125;
+
+end.  &#123; Main &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>You can see the procedure here comes with a parameter. Let’s tackle this first by making a quick detour and learning how to handle formal procedure parameters.</p>
+<blockquote>
+<p>ASIDE <em>Formal parameters</em> are parameters that show up in the declaration of a procedure. <em>Arguments</em> (aka <em>actual parameters</em>) are different variables and expressions passed to a procedure in a particular procedure call.</p>
+</blockquote>
+<p>We have many changes to make to support procedure declarations with parameters:</p>
+<ol>
+<li><p>Add the <em>Param AST</em> node</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">Param</span><span class="token punctuation">(</span>AST<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> var_node<span class="token punctuation">,</span> type_node<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>var_node <span class="token operator">=</span> var_node
+        self<span class="token punctuation">.</span>type_node <span class="token operator">=</span> type_node<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></li>
+<li><p>Update the <em>ProcedureDecl</em> node’s constructor to take an additional argument: <em>params</em></p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">ProcedureDecl</span><span class="token punctuation">(</span>AST<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> proc_name<span class="token punctuation">,</span> params<span class="token punctuation">,</span> block_node<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>proc_name <span class="token operator">=</span> proc_name
+        self<span class="token punctuation">.</span>params <span class="token operator">=</span> params  <span class="token comment"># a list of Param nodes</span>
+        self<span class="token punctuation">.</span>block_node <span class="token operator">=</span> block_node<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre></li>
+<li><p>Update the <em>declarations</em> rule to reflect changes in the procedure declaration sub-rule</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">declarations</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token triple-quoted-string string">"""declarations : (VAR (variable_declaration SEMI)+)*
+                | (PROCEDURE ID (LPAREN formal_parameter_list RPAREN)? SEMI block SEMI)*
+                | empty
+    """</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre></li>
+<li><p>The <em>formal_parameter_list</em> rule and method</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">formal_parameter_list</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token triple-quoted-string string">""" formal_parameter_list : formal_parameters
+                            | formal_parameters SEMI formal_parameter_list
+    """</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></li>
+<li><p>Add the _formal_parameters_ rule and method</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">formal_parameters</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token triple-quoted-string string">""" formal_parameters : ID (COMMA ID)* COLON type_spec """</span>
+    param_nodes <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>With these addition of the above methods and rules our parser will be able to parse procedure declarations like the following sample code:</p>
+</li>
+</ol>
+<pre class="line-numbers language-none"><code class="language-none">procedure Foo;
+
+procedure Foo(a : INTEGER);
+
+procedure Foo(a, b : INTEGER);
+
+procedure Foo(a, b : INTEGER; c : REAL);<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<table>
+<thead>
+<tr>
+<th align="center"><img data-src="./imgs/lsbasi_part14_img06.png" alt="" /></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">AST</td>
+</tr>
+</tbody></table>
+<h2 id="procedure-symbols"><a href="#procedure-symbols" class="headerlink" title="Procedure Symbols"></a>Procedure Symbols</h2><p>As with variable declarations, and built-in type declarations, there is a separate category of symbols for procedures. Let’s create a separate symbol class for procedure symbols:</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">ProcedureSymbol</span><span class="token punctuation">(</span>Symbol<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> name<span class="token punctuation">,</span> params<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token builtin">super</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>__init__<span class="token punctuation">(</span>name<span class="token punctuation">)</span>
+        <span class="token comment"># a list of formal parameters</span>
+        self<span class="token punctuation">.</span>params <span class="token operator">=</span> params <span class="token keyword">if</span> params <span class="token keyword">is</span> <span class="token keyword">not</span> <span class="token boolean">None</span> <span class="token keyword">else</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+
+    <span class="token keyword">def</span> <span class="token function">__str__</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">return</span> <span class="token string">'&lt;&#123;class_name&#125;(name=&#123;name&#125;, parameters=&#123;params&#125;)>'</span><span class="token punctuation">.</span><span class="token builtin">format</span><span class="token punctuation">(</span>
+            class_name<span class="token operator">=</span>self<span class="token punctuation">.</span>__class__<span class="token punctuation">.</span>__name__<span class="token punctuation">,</span>
+            name<span class="token operator">=</span>self<span class="token punctuation">.</span>name<span class="token punctuation">,</span>
+            params<span class="token operator">=</span>self<span class="token punctuation">.</span>params<span class="token punctuation">,</span>
+        <span class="token punctuation">)</span>
+
+    __repr__ <span class="token operator">=</span> __str__<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Procedure symbols have a name (the procedure’s name), their category is procedure (encoded in the class name), and the type is <em>None</em> because in Pascal procedures don’t return anything.</p>
+<p>Procedure symbols also carry additional information about procedure declarations, namely they contain informaiton about the procedure’s formal parameters.</p>
+<p>With the addition of procedure symbols, our new symbol hierarchy looks like this:</p>
+<img data-src="./imgs/lsbasi_part14_img07.png" alt="" />
+
+<h2 id="nested-scopes"><a href="#nested-scopes" class="headerlink" title="Nested Scopes"></a>Nested Scopes</h2><p>Now time to get back to the program and the discussion of nested scopes:</p>
+<pre class="line-numbers language-none"><code class="language-none">program Main;
+   var x, y: real;
+
+   procedure Alpha(a : integer);
+      var y : integer;
+   begin
+      x :&#x3D; a + x + y;
+   end;
+
+begin &#123; Main &#125;
+
+end.  &#123; Main &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>By declaring a new procedure, we introduce a new scope, and this scope is nested within the <em>global scope</em> introduced by the <em>PROGRAM</em> statement, so this is a case where we have nested scopes in a Pascal program.</p>
+<p>The scope of a procedure is the whole body of the procedure. The beginning of the procedure scope is marked by the <em>PROCEDURE</em> keyword and the end is marked by the <em>END</em> keyword and a semicolon.</p>
+<p>Let’s subscript names in the program and show some additional information:</p>
+<img data-src="./imgs/lsbasi_part14_img08.png" alt="" />
+
+<p>Some observation from the picture above:</p>
+<ul>
+<li><p>Tow scope level: level 1 and level 2</p>
+</li>
+<li><p>The <em>nesting relationships</em> diagram visually shows that the scope <em>Alpha</em> is nested within the <em>global scope</em>, hence there are two levels: the <em>global scope</em> at level 1, and the <em>Alpha</em> scope at level 2.</p>
+</li>
+<li><p>The scope level of the procedure declaration <em>Alpha</em> is one less than the level of the variables declared inside the procedure <em>Alpha</em>.</p>
+</li>
+<li><p>The variable declaration of y inside <em>Alpha</em> hides the declaration of y in the <em>global scope</em>. You can see the hole in the vertical bar for y<sub>1</sub> and you can see that the scope of the y<sub>2</sub> variable declaration is the Alpha procedure’s whole body.</p>
+</li>
+<li><p>The scope information table shows scope levels, scope names for those levels, and respective names declared in those scopes.</p>
+</li>
+<li><p>In the picture, we omitted showing the scope of the <em>integer</em> and <em>real</em> types (except in the scope information table) because they are always declared at scope level 1, the <em>global scope</em>.</p>
+</li>
+</ul>
+<p>Now on discussing implementation details.</p>
+<p>First, let’s focus on variable and procedure declarations. Then, we’ll discuss variable references and how <em>name resolution</em> works in teh presence of nested scopes.</p>
+<p>For our discussion, we’ll use a stripped down version of the program. The following version does not have variable references, it only has variable and procedure declarations:</p>
+<pre class="line-numbers language-none"><code class="language-none">program Main;
+   var x, y: real;
+
+   procedure Alpha(a : integer);
+      var y : integer;
+   begin
+
+   end;
+
+begin &#123; Main &#125;
+
+end.  &#123; Main &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>From the code, we have two scopes: the <em>global scope</em> and the scope introduced by the procedure <em>Alpha</em>. Following our approach we should now have two scoped symbol tables: one for the <em>global scope</em> and one for the <em>Alpha scope</em>.</p>
+<p>We’ll extend the semantic analyzer to create a separate scoped symbol table for every scope instead of just for the <em>global scope</em>. The scope construction will happen when walking the AST.</p>
+<p>We’re going to update the <em>visit_Program_ method and add the _visit_ProcedureDecl</em> method to create scoped symbol tables.</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">visit_Program</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span>node<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'ENTER scope: global'</span><span class="token punctuation">)</span>
+    global_scope <span class="token operator">=</span> ScopedSymbolTable<span class="token punctuation">(</span>
+        scope_name<span class="token operator">=</span><span class="token string">'global'</span><span class="token punctuation">,</span>
+        scope_level<span class="token operator">=</span><span class="token number">1</span>
+    <span class="token punctuation">)</span>
+    self<span class="token punctuation">.</span>current_scope <span class="token operator">=</span> global_scope
+
+    <span class="token comment"># visit subtree</span>
+    self<span class="token punctuation">.</span>visit<span class="token punctuation">(</span>node<span class="token punctuation">.</span>block<span class="token punctuation">)</span>
+
+    <span class="token keyword">print</span><span class="token punctuation">(</span>global_scope<span class="token punctuation">)</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'LEAVE scope: global'</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>The method has quite a few changes:</p>
+<ol>
+<li><p>When visiting the node in AST, we first print what scope we’re entering, in this case <em>global</em>.</p>
+</li>
+<li><p>Create a separate <em>scoped symbol table</em> to represent the <em>global scope</em>. When constructing an instance of <em>ScopedSymbolTable</em>, we explicitly pass the scope name and scope level arguments to the class constructor.</p>
+</li>
+<li><p>Assign the newly created scope to the instance variable <em>current_scope_. Other visitor methods that insert and look up symbols in scoped symbol tables will use the _current_scope</em>.</p>
+</li>
+<li><p>Visit a subtree (block).</p>
+</li>
+<li><p>Before leaving the <em>global scope</em> we print the contents of the <em>global scope</em> (scoped symbol table)</p>
+</li>
+<li><p>Print the message when leaving the global scope</p>
+</li>
+</ol>
+<p>Now let’s add the _visit_ProcedureDecl_ method:</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">visit_ProcedureDecl</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> node<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    proc_name <span class="token operator">=</span> node<span class="token punctuation">.</span>proc_name
+    proc_symbol <span class="token operator">=</span> ProcedureSymbol<span class="token punctuation">(</span>proc_name<span class="token punctuation">)</span>
+    self<span class="token punctuation">.</span>current_scope<span class="token punctuation">.</span>insert<span class="token punctuation">(</span>proc_symbol<span class="token punctuation">)</span>
+
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'ENTER scope: %s '</span> <span class="token operator">%</span> proc_name<span class="token punctuation">)</span>
+
+    <span class="token comment"># Scope for parameters and Local variables</span>
+    procedure_scope <span class="token operator">=</span> ScopedSymbolTable<span class="token punctuation">(</span>
+        scope_name<span class="token operator">=</span>proc_name<span class="token punctuation">,</span>
+        scope_level<span class="token operator">=</span><span class="token number">2</span>
+    <span class="token punctuation">)</span>
+    self<span class="token punctuation">.</span>current_scope <span class="token operator">=</span> procedure_scope
+
+    <span class="token comment"># Insert parameters into the procedure scope</span>
+    <span class="token keyword">for</span> param <span class="token keyword">in</span> node<span class="token punctuation">.</span>params<span class="token punctuation">:</span>
+        param_type <span class="token operator">=</span> self<span class="token punctuation">.</span>current_scope<span class="token punctuation">.</span>lookup<span class="token punctuation">(</span>param<span class="token punctuation">.</span>type_node<span class="token punctuation">.</span>value<span class="token punctuation">)</span>
+        param_name <span class="token operator">=</span> param<span class="token punctuation">.</span>var_node<span class="token punctuation">.</span>value
+        var_symbol <span class="token operator">=</span> VarSymbol<span class="token punctuation">(</span>param_name<span class="token punctuation">,</span> param_type<span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>current_scope<span class="token punctuation">.</span>insert<span class="token punctuation">(</span>var_symbol<span class="token punctuation">)</span>
+        proc_symbol<span class="token punctuation">.</span>params<span class="token punctuation">.</span>append<span class="token punctuation">(</span>var_symbol<span class="token punctuation">)</span>
+
+    self<span class="token punctuation">.</span>visit<span class="token punctuation">(</span>node<span class="token punctuation">.</span>block_node<span class="token punctuation">)</span>
+
+    <span class="token keyword">print</span><span class="token punctuation">(</span>procedure_scope<span class="token punctuation">)</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'LEAVE scope: %s'</span> <span class="token operator">%</span>s proc_name<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Let’s go over the contents of the method:</p>
+<ol>
+<li><p>The first thing that the method does is create a procedure symbol and insert it into the current scope, which is the <em>global</em> scope for our sample program.</p>
+</li>
+<li><p>Prints the message about entering the procedure scope.</p>
+</li>
+<li><p>Then create a new scope for the procedure’s parameters and variable declarations.</p>
+</li>
+<li><p>Assign the procedure scope to the _self.current_scope_ variable indicating that this is our current scope and all symbol operations (<em>insert</em> and <em>lookup</em>) will use the current scope.</p>
+</li>
+<li><p>Then handle procedure formal parameters by inserting them into the current scope and adding them to the procedure symbol.</p>
+</li>
+<li><p>Then visit the rest of the AST subtree - the body of the procedure.</p>
+</li>
+<li><p>Finally, print the message about leaving the scope before leaving the node and moving to another AST node, if any.</p>
+</li>
+</ol>
+<p>Now, what we need to do is update other semantic analyzer visitor methods to use _self.current_scope_ when inserting and looking up symbols</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">visit_VarDecl</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> node<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    type_name <span class="token operator">=</span> node<span class="token punctuation">.</span>type_node<span class="token punctuation">.</span>value
+    type_symbol <span class="token operator">=</span> self<span class="token punctuation">.</span>current_scope<span class="token punctuation">.</span>lookup<span class="token punctuation">(</span>type_name<span class="token punctuation">)</span>
+
+    <span class="token comment"># We have all the information we need to create a variable symbol.</span>
+    <span class="token comment"># Create the symbol and insert it into the symbol table.</span>
+    var_name <span class="token operator">=</span> node<span class="token punctuation">.</span>var_node<span class="token punctuation">.</span>value
+    var_symbol <span class="token operator">=</span> VarSymbol<span class="token punctuation">(</span>var_name<span class="token punctuation">,</span> type_symbol<span class="token punctuation">)</span>
+
+    self<span class="token punctuation">.</span>current_scope<span class="token punctuation">.</span>insert<span class="token punctuation">(</span>var_symbol<span class="token punctuation">)</span>
+
+<span class="token keyword">def</span> <span class="token function">visit_Var</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> node<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    var_name <span class="token operator">=</span> node<span class="token punctuation">.</span>value
+    var_symbol <span class="token operator">=</span> self<span class="token punctuation">.</span>current_scope<span class="token punctuation">.</span>lookup<span class="token punctuation">(</span>var_name<span class="token punctuation">)</span>
+    <span class="token keyword">if</span> var_symbol <span class="token keyword">is</span> <span class="token boolean">None</span><span class="token punctuation">:</span>
+        <span class="token keyword">raise</span> Exception<span class="token punctuation">(</span>
+            <span class="token string">"Error: Symbol(identifier) not found '%s' "</span> <span class="token operator">%</span> var_name
+        <span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Both the <em>visit_VarDeal_ and _visit_Var</em> will now use the _current_scope_ to insert and/or look up symbols.</p>
+<p>We also need to update the semantic analyzer and set the _current_scope_ to <em>None</em> in the constructor:</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">SemanticAnalyzer</span><span class="token punctuation">(</span>NodeVisitor<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>current_scope <span class="token operator">=</span> <span class="token boolean">None</span>
+
+    <span class="token keyword">def</span> <span class="token function">visit_Block</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> node<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">for</span> declaration <span class="token keyword">in</span> node<span class="token punctuation">.</span>declarations<span class="token punctuation">:</span>
+            self<span class="token punctuation">.</span>visit<span class="token punctuation">(</span>declaration<span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>visit<span class="token punctuation">(</span>node<span class="token punctuation">.</span>compound_statement<span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">visit_Program</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> node<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'ENTER scope: global'</span><span class="token punctuation">)</span>
+        global_scope <span class="token operator">=</span> ScopedSymbolTable<span class="token punctuation">(</span>
+            scope_name<span class="token operator">=</span><span class="token string">'global'</span><span class="token punctuation">,</span>
+            scope_level<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span>
+        <span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>current_scope <span class="token operator">=</span> global_scope
+
+        <span class="token comment"># visit subtree</span>
+        self<span class="token punctuation">.</span>visit<span class="token punctuation">(</span>node<span class="token punctuation">.</span>block<span class="token punctuation">)</span>
+
+        <span class="token keyword">print</span><span class="token punctuation">(</span>global_scope<span class="token punctuation">)</span>
+        <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'LEAVE scope: global'</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">visit_Compound</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> node<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">for</span> child <span class="token keyword">in</span> node<span class="token punctuation">.</span>children<span class="token punctuation">:</span>
+            self<span class="token punctuation">.</span>visit<span class="token punctuation">(</span>child<span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">visit_NoOp</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> node<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">pass</span>
+
+    <span class="token keyword">def</span> <span class="token function">visit_BinOp</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> node<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>visit<span class="token punctuation">(</span>node<span class="token punctuation">.</span>left<span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>visit<span class="token punctuation">(</span>node<span class="token punctuation">.</span>right<span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">visit_ProcedureDecl</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> node<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        proc_name <span class="token operator">=</span> node<span class="token punctuation">.</span>proc_name
+        proc_symbol <span class="token operator">=</span> ProcedureSymbol<span class="token punctuation">(</span>proc_name<span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>current_scope<span class="token punctuation">.</span>insert<span class="token punctuation">(</span>proc_symbol<span class="token punctuation">)</span>
+
+        <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'ENTER scope: %s'</span> <span class="token operator">%</span>  proc_name<span class="token punctuation">)</span>
+        <span class="token comment"># Scope for parameters and local variables</span>
+        procedure_scope <span class="token operator">=</span> ScopedSymbolTable<span class="token punctuation">(</span>
+            scope_name<span class="token operator">=</span>proc_name<span class="token punctuation">,</span>
+            scope_level<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">,</span>
+        <span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>current_scope <span class="token operator">=</span> procedure_scope
+
+        <span class="token comment"># Insert parameters into the procedure scope</span>
+        <span class="token keyword">for</span> param <span class="token keyword">in</span> node<span class="token punctuation">.</span>params<span class="token punctuation">:</span>
+            param_type <span class="token operator">=</span> self<span class="token punctuation">.</span>current_scope<span class="token punctuation">.</span>lookup<span class="token punctuation">(</span>param<span class="token punctuation">.</span>type_node<span class="token punctuation">.</span>value<span class="token punctuation">)</span>
+            param_name <span class="token operator">=</span> param<span class="token punctuation">.</span>var_node<span class="token punctuation">.</span>value
+            var_symbol <span class="token operator">=</span> VarSymbol<span class="token punctuation">(</span>param_name<span class="token punctuation">,</span> param_type<span class="token punctuation">)</span>
+            self<span class="token punctuation">.</span>current_scope<span class="token punctuation">.</span>insert<span class="token punctuation">(</span>var_symbol<span class="token punctuation">)</span>
+            proc_symbol<span class="token punctuation">.</span>params<span class="token punctuation">.</span>append<span class="token punctuation">(</span>var_symbol<span class="token punctuation">)</span>
+
+        self<span class="token punctuation">.</span>visit<span class="token punctuation">(</span>node<span class="token punctuation">.</span>block_node<span class="token punctuation">)</span>
+
+        <span class="token keyword">print</span><span class="token punctuation">(</span>procedure_scope<span class="token punctuation">)</span>
+        <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'LEAVE scope: %s'</span> <span class="token operator">%</span>  proc_name<span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">visit_VarDecl</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> node<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        type_name <span class="token operator">=</span> node<span class="token punctuation">.</span>type_node<span class="token punctuation">.</span>value
+        type_symbol <span class="token operator">=</span> self<span class="token punctuation">.</span>current_scope<span class="token punctuation">.</span>lookup<span class="token punctuation">(</span>type_name<span class="token punctuation">)</span>
+
+        <span class="token comment"># We have all the information we need to create a variable symbol.</span>
+        <span class="token comment"># Create the symbol and insert it into the symbol table.</span>
+        var_name <span class="token operator">=</span> node<span class="token punctuation">.</span>var_node<span class="token punctuation">.</span>value
+        var_symbol <span class="token operator">=</span> VarSymbol<span class="token punctuation">(</span>var_name<span class="token punctuation">,</span> type_symbol<span class="token punctuation">)</span>
+
+        self<span class="token punctuation">.</span>current_scope<span class="token punctuation">.</span>insert<span class="token punctuation">(</span>var_symbol<span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">visit_Assign</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> node<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token comment"># right-hand side</span>
+        self<span class="token punctuation">.</span>visit<span class="token punctuation">(</span>node<span class="token punctuation">.</span>right<span class="token punctuation">)</span>
+        <span class="token comment"># left-hand side</span>
+        self<span class="token punctuation">.</span>visit<span class="token punctuation">(</span>node<span class="token punctuation">.</span>left<span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">visit_Var</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> node<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        var_name <span class="token operator">=</span> node<span class="token punctuation">.</span>value
+        var_symbol <span class="token operator">=</span> self<span class="token punctuation">.</span>current_scope<span class="token punctuation">.</span>lookup<span class="token punctuation">(</span>var_name<span class="token punctuation">)</span>
+        <span class="token keyword">if</span> var_symbol <span class="token keyword">is</span> <span class="token boolean">None</span><span class="token punctuation">:</span>
+            <span class="token keyword">raise</span> Exception<span class="token punctuation">(</span>
+                <span class="token string">"Error: Symbol(identifier) not found '%s'"</span> <span class="token operator">%</span> var_name
+            <span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="scope-tree-chaining-scoped-symbol-tables"><a href="#scope-tree-chaining-scoped-symbol-tables" class="headerlink" title="Scope tree: Chaining scoped symbol tables"></a>Scope tree: Chaining scoped symbol tables</h2><p>Now every scope is represented by a separate scoped symbol table, how do we express in code that the scope <em>B</em> is nested within the <em>global scope</em>?</p>
+<p>Chain the tables together.</p>
+<p>Let’s take a look at the following <em>scope tree</em>:</p>
+<img data-src="./imgs/lsbasi_part14_img11.png" alt="" />
+
+<p>So how to do that?</p>
+<ol>
+<li><p>Update the <em>ScopedSymbolTable</em> class and add a variable _enclosing_scope_ that will hold a pointer to the scope’s enclosing scope.</p>
+</li>
+<li><p>Upadte the <em>visit_Program_ and _visit_ProcedureDecl</em> methods to create an actual link to the scope’s enclosing scope using the updated version of the <em>ScopedSymbolTable</em> class.</p>
+</li>
+</ol>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">ScopedSymbolTable</span><span class="token punctuation">(</span><span class="token builtin">object</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> scoped_name<span class="token punctuation">,</span> scope_level<span class="token punctuation">,</span> enclosing_scope<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>_symbols <span class="token operator">=</span> OrderedDict<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>scope_name <span class="token operator">=</span> scope_name
+        self<span class="token punctuation">.</span>scope_level <span class="token operator">=</span> scope_level
+        self<span class="token punctuation">.</span>enclosing_scope <span class="token operator">=</span> enclosing_scope
+        self<span class="token punctuation">.</span>_init_builtins<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">_init_builtins</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>insert<span class="token punctuation">(</span>BuiltinTypeSymbol<span class="token punctuation">(</span><span class="token string">'INTEGER'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>insert<span class="token punctuation">(</span>BuiltinTypeSymbol<span class="token punctuation">(</span><span class="token string">'REAL'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">__str__</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        h1 <span class="token operator">=</span> <span class="token string">'SCOPE (SCOPED SYMBOL TABLE)'</span>
+        lines <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">'\n'</span><span class="token punctuation">,</span> h1<span class="token punctuation">,</span> <span class="token string">'='</span> <span class="token operator">*</span> <span class="token builtin">len</span><span class="token punctuation">(</span>h1<span class="token punctuation">)</span><span class="token punctuation">]</span>
+        <span class="token keyword">for</span> header_name<span class="token punctuation">,</span> header_value <span class="token keyword">in</span> <span class="token punctuation">(</span>
+            <span class="token punctuation">(</span><span class="token string">'Scope name'</span><span class="token punctuation">,</span> self<span class="token punctuation">.</span>scope_name<span class="token punctuation">)</span><span class="token punctuation">,</span>
+            <span class="token punctuation">(</span><span class="token string">'Scope level'</span><span class="token punctuation">,</span> self<span class="token punctuation">.</span>scope_level<span class="token punctuation">)</span><span class="token punctuation">,</span>
+            <span class="token punctuation">(</span><span class="token string">'Enclosing scope'</span><span class="token punctuation">,</span>
+             self<span class="token punctuation">.</span>enclosing_scope<span class="token punctuation">.</span>scope_name <span class="token keyword">if</span> self<span class="token punctuation">.</span>enclosing_scope <span class="token keyword">else</span> <span class="token boolean">None</span>
+            <span class="token punctuation">)</span>
+        <span class="token punctuation">)</span><span class="token punctuation">:</span>
+            lines<span class="token punctuation">.</span>append<span class="token punctuation">(</span><span class="token string">'%-15s: %s'</span> <span class="token operator">%</span> <span class="token punctuation">(</span>header_name<span class="token punctuation">,</span> header_value<span class="token punctuation">)</span><span class="token punctuation">)</span>
+        h2 <span class="token operator">=</span> <span class="token string">'Scope (Scoped symbol table) contents'</span>
+        lines<span class="token punctuation">.</span>extend<span class="token punctuation">(</span><span class="token punctuation">[</span>h2<span class="token punctuation">,</span> <span class="token string">'-'</span> <span class="token operator">*</span> <span class="token builtin">len</span><span class="token punctuation">(</span>h2<span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+        lines<span class="token punctuation">.</span>extend<span class="token punctuation">(</span>
+            <span class="token punctuation">(</span><span class="token string">'%7s: %r'</span> <span class="token operator">%</span> <span class="token punctuation">(</span>key<span class="token punctuation">,</span> value<span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token keyword">for</span> key<span class="token punctuation">,</span> value <span class="token keyword">in</span> self<span class="token punctuation">.</span>_symbols<span class="token punctuation">.</span>items<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token punctuation">)</span>
+        lines<span class="token punctuation">.</span>append<span class="token punctuation">(</span><span class="token string">'\n'</span><span class="token punctuation">)</span>
+        s <span class="token operator">=</span> <span class="token string">'\n'</span><span class="token punctuation">.</span>join<span class="token punctuation">(</span>lines<span class="token punctuation">)</span>
+        <span class="token keyword">return</span> s
+
+    __repr__ <span class="token operator">=</span> __str__
+
+    <span class="token keyword">def</span> <span class="token function">insert</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> symbol<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'Insert: %s '</span> <span class="token operator">%</span> symbol<span class="token punctuation">.</span>name<span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>_symbol<span class="token punctuation">[</span>symbol<span class="token punctuation">.</span>name<span class="token punctuation">]</span> <span class="token operator">=</span> symbol
+
+    <span class="token keyword">def</span> <span class="token function">lookup</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> name<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'Lookup: %s '</span> <span class="token operator">%</span> name<span class="token punctuation">)</span>
+        symbol <span class="token operator">=</span> self<span class="token punctuation">.</span>_symbols<span class="token punctuation">.</span>get<span class="token punctuation">(</span>name<span class="token punctuation">)</span>
+        <span class="token comment"># 'symbol' is either an instance of the Symbol or None</span>
+        <span class="token keyword">return</span> symbol
+
+<span class="token keyword">def</span> <span class="token function">visit_Program</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> node<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'ENTER scope: global'</span><span class="token punctuation">)</span>
+    global_scope <span class="token operator">=</span> ScopedSymbolTable<span class="token punctuation">(</span>
+        scope_name<span class="token operator">=</span><span class="token string">'global'</span><span class="token punctuation">,</span>
+        scope_level<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span>
+        enclosing_scope<span class="token operator">=</span>self<span class="token punctuation">.</span>current_scope<span class="token punctuation">,</span> <span class="token comment"># None</span>
+    <span class="token punctuation">)</span>
+    self<span class="token punctuation">.</span>current_scope <span class="token operator">=</span> global_scope
+
+    <span class="token comment"># visit subtree</span>
+    self<span class="token punctuation">.</span>visit<span class="token punctuation">(</span>node<span class="token punctuation">.</span>block<span class="token punctuation">)</span>
+
+    <span class="token keyword">print</span><span class="token punctuation">(</span>global_scope<span class="token punctuation">)</span>
+
+    self<span class="token punctuation">.</span>current_scope <span class="token operator">=</span> self<span class="token punctuation">.</span>current_scope<span class="token punctuation">.</span>enclosing_scope
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'LEAVE scope: global'</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>There are a couple of things worth mentioning and repeating:</p>
+<ol>
+<li><p>Explicitly pass the <em>self.current_scope_ as the _enclosing_scope</em> argument when creating a scope</p>
+</li>
+<li><p>Assign the newly created global scope to the variable _self.current_scope_</p>
+</li>
+<li><p>Restore the variable _self.current_scope_ to its previous value right before leaving the <em>Program</em> node.</p>
+</li>
+</ol>
+<p>And, updating the _visit_ProcedureDecl_ method:</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">visit_ProcedureDecl</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span>node<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    proc_name <span class="token operator">=</span> node<span class="token punctuation">.</span>proc_name
+    proc_symbol <span class="token operator">=</span> ProcedureSymbol<span class="token punctuation">(</span>proc_name<span class="token punctuation">)</span>
+    self<span class="token punctuation">.</span>current_scope<span class="token punctuation">.</span>insert<span class="token punctuation">(</span>proc_symbol<span class="token punctuation">)</span>
+
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'ENTER scope: %s'</span> <span class="token operator">%</span>  proc_name<span class="token punctuation">)</span>
+    <span class="token comment"># Scope for parameters and local variables</span>
+    procedure_scope <span class="token operator">=</span> ScopedSymbolTable<span class="token punctuation">(</span>
+        scope_name<span class="token operator">=</span>proc_name<span class="token punctuation">,</span>
+        scope_level<span class="token operator">=</span>self<span class="token punctuation">.</span>current_scope<span class="token punctuation">.</span>scope_level<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">,</span>
+        enclosing_scope<span class="token operator">=</span>self<span class="token punctuation">.</span>current_scope
+    <span class="token punctuation">)</span>
+
+    self<span class="token punctuation">.</span>current_scope <span class="token operator">=</span> procedure_scope
+
+    <span class="token keyword">for</span> param <span class="token keyword">in</span> node<span class="token punctuation">.</span>params<span class="token punctuation">:</span>
+        param_type <span class="token operator">=</span> self<span class="token punctuation">.</span>current_scope<span class="token punctuation">.</span>lookup<span class="token punctuation">(</span>param<span class="token punctuation">.</span>type_node<span class="token punctuation">.</span>value<span class="token punctuation">)</span>
+        param_name <span class="token operator">=</span> param<span class="token punctuation">.</span>var_node<span class="token punctuation">.</span>value
+        var_symbol <span class="token operator">=</span> VarSymbol<span class="token punctuation">(</span>param_name<span class="token punctuation">,</span> param_type<span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>current_scope<span class="token punctuation">.</span>insert<span class="token punctuation">(</span>var_symbol<span class="token punctuation">)</span>
+        proc_symbol<span class="token punctuation">.</span>params<span class="token punctuation">.</span>append<span class="token punctuation">(</span>var_symbol<span class="token punctuation">)</span>
+
+    self<span class="token punctuation">.</span>visit<span class="token punctuation">(</span>node<span class="token punctuation">.</span>block_node<span class="token punctuation">)</span>
+
+    <span class="token keyword">print</span><span class="token punctuation">(</span>procedure_scope<span class="token punctuation">)</span>
+    self<span class="token punctuation">.</span>current_scope <span class="token operator">=</span> self<span class="token punctuation">.</span>current_scope<span class="token punctuation">.</span>enclosing_scope
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'LEAVE scope: %s '</span> <span class="token operator">%</span> proc_name<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>The main changes are:</p>
+<ol>
+<li><p>Explicitly pass the <em>self.current_scope_ as an _enclosing_scope</em> argument when creating a scope.</p>
+</li>
+<li><p>Calculate the level automatically based on the scope level of the procedure’s enclosing scope: increment by one!</p>
+</li>
+<li><p>Restore the value of the _self.current_scope_ to its previous value right before leaving the <em>ProcedureDecl</em> node.</p>
+</li>
+</ol>
+<p>Let’s consider why it is important to set and restore the value of the _self.current_scope_ variable. Just take a look at the following program, where we have two procedure declarations in the <em>global scope</em>:</p>
+<pre class="line-numbers language-none"><code class="language-none">program Main;
+   var x, y : real;
+
+   procedure AlphaA(a : integer);
+      var y : integer;
+   begin &#123; AlphaA &#125;
+
+   end;  &#123; AlphaA &#125;
+
+   procedure AlphaB(a : integer);
+      var b : integer;
+   begin &#123; AlphaB &#125;
+
+   end;  &#123; AlphaB &#125;
+
+begin &#123; Main &#125;
+
+end.  &#123; Main &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>The nesing relationship diagram for the sample program looks like this:</p>
+<img data-src="./imgs/lsbasi_part14_img12.png" alt="" />
+
+<p>The way our semantic analyzer walks the tree is depth first, left-to-right, so it will traverse the <em>ProcedureDecl</em> node for <em>AlphaA</em> first and then it will visit the <em>ProcedureDecl</em> node for <em>AlphaB</em>. The problem here is that if we don’t restore the <em>self.current_scope_ before leaving <em>AlphaA</em> the _self.current_scope</em> will be left pointing to <em>AlphaA</em> instead of the <em>global scope</em> and, as a result, the semantic analyzer will create the scope <em>AlphaB</em> at level 3, as if it was nested within the scope <em>AlphaA</em>, which is, of course, incorrect.</p>
+<p>To construct a scope tree correctly, we need to follow a really simple procedure:</p>
+<ol>
+<li><p>When ENTER a <em>Program</em> or <em>ProcedureDecl</em> node, create a new scope and assign it to the _self.current_scope_</p>
+</li>
+<li><p>When about to LEAVE the <em>Program</em> or <em>ProcedureDecl</em> node, we restore the value of the _self.current_scope_</p>
+</li>
+</ol>
+<p>Just think of the _self.current_scope_ as a stack pointer and a <em>scope tree</em> as a collection of stacks.</p>
+<p>So, if correctly constructed, the <em>scope tree</em> would look like this:</p>
+<img data-src="./imgs/lsbasi_part14_img13.png" alt="" />
+
+<p>Now, let’s continue and talk about how <em>name resolution</em> works when we have nested scopes.</p>
+<h2 id="nested-scopes-and-name-resolution"><a href="#nested-scopes-and-name-resolution" class="headerlink" title="Nested scopes and name resolution"></a>Nested scopes and name resolution</h2><p>Here is a sample program with some variable references:</p>
+<img data-src="./imgs/lsbasi_part14_img14.png" alt="" />
+
+<p>The assignment statement, x resolves to a declaration at level 1, a resolves to a declaration at level 2 and y also resolves to a declaration at level 2.</p>
+<p><em>Lexically (statically) scoped</em> languages like Pascal follow the most closely nested scope rule when it comes to name resolution. It means that, in every scope, a name refers to its lexically closest declaration. For our assignment statement, let’s go over every variable reference and see how the rule works in practice:</p>
+<ol>
+<li><p>The semantic analyzer visits the right-hand side of the assignment first. We begin our search for a’s declaration in the lexically closest scope, which is the <em>Alpha</em> scope. The <em>Alpha</em> scope contains variable declarations in the <em>Alpha</em> procedure including the procedure’s formal parameters. We find the declaration of a in the <em>Alpha</em> scope: it’s the formal parameter a of the <em>Alpha</em> procedure - a variable symbol that has type integer.</p>
+<img data-src="./imgs/lsbasi_part14_img16.png" alt="" />
+</li>
+<li><p>Again, first we search for the declaration of x in the lexically closest scope. The lexically closest scope is the <em>Alpha</em> scope at level 2. The scope contains declarations in the <em>Alpha</em> procedure including the procedure’s formal parameters. We don’t find x at this scope level (in the <em>Alpha</em> scope), so we go up the chain to the <em>global scope</em> and continue our search there. Our search succeeds because the <em>global scope</em> has a variable symbol with the name x in it:</p>
+<img data-src="./imgs/lsbasi_part14_img17.png" alt="" />
+</li>
+<li><p>Now look at the variable reference y from the arithmetic expression a + x + y. We find its declaration in the lexically closest scope, which is the <em>Alpha</em> scope. In the <em>Alpha</em> scope the variable y has type integer (if there weren’t a declaration for y in the Alpha scope we would scan the text and find y in the outer/global scope and it would have real type in that case):</p>
+<img data-src="./imgs/lsbasi_part14_img18.png" alt="" />
+</li>
+<li><p>Finally, the variable x from the left hand side of the assignment statement x := a + x + y; It resolves to the same declaration as the variable reference x in the arithmetic expression on the right-hand side:</p>
+<img data-src="./imgs/lsbasi_part14_img19.png" alt="" />
+
+</li>
+</ol>
+<p>How to implement that behavior of looking in the current scope, and then looking in the enclosing scope, and so on until either find the symbol we’re looking for or we’ve reached the top of the scope tree and there are no more scopes left? We simply need to extend the <em>lookup</em> method in the <em>ScopedSymbolTable</em> class to continue its search up the chain in the scope tree:</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">lookup</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span>name<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'Lookup: %s. (Scope name: %s)'</span> <span class="token operator">%</span> <span class="token punctuation">(</span>name<span class="token punctuation">,</span> self<span class="token punctuation">.</span>scope_name<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token comment"># 'symbol' is either an instance of the Symbol class or None</span>
+    symbol <span class="token operator">=</span> self<span class="token punctuation">.</span>_symbols<span class="token punctuation">.</span>get<span class="token punctuation">(</span>name<span class="token punctuation">)</span>
+
+    <span class="token keyword">if</span> symbol <span class="token keyword">is</span> <span class="token keyword">not</span> <span class="token boolean">None</span><span class="token punctuation">:</span>
+        <span class="token keyword">return</span> symbol
+
+    <span class="token comment"># recursively go up the chain and lookup the name</span>
+    <span class="token keyword">if</span> self<span class="token punctuation">.</span>enclosing_scope <span class="token keyword">is</span> <span class="token keyword">not</span> <span class="token boolean">None</span><span class="token punctuation">:</span>
+        <span class="token keyword">return</span> self<span class="token punctuation">.</span>enclosing_scope<span class="token punctuation">.</span>lookup<span class="token punctuation">(</span>name<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>The way the updated <em>lookup</em> method works:</p>
+<ol>
+<li><p>Search for a symbol by name in the current scope. If the symbol is found, then return it.</p>
+</li>
+<li><p>If the symbol is not found, recursively traverse the tree and search for the symbol in the scopes up the chain. You don’t have to do the lookup recursively, you can rewrite it into an iterative form; the important part is to follow the link from a nested scope to its enclosing scope and search for the symbol there and up the tree until either the symbol is found or there are no more scopes left because you’ve reached the top of the scope tree.</p>
+</li>
+<li><p>The <em>lookup</em> method also prints the scope name, in parenthesis, where the lookup happens to make it clearer that lookup goes up the chain to search for a symbol, if it can’t find it in the current scope.</p>
+</li>
+</ol>
+<h2 id="source-to-source-compiler"><a href="#source-to-source-compiler" class="headerlink" title="Source-to-source compiler"></a>Source-to-source compiler</h2><p>We will start by talking about definitions. For the purpose of this article, we difine a <em>source-to-source compiler</em> as a compiler that translates a program in some source language into a program in the same (or almost the same) source language.</p>
+<p>So, if you write a translator that takes as an input a Pascal program and outputs a Pascal program, possibly modified, or enhanced, the translator in this case is called a <em>source-to-source compiler</em>.</p>
+<p>A good example of a source-to-source compiler for us to study would be a compiler that takes a Pascal program as an input and outputs a Pascal-like program where every name is subscripted with a corresponding scope level, and, in addition to that, every variable reference also has a type indicator. So we want a source-to-source compiler that would take the following Pascal program:</p>
+<pre class="line-numbers language-none"><code class="language-none">program Main;
+   var x, y: real;
+
+   procedure Alpha(a : integer);
+      var y : integer;
+   begin
+      x :&#x3D; a + x + y;
+   end;
+
+begin &#123; Main &#125;
+
+end.  &#123; Main &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>and turn it into the following Pascal-like program:</p>
+<pre class="line-numbers language-none"><code class="language-none">program Main0;
+   var x1 : REAL;
+   var y1 : REAL;
+   procedure Alpha1(a2 : INTEGER);
+      var y2 : INTEGER;
+
+   begin
+      &lt;x1:REAL&gt; :&#x3D; &lt;a2:INTEGER&gt; + &lt;x1:REAL&gt; + &lt;y2:INTEGER&gt;;
+   end; &#123;END OF Alpha&#125;
+
+begin
+
+end. &#123;END OF Main&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Here is the list of modifications our source-to-source compiler should make to an input Pascal program:</p>
+<ol>
+<li><p>Every declaration should be printed on a separate line, so if we have multiple declarations in the input Pascal program, the compiled output should have each declaration on a separate line. We can see in the text above, for example, how the <em>line var x, y : real;</em> gets converted into multiple lines.</p>
+</li>
+<li><p>Every name should get subscripted with a number corresponding to the scope level of the respective declaration.</p>
+</li>
+<li><p>Every variable reference, in addition to being subscripted, should also be printed in the following form: <code>&lt;var_name_with_subscript:type&gt;</code></p>
+</li>
+<li><p>The compiler should also add a comment at the end of every block in the form <em>{END OF … }</em>, where the ellipses will get substituted either with a program name or procedure name. That will help us identify the textual boundaries of procedures faster.</p>
+</li>
+</ol>
+<p>As you can see from the generated output above, this source-to-source compiler could be a useful tool for understanding how name resolution works, especially when a program has nested scopes, because the output generated by the compiler would allow us to quickly see to what declaration and in what scope a certain variable reference resolves to. This is good help when learning about symbols, nested scopes, and name resolution.</p>
+<p>All we need to do now is extend the semantic analyzer a bit to generate the enhanced output. You can see the full source code of the compiler <a href="./codes/src2src-compiler.py">here</a>. It is basically a semantic analyzer on drugs, modified to generate and return strings for certain AST nodes.</p>
+<p>For the following program, for example:</p>
+<pre class="line-numbers language-none"><code class="language-none">program Main;
+   var x, y : real;
+   var z : integer;
+
+   procedure AlphaA(a : integer);
+      var y : integer;
+   begin &#123; AlphaA &#125;
+      x :&#x3D; a + x + y;
+   end;  &#123; AlphaA &#125;
+
+   procedure AlphaB(a : integer);
+      var b : integer;
+   begin &#123; AlphaB &#125;
+   end;  &#123; AlphaB &#125;
+
+begin &#123; Main &#125;
+end.  &#123; Main &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>The compiler genertates the following output:</p>
+<pre class="line-numbers language-none"><code class="language-none">program Main0;
+   var x1 : REAL;
+   var y1 : REAL;
+   var z1 : INTEGER;
+   procedure AlphaA1(a2 : INTEGER);
+      var y2 : INTEGER;
+
+   begin
+      &lt;x1:REAL&gt; :&#x3D; &lt;a2:INTEGER&gt; + &lt;x1:REAL&gt; + &lt;y2:INTEGER&gt;;
+   end; &#123;END OF AlphaA&#125;
+   procedure AlphaB1(a2 : INTEGER);
+      var b2 : INTEGER;
+
+   begin
+
+   end; &#123;END OF AlphaB&#125;
+
+begin
+
+end. &#123;END OF Main&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>In the next article we’ll learn about runtime, call stack, implement procedure calls, and write our first version of a recursive factorial function. Stay tuned and see you soon! <a target="_blank" rel="noopener" href="https://ruslanspivak.com/lsbasi-part14/">However, there is no next yet</a>.</p>
+<h2 id="quick-reference"><a href="#quick-reference" class="headerlink" title="Quick Reference"></a>Quick Reference</h2><ol>
+<li><a href="/lisp-interpreter-in-py/chapter-01.html">Chapter 01</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-02.html">Chapter 02</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-03.html">Chapter 03</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-04.html">Chapter 04</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-05.html">Chapter 05</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-06.html">Chapter 06</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-07.html">Chapter 07</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-08.html">Chapter 08</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-09.html">Chapter 09</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-10.html">Chapter 10</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-11.html">Chapter 11</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-12.html">Chapter 12</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-13.html">Chapter 13</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-14.html">Chapter 14</a></li>
+</ol>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

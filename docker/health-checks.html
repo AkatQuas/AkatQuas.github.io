@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="Health ChecksDocker monitors the health of your app at a basic level every time you run a container. Containers run a specific process when they start, which could be the Java or .NET Core runtime, a">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Health checks">
+<meta property="og:url" content="https://akatquas.github.io/docker/health-checks.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="Health ChecksDocker monitors the health of your app at a basic level every time you run a container. Containers run a specific process when they start, which could be the Java or .NET Core runtime, a">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-01-15T10:21:08.374Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.374Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="akat,programmer,frontend,node,javascript,golang,python">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://akatquas.github.io/docker/health-checks.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>Health checks | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#health-checks"><span class="nav-text">Health Checks</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#starting-containers-with-dependency-checks"><span class="nav-text">Starting containers with dependency checks</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#defining-health-checks-and-dependency-checks-in-docker-compose"><span class="nav-text">Defining health checks and dependency checks in Docker Compose</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#understanding-how-checks-power-self-healing-apps"><span class="nav-text">Understanding how checks power self-healing apps</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#api-reference"><span class="nav-text">API Reference</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">Health checks
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <h2 id="health-checks"><a href="#health-checks" class="headerlink" title="Health Checks"></a>Health Checks</h2><p>Docker monitors the health of your app at a basic level every time you run a container.</p>
+<p>Containers run a specific process when they start, which could be the Java or .NET Core runtime, a shell script, or an application binary. Docker checks that the process is still running, and if it stops, the container goes into the exited state.</p>
+<p>That gives you a basic health check that works across all environments. Developers can see that their app is unhealthy if the process fails and the container exits.</p>
+<p>In a clustered environment, the container platform can restart an exited container or create a replacement container. However, this kind of restarting has nothing todo with container’s health.</p>
+<p>Docker gives you a neat way to build a real application health check right into the Docker image, just by adding logic to the Dockerfile.</p>
+<p>Enter the <code>HEALTHCHECK</code> instruction, which you can add to a Dockerfile to tell the runtime exactly how to check whether the app in the container is still healthy. The <code>HEALTHCHECK</code> instruction specifies a command for Docker to run inside the container, which will return a status code – the command can be anything you need to check if your app is healthy. Docker will run that command in the container at a timed interval. If the status code says everything is good, then the container is healthy. If the status code is a failure several times in a row, then the container is marked as unhealthy.</p>
+<pre class="line-numbers language-Dockerfile" data-language="Dockerfile"><code class="language-Dockerfile">HEALTHCHECK CMD curl --fail http:&#x2F;&#x2F;localhost&#x2F;health
+
+HEALTHCHECK CMD [&quot;&lt;execute-binary&gt;&quot;, &quot;&lt;execute-file&gt;&quot;, &quot;&lt;options&gt;&quot;, &quot;http:&#x2F;&#x2F;localhost&#x2F;health&quot;]<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<blockquote>
+<p>Use <code>docker inspect &lt;container&gt;</code> to check the <code>Health</code> field, which indicates the health status of the container.</p>
+</blockquote>
+<p>Would Docker restart or replace the container that is unhealthy? -&gt; The Docker does nothing with it, Docker broadcasts that the container is unhealthy but leaves it as it is. But keep it in mind, the health check continues too, so if the failure is temporary and the next check passes, the container status flips to healthy again.</p>
+<p>Health checks become really useful in a cluster with multiple servers running Docker being managed by Docker Swarm or Kubernetes. Then the container platform is notified if the container is unhealthy and it can take action. Because there is additional capacity in a cluster, a replacement container can be started while the unhealthy one is still running, so there shouldn’t be any application downtime.</p>
+<h3 id="starting-containers-with-dependency-checks"><a href="#starting-containers-with-dependency-checks" class="headerlink" title="Starting containers with dependency checks"></a>Starting containers with dependency checks</h3><p>Running across a cluster brings new challenges for distributed apps, because you can no longer control the <em>startup order</em> for containers that may have dependencies on each other.</p>
+<p>Some apps may have logic built into them to verify that the dependencies they need are there when they start.</p>
+<p>You can add that dependency check inside the Docker image. A dependency check is different from a health check – it runs before the application starts and makes sure everything the app needs is available.</p>
+<p>Docker doesn’t have a built-in feature like the <code>HEALTHCHECK</code> instruction for dependency checks, but you can put that logic in the startup command.</p>
+<p>Any extra tools increase the image size, and they also increase the frequency of updates and the security attack surface. So although curl is a great tool for getting started with container checks, it’s better to write a custom utility for your checks using the same language that your application uses—Java for Java apps, Node.js for Node.js apps, and so on.</p>
+<p>There are a whole lot of advantages to this:</p>
+<ul>
+<li><p>You reduce the software requirements in your image – you don’t need to install any extra tools, because everything the check utility needs to run is already there for the application.</p>
+</li>
+<li><p>You can use more complex conditional logic in your checks with retries or branches, which are harder to express in shell scripts, especially if you’re publishing cross-platform Docker images for Linux and Windows.</p>
+</li>
+<li><p>Your utility can use the same application configuration that your app uses, so you don’t end up specifying settings like URLs in several places, with the risk of them getting out of sync.</p>
+</li>
+<li><p>You can execute any tests you need, checking database connections or file paths for the existence of certificates that you’re expecting the platform to load into the container – all using the same libraries your app uses.</p>
+</li>
+</ul>
+<h2 id="defining-health-checks-and-dependency-checks-in-docker-compose"><a href="#defining-health-checks-and-dependency-checks-in-docker-compose" class="headerlink" title="Defining health checks and dependency checks in Docker Compose"></a>Defining health checks and dependency checks in Docker Compose</h2><p>Docker Compose can go some of the way toward repairing unreliable applications, but it won’t replace unhealthy containers. But it can set containers to restart if they exit, and it can add a health check if there isn’t one already in the image.</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment"># There's no `depends_on` setting, Docker Compose</span>
+<span class="token comment"># could start the containers in any order</span>
+<span class="token key atrule">version</span><span class="token punctuation">:</span> <span class="token string">'3.7'</span>
+
+<span class="token key atrule">services</span><span class="token punctuation">:</span>
+  <span class="token key atrule">numbers-api</span><span class="token punctuation">:</span>
+    <span class="token key atrule">image</span><span class="token punctuation">:</span> numbers<span class="token punctuation">-</span>api
+    <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token string">'8087:80'</span>
+    <span class="token key atrule">healthcheck</span><span class="token punctuation">:</span> <span class="token comment"># run the `HEALTHCHECK` command in that container</span>
+      <span class="token key atrule">interval</span><span class="token punctuation">:</span> 5s <span class="token comment"># interval between checks</span>
+      <span class="token key atrule">timeout</span><span class="token punctuation">:</span> 1s <span class="token comment"># timeout is limited for a single healthcheck</span>
+      <span class="token key atrule">retries</span><span class="token punctuation">:</span> <span class="token number">2</span> <span class="token comment"># maximum failures before the container to be flagged as unhealthy</span>
+      <span class="token key atrule">start_period</span><span class="token punctuation">:</span> 5s <span class="token comment"># time to wait before the first health checks</span>
+    <span class="token key atrule">networks</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> app<span class="token punctuation">-</span>net
+
+  <span class="token key atrule">numbers-web</span><span class="token punctuation">:</span>
+    <span class="token key atrule">image</span><span class="token punctuation">:</span> numbers<span class="token punctuation">-</span>web
+    <span class="token key atrule">restart</span><span class="token punctuation">:</span> on<span class="token punctuation">-</span>failure <span class="token comment"># restart container if exit</span>
+    <span class="token key atrule">environment</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> RngApi__Url=http<span class="token punctuation">:</span>//numbers<span class="token punctuation">-</span>api/rng
+    <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token string">'8088:80'</span>
+    <span class="token key atrule">healthcheck</span><span class="token punctuation">:</span>
+      <span class="token comment"># using the given command, which is not exist in the container Dockerfile</span>
+      <span class="token key atrule">test</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">'CMD'</span><span class="token punctuation">,</span> <span class="token string">'&lt;execute-cmd>'</span><span class="token punctuation">,</span> <span class="token string">'&lt;execute-file>'</span><span class="token punctuation">,</span> <span class="token string">'-option'</span><span class="token punctuation">,</span> <span class="token string">''</span><span class="token punctuation">]</span>
+      <span class="token key atrule">interval</span><span class="token punctuation">:</span> 5s
+      <span class="token key atrule">timeout</span><span class="token punctuation">:</span> 1s
+      <span class="token key atrule">retries</span><span class="token punctuation">:</span> <span class="token number">2</span>
+      <span class="token key atrule">start_period</span><span class="token punctuation">:</span> 10s
+    <span class="token key atrule">networks</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> app<span class="token punctuation">-</span>net
+
+<span class="token key atrule">networks</span><span class="token punctuation">:</span>
+  <span class="token key atrule">app-net</span><span class="token punctuation">:</span>
+    <span class="token key atrule">external</span><span class="token punctuation">:</span>
+      <span class="token key atrule">name</span><span class="token punctuation">:</span> nat<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<blockquote>
+<p>Why bother building a dependency check into the container startup when Docker Compose can do it for you with the <code>depends_on</code> flag? The answer is that Compose can only manage dependencies on a single machine, and the startup behavior of your app on a production cluster is far less predictable.</p>
+</blockquote>
+<h2 id="understanding-how-checks-power-self-healing-apps"><a href="#understanding-how-checks-power-self-healing-apps" class="headerlink" title="Understanding how checks power self-healing apps"></a>Understanding how checks power self-healing apps</h2><p>With dependency checks and health checks, we don’t require the platform to guarantee the startup order – the platform could spin up as many as containers on as many servers as quickly as it could. If some of those containers can’t reach their dependencies, they fail quickly and get restarted or replaced with other containers.</p>
+<p>The idea of self-healing apps is that any transient failuers can be dealt with by the platform. If your app has a nasty bug that causes it to run out of memory, the platform will shut down the container and replace it with a new one that has a fresh allocation of memory. It doesn’t fix the bug, but it keeps the app working correctly.</p>
+<p>You do need to be careful with your checks though. Health checks run periodically, so they shouldn’t do too much work. You need to find the balance so checks are testing that key parts of your app are working without taking too long to run or using too much compute resource. Dependency checks only run at startup, so you don’t need to be too concerned about the resources they use, but you need to be careful what you check. Some dependencies are out of your control, and if the platform can’t fix things, it won’t be helpful if your containers fail.</p>
+<ul>
+<li><p>During the startup life cycle, if the contanier starts and then exists because its dependencies are not available. The platform will try to <em>restarts the container until it starts correctly</em> with its successful dependency checks.</p>
+</li>
+<li><p>During the ongoing app life cycle. At some point the app fails, and the health checks fail repeatedly, so the container is flagged as unhealthy. The platform <em>creates a replacement container</em> (maybe on another server) and when that is running correctly, the original unhealthy container is shut down.</p>
+</li>
+</ul>
+<h2 id="api-reference"><a href="#api-reference" class="headerlink" title="API Reference"></a>API Reference</h2><p><a target="_blank" rel="noopener" href="https://docs.docker.com/engine/reference/builder/#healthcheck">HEALTHCHECK</a></p>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="Put very simply, a goroutine is a function that is running concurrently (remember: not necessarily in parallel!) alongside other code. In fact, every Go program has at least one goroutine: the main go">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Concurrency Primitives">
+<meta property="og:url" content="https://akatquas.github.io/concurrency-in-go/primitives.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="Put very simply, a goroutine is a function that is running concurrently (remember: not necessarily in parallel!) alongside other code. In fact, every Go program has at least one goroutine: the main go">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://akatquas.github.io/concurrency-in-go/channel-operation.png">
+<meta property="article:published_time" content="2021-01-15T10:21:08.374Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.374Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="akat,programmer,frontend,node,javascript,golang,python">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://akatquas.github.io/concurrency-in-go/channel-operation.png">
+
+
+<link rel="canonical" href="https://akatquas.github.io/concurrency-in-go/primitives.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>Concurrency Primitives | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#the-sync-package"><span class="nav-text">The sync package</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#waitgroup"><span class="nav-text">WaitGroup</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mutex-and-rwmutex"><span class="nav-text">Mutex and RWMutex</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cond"><span class="nav-text">Cond</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#once"><span class="nav-text">Once</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pool"><span class="nav-text">Pool</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#channels"><span class="nav-text">Channels</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#the-select-statement"><span class="nav-text">The select Statement</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#contents"><span class="nav-text">Contents</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">Concurrency Primitives
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <p>Put very simply, a goroutine is a function that is running concurrently (remember: not necessarily in parallel!) alongside other code.</p>
+<p>In fact, every Go program has at least one goroutine: the main goroutine, which is automatically created and started when the process begins.</p>
+<p>So let’s look at what’s happening behind the scenes here: how do goroutines actually work? Are they OS threads? Green threads? How many can we create?</p>
+<p>Goroutines are unique to Go (though some other languages have a concurrency primitive that is similar). They’re not OS threads, and they’re not exactly green threads—threads that are managed by a language’s runtime—they’re a higher level of abstraction known as coroutines. Coroutines are simply concurrent subroutines (functions, closures, or methods in Go) that are nonpreemptive—that is, they cannot be interrupted. Instead, coroutines have multiple points throughout which allow for suspension or reentry.</p>
+<p>What makes goroutines unique to Go are their deep integration with Go’s runtime. Goroutines don’t define their own suspension or reentry points; Go’s runtime observes the runtime behavior of goroutines and automatically suspends them when they block and then resumes them when they become unblocked. In a way this makes them preemptable, but only at points where the goroutine has become blocked. It is an elegant partnership between the runtime and a goroutine’s logic. Thus, goroutines can be considered a special class of coroutine.</p>
+<p>Coroutines, and thus goroutines, are implicitly concurrent constructs, but concurrency is not a property of a coroutine: something must host several coroutines simultaneously and give each an opportunity to execute. Note that this does not imply that coroutines are implicitly parallel. It is certainly possible to have several coroutines executing sequentially to give the illusion of parallelism</p>
+<p>Go’s mechanism for hosting goroutines is an implementation of what’s called an <strong>M:N scheduler</strong>, which means it maps <em>M green threads</em> to <em>N OS threads</em>. Goroutines are then scheduled onto the green threads. When we have more goroutines than green threads available, the scheduler handles the distribution of the goroutines across the available threads and ensures that when these goroutines become blocked, other goroutines can be run</p>
+<p>Go follows a model of concurrency called the <em>fork-join</em> model. The word <em>fork</em> refers to the fact that at any point in the program, it can split off a <em>child</em> branch of execution to be run concurrently with its <em>parent</em>. The word join refers to the fact that at some point in the future, these concurrent branches of execution will <em>join</em> back together. Where the <em>child</em> rejoins the parent is called a <em>join point</em>.</p>
+<pre class="line-numbers language-none"><code class="language-none">            main
+              |
+              |--fork--&gt; child
+              |            |
+              |            |
+join-point:   |-&lt;- join ---|
+              |            x
+              |            |
+            main         child<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>The <em>join points</em> are what guarantee our program’s correctness and remove the race condition.</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">var</span> wg sync<span class="token punctuation">.</span>WaitGroup
+sayHello <span class="token operator">:=</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">defer</span> wg<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// the child would return to join?</span>
+  fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"hello"</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+wg<span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+<span class="token keyword">go</span> <span class="token function">sayHello</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+wg<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// this is the join part</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Because goroutines operate within the same address space as each other, and simply host functions, utilizing goroutines is a natural extension to writing nonconcurrent code. Go’s compiler nicely takes care of pinning variables in memory so that goroutines don’t accidentally access freed memory, which allows developers to focus on their problem space instead of memory management; however, it’s not a blank check.</p>
+<p>Since multiple goroutines can operate against the same address space, we still have to worry about synchronization. As we’ve discussed, we can choose either to synchronize access to the shared memory the goroutines access, or we can use CSP primitives to share memory by communication.</p>
+<p>In the following example, we combine the fact that goroutines are not garbage collected with the runtime’s ability to introspect upon itself and measure the amount of memory allocated before and after goroutine creation:</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go">memConsumed <span class="token operator">:=</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">uint64</span> <span class="token punctuation">&#123;</span>
+  runtime<span class="token punctuation">.</span><span class="token function">GC</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token keyword">var</span> s runtime<span class="token punctuation">.</span>MemStats
+  runtime<span class="token punctuation">.</span><span class="token function">ReadMemStats</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>s<span class="token punctuation">)</span>
+  <span class="token keyword">return</span> s<span class="token punctuation">.</span>Sys
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">var</span> c <span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+<span class="token keyword">var</span> wg sync<span class="token punctuation">.</span>WaitGroup
+noop <span class="token operator">:=</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  wg<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token operator">&lt;-</span>c <span class="token comment">// the goroutine would hang up forever</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">const</span> numGoroutines <span class="token operator">=</span> <span class="token number">1e4</span> <span class="token comment">// a big number of goroutines to create</span>
+wg<span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span>numGoroutines<span class="token punctuation">)</span>
+before <span class="token operator">:=</span> <span class="token function">memConsumed</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">for</span> i <span class="token operator">:=</span> numGoroutines<span class="token punctuation">;</span> i <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">;</span> i<span class="token operator">--</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">go</span> <span class="token function">noop</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+wg<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+after <span class="token operator">:=</span> <span class="token function">memConsumed</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"%.3fkb"</span><span class="token punctuation">,</span> <span class="token function">float64</span><span class="token punctuation">(</span>after<span class="token operator">-</span>before<span class="token punctuation">)</span><span class="token operator">/</span>numGoroutines<span class="token operator">/</span><span class="token number">1000</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Something that might dampen our spirits is <em>context switching</em>, which is when something hosting a concurrent process must save its state to switch to running a different concurrent process. At the OS level, with threads, this can be quite costly. The OS thread must save things like register values, lookup tables, and memory maps to successfully be able to switch back to the current thread when it is time. Then it has to load the same information for the incoming thread.</p>
+<p>Context switching in software is comparatively much, much cheaper. Under a software-defined scheduler, the runtime can be more selective in what is persisted for retrieval, how it is persisted, and when the persisting need occur.</p>
+<h2 id="the-sync-package"><a href="#the-sync-package" class="headerlink" title="The sync package"></a>The <code>sync</code> package</h2><p>The <code>sync</code> package contains the concurrency primitives that are most useful for lowlevel memory access synchronization. In Go, these memory-access-synchronization operations have their use—mostly in small scopes such as a struct. It will be up to you to decide when memory access synchronization is appropriate.</p>
+<h2 id="waitgroup"><a href="#waitgroup" class="headerlink" title="WaitGroup"></a><code>WaitGroup</code></h2><p><code>WaitGroup</code> is a great way to wait for a set of concurrent operations to complete when you either don’t care about the result of the concurrent operation, or you have other means of collecting their results. If neither of those conditions are true, I suggest you use <code>channels</code> and a <code>select</code> statement instead.</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// 2nd goroutine sleeping...</span>
+<span class="token comment">// 1st goroutine sleeping...</span>
+<span class="token comment">//</span>
+<span class="token comment">// All goroutines complete.</span>
+<span class="token keyword">var</span> wg sync<span class="token punctuation">.</span>WaitGroup
+wg<span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token comment">// call Add with an argument of 1 to indicate that one goroutine is beginning.</span>
+<span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">defer</span> wg<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// call Done using the defer keyword to ensure that before exiting the goroutine’s closure, indicating to the WaitGroup</span>
+  fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"1st goroutine sleeping..."</span><span class="token punctuation">)</span>
+  time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+wg<span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+<span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">defer</span> wg<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"2nd goroutine sleeping..."</span><span class="token punctuation">)</span>
+  time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+wg<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// call Wait, which will block the main goroutine until all goroutines have indicated they have exited.</span>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"All goroutines complete."</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Notice that the calls to <code>Add</code> are done outside the goroutines they’re helping to track. If we didn’t do this, we would have introduced a race condition:</p>
+<blockquote>
+<p>Had the calls to <code>Add</code> been placed inside the goroutines’ closures, the call to <code>Wait</code> could have returned without blocking at all because the calls to <code>Add</code> would not have taken place.</p>
+</blockquote>
+<h2 id="mutex-and-rwmutex"><a href="#mutex-and-rwmutex" class="headerlink" title="Mutex and RWMutex"></a><code>Mutex</code> and <code>RWMutex</code></h2><p><code>Mutex</code> stands for “mutual exclusion” and is a way to guard critical sections of your program. A <code>Mutex</code> provides a concurrent-safe way to express exclusive access to these shared resources. The developers are responsible for coordinating access to this memory by guarding access to it with a mutex.</p>
+<blockquote>
+<p>To borrow a Goism, whereas channels share memory by communicating, a <code>Mutex</code> shares memory by creating a convention developers must follow to synchronize access to the memory.</p>
+</blockquote>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">var</span> count <span class="token builtin">int</span>
+<span class="token keyword">var</span> lock sync<span class="token punctuation">.</span>Mutex
+
+increment <span class="token operator">:=</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  lock<span class="token punctuation">.</span><span class="token function">Lock</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// request exclusive use of the critical section guarded by a `Mutex.lock`.</span>
+  <span class="token keyword">defer</span> lock<span class="token punctuation">.</span><span class="token function">Unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// indicate that jobs are done with the critical section lock is guarding.</span>
+  count<span class="token operator">++</span>
+  fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"Incrementing: %d\n"</span><span class="token punctuation">,</span> count<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+decrement <span class="token operator">:=</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  lock<span class="token punctuation">.</span><span class="token function">Lock</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// request exclusive use of the critical section guarded by a `Mutex.lock`.</span>
+  <span class="token keyword">defer</span> lock<span class="token punctuation">.</span><span class="token function">Unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// indicate that jobs are done with the critical section lock is guarding.</span>
+  count<span class="token operator">--</span>
+  fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"Decrementing: %d\n"</span><span class="token punctuation">,</span> count<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">// Increment</span>
+<span class="token keyword">var</span> arithmetic sync<span class="token punctuation">.</span>WaitGroup
+<span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;=</span> <span class="token number">5</span><span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+  arithmetic<span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+  <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">defer</span> arithmetic<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token function">increment</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">// Decrement</span>
+<span class="token keyword">for</span> i<span class="token punctuation">:</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;=</span> <span class="token number">5</span><span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+  arithmetic<span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+  <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">defer</span> arithmetic<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token function">decrement</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+arithmetic<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"Arithmetic complete."</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>You’ll notice that we always call <code>Unlock</code> within a defer statement. This is a very common idiom when utilizing a <code>Mutex</code> to ensure the call always happens, even when <code>panicing</code>. Failing to do so will probably cause your program to deadlock.</p>
+<p>Critical sections are so named because they reflect a bottleneck in your program. <em>It is somewhat <strong>expensive to enter and exit</strong> a critical section, and so generally people attempt to <strong>minimize the time</strong> spent in critical sections.</em></p>
+<p>One strategy for doing so is to reduce the cross-section of the critical section. There may be memory that needs to be shared between multiple concurrent processes, but perhaps not all of these processes will read and write to this memory. If this is the case, you can take advantage of a different type of mutex: <code>sync.RWMutex</code>.</p>
+<p>The <code>sync.RWMutex</code> is conceptually the same thing as a Mutex: it guards access to memory; however, You can request a lock for reading, in which case you will be granted access unless the lock is being held for writing. This means that an arbitrary number of readers can hold a reader lock or only a single writer lock.</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go">producer <span class="token operator">:=</span> <span class="token keyword">func</span><span class="token punctuation">(</span>wg <span class="token operator">*</span>sync<span class="token punctuation">.</span>WaitGroup<span class="token punctuation">,</span> l sync<span class="token punctuation">.</span>Locker<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">defer</span> wg<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">5</span><span class="token punctuation">;</span> i <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">;</span> i<span class="token operator">--</span> <span class="token punctuation">&#123;</span>
+    l<span class="token punctuation">.</span><span class="token function">Lock</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    l<span class="token punctuation">.</span><span class="token function">Unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+observer <span class="token operator">:=</span> <span class="token keyword">func</span><span class="token punctuation">(</span>wg <span class="token operator">*</span>sync<span class="token punctuation">.</span>WaitGroup<span class="token punctuation">,</span> l sync<span class="token punctuation">.</span>Locker<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">defer</span> wg<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  l<span class="token punctuation">.</span><span class="token function">Lock</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token keyword">defer</span> l<span class="token punctuation">.</span><span class="token function">Unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+test <span class="token operator">:=</span> <span class="token keyword">func</span><span class="token punctuation">(</span>count <span class="token builtin">int</span><span class="token punctuation">,</span> mutex<span class="token punctuation">,</span> rwMutex sync<span class="token punctuation">.</span>Locker<span class="token punctuation">)</span> time<span class="token punctuation">.</span>Duration <span class="token punctuation">&#123;</span>
+  <span class="token keyword">var</span> wg sync<span class="token punctuation">.</span>WaitGroup
+  wg<span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span>count<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">)</span>
+  beginTestTime <span class="token operator">:=</span> time<span class="token punctuation">.</span><span class="token function">Now</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token keyword">go</span> <span class="token function">producer</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>wg<span class="token punctuation">,</span> mutex<span class="token punctuation">)</span>
+  <span class="token keyword">for</span> i <span class="token operator">:=</span> count<span class="token punctuation">;</span> i <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">;</span> i<span class="token operator">--</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">go</span> <span class="token function">observer</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>wg<span class="token punctuation">,</span> rwMutex<span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
+  wg<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token keyword">return</span> time<span class="token punctuation">.</span><span class="token function">Since</span><span class="token punctuation">(</span>beginTestTime<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+tw <span class="token operator">:=</span> tabwriter<span class="token punctuation">.</span><span class="token function">NewWriter</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span>Stdout<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token string">' '</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span>
+<span class="token keyword">defer</span> tw<span class="token punctuation">.</span><span class="token function">Flush</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token keyword">var</span> m sync<span class="token punctuation">.</span>RWMutex
+fmt<span class="token punctuation">.</span><span class="token function">Fprintf</span><span class="token punctuation">(</span>tw<span class="token punctuation">,</span> <span class="token string">"Readers\tRWMutext\tMutex\n"</span><span class="token punctuation">)</span>
+<span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">20</span><span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+  count <span class="token operator">:=</span> <span class="token function">int</span><span class="token punctuation">(</span>math<span class="token punctuation">.</span><span class="token function">Pow</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">,</span> <span class="token function">float64</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+  fmt<span class="token punctuation">.</span><span class="token function">Fprintf</span><span class="token punctuation">(</span>
+    tw<span class="token punctuation">,</span>
+    <span class="token string">"%d\t%v\t%v\n"</span><span class="token punctuation">,</span>
+    count<span class="token punctuation">,</span>
+    <span class="token function">test</span><span class="token punctuation">(</span>count<span class="token punctuation">,</span> <span class="token operator">&amp;</span>m<span class="token punctuation">,</span> m<span class="token punctuation">.</span><span class="token function">RLocker</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token function">test</span><span class="token punctuation">(</span>count<span class="token punctuation">,</span> <span class="token operator">&amp;</span>m<span class="token punctuation">,</span> <span class="token operator">&amp;</span>m<span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="cond"><a href="#cond" class="headerlink" title="Cond"></a><code>Cond</code></h2><p>The comment for the <code>Cond</code> type really does a great job of describing its purpose:</p>
+<p><code>Cond</code> implements a condition variable, a rendezvous point for goroutines waiting for or announcing the occurrence of an event.</p>
+<p>In that definition, an “event” is any arbitrary signal between two or more goroutines that carries no information other than the fact that it has occurred.</p>
+<p>Very often you’ll want to wait for one of these signals before continuing execution on a goroutine. If we were to look at how to accomplish this without the Cond type, one naive approach to doing this is to use an infinite loop:</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">for</span> <span class="token function">conditionTrue</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token boolean">false</span> <span class="token punctuation">&#123;</span>
+  time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token operator">*</span>time<span class="token punctuation">.</span>Millisecond<span class="token punctuation">)</span> <span class="token comment">// using sleep to release the CPU core</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>This is better, but it’s still inefficient, and you have to figure out how long to sleep for: too long, and you’re artificially degrading performance; too short, and you’re unnecessarily consuming too much CPU time. It would be better if there were some kind of way for a goroutine to efficiently sleep until it was signaled to wake and check its condition. This is exactly what the Cond type does for us. Using a <code>Cond</code>, we could write the previous examples like this:</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// instantiate a new `Cond`</span>
+<span class="token comment">// The `NewCond` function takes in a type that satisfies the `sync.Locker` interface.</span>
+<span class="token comment">// This is what allows the `Cond` type to facilitate coordination with other goroutines in a concurrent-safe way.</span>
+c <span class="token operator">:=</span> sync<span class="token punctuation">.</span><span class="token function">NewCond</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>sync<span class="token punctuation">.</span>Mutex<span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+<span class="token comment">// lock the Locker for this condition</span>
+<span class="token comment">// This is necessary because the call to `Wait` automatically</span>
+<span class="token comment">// calls `Unlock` on the Locker when entered.</span>
+c<span class="token punctuation">.</span>L<span class="token punctuation">.</span><span class="token function">Lock</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">for</span> <span class="token function">conditionTrue</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token boolean">false</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// wait to be notified that the condition has occurred.</span>
+  <span class="token comment">// This is a blocking call and the goroutine will be suspended.</span>
+  c<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">// unlock the Locker for this condition.</span>
+<span class="token comment">// This is necessary because when the call to `Wait` exits,</span>
+<span class="token comment">// it calls `Lock` on the Locker for the condition</span>
+c<span class="token punctuation">.</span>L<span class="token punctuation">.</span><span class="token function">Unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>This approach is much more efficient. Note that the call to Wait doesn’t just block, it <em>suspends</em> the current goroutine, allowing other goroutines to run on the OS thread.</p>
+<p>A few other things happen when you call <code>Wait</code>: upon entering <code>Wait</code>, <code>Unlock</code> is called on the <code>Cond</code> variable’s Locker, and upon exiting <code>Wait</code>, <code>Lock</code> is called on the <code>Cond</code> variable’s Locker. This is effectively a hidden side effect of the method. It looks like we’re holding this lock the entire time while we wait for the condition to occur, but that’s not actually the case.</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// create condition using a standard `sync.Mutex` as the Locker</span>
+c <span class="token operator">:=</span> sync<span class="token punctuation">.</span><span class="token function">NewCond</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>sync<span class="token punctuation">.</span>Mutex<span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token comment">// create a slice with a length of 0, capacity of 10.</span>
+queue <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">)</span>
+
+removeFromQueue <span class="token operator">:=</span> <span class="token keyword">func</span><span class="token punctuation">(</span>delay time<span class="token punctuation">.</span>Duration<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span>delay<span class="token punctuation">)</span>
+  <span class="token comment">// enter the critical section for the condition</span>
+  <span class="token comment">// so we can modify data pertinent to the condition.</span>
+  c<span class="token punctuation">.</span>L<span class="token punctuation">.</span><span class="token function">Lock</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+  <span class="token comment">// simulate dequeuing an item by reassigning</span>
+  <span class="token comment">// the head of the slice to the second item</span>
+  queue <span class="token operator">=</span> queue<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">:</span><span class="token punctuation">]</span>
+  fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"Removed from queue"</span><span class="token punctuation">)</span>
+
+  <span class="token comment">//  exit the condition’s critical section</span>
+  c<span class="token punctuation">.</span>L<span class="token punctuation">.</span><span class="token function">Unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+  <span class="token comment">// let a goroutine waiting on the condition know that something has occurred</span>
+  c<span class="token punctuation">.</span><span class="token function">Signal</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">10</span><span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// enter the critical section for the condition</span>
+  <span class="token comment">// by calling Lock on the condition’s `Locker`</span>
+  c<span class="token punctuation">.</span>L<span class="token punctuation">.</span><span class="token function">Lock</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token comment">// This is important because a signal on the condition</span>
+  <span class="token comment">// doesn’t necessarily mean what you’ve been waiting for</span>
+  <span class="token comment">//  has occurred—only that something has occurred.</span>
+  <span class="token keyword">for</span> <span class="token function">len</span><span class="token punctuation">(</span>queue<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">2</span> <span class="token punctuation">&#123;</span>
+
+    <span class="token comment">// suspend the main goroutine until</span>
+    <span class="token comment">// a signal on the condition has been sent.</span>
+    c<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
+  fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"Adding to queue"</span><span class="token punctuation">)</span>
+  queue <span class="token operator">=</span> <span class="token function">append</span><span class="token punctuation">(</span>queue<span class="token punctuation">,</span> <span class="token keyword">struct</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+  <span class="token comment">// create a new goroutine that will</span>
+  <span class="token comment">// dequeue an element after one second</span>
+  <span class="token keyword">go</span> <span class="token function">removeFromQueue</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token operator">*</span>time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+
+  <span class="token comment">// exit the condition’s critical section</span>
+  c<span class="token punctuation">.</span>L<span class="token punctuation">.</span><span class="token function">Unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>There’s a new method in this example, <code>Signal</code>. This is one of two methods that the <code>Cond</code> type provides for notifying goroutines blocked on a <code>Wait</code> call that the condition has been triggered. The other is a method called <code>Broadcast</code>. Internally, the runtime maintains a FIFO list of goroutines waiting to be signaled; <code>Signal</code> finds the goroutine that’s been waiting the longest and notifies that, whereas <code>Broadcast</code> sends a signal to all goroutines that are waiting.</p>
+<blockquote>
+<p>In addition, the Cond type is much more performant than utilizing channels.</p>
+</blockquote>
+<p>Like most other things in the sync package, usage of Cond works best when constrained to a tight scope, or exposed to a broader scope through a type that encapsulates it.</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">/*
+  An example to use `Broadcast`
+
+  We’re creating a GUI application with a button on it.
+  We want to register an arbitrary number of functions
+  that will run when that button is clicked.
+
+  A `Cond` is perfect for this because we can use
+  its `Broadcast` method to notify all registered handlers.
+*/</span>
+
+<span class="token comment">// define a type `Button` that contains a condition, `Clicked`.</span>
+<span class="token keyword">type</span> Button <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+  Clicked <span class="token operator">*</span>sync<span class="token punctuation">.</span>Cond
+<span class="token punctuation">&#125;</span>
+
+button <span class="token operator">:=</span> Button<span class="token punctuation">&#123;</span> Clicked<span class="token punctuation">:</span> sync<span class="token punctuation">.</span><span class="token function">NewCond</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>sync<span class="token punctuation">.</span>Mutex<span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span> <span class="token punctuation">&#125;</span>
+
+<span class="token comment">// define a convenience function that will allow us</span>
+<span class="token comment">// to register functions to handle signals from a condition.</span>
+<span class="token comment">// Each handler is run on its own goroutine, and subscribe</span>
+<span class="token comment">// will not exit until that goroutine is confirmed to be running.</span>
+subscribe <span class="token operator">:=</span> <span class="token keyword">func</span><span class="token punctuation">(</span>c <span class="token operator">*</span>sync<span class="token punctuation">.</span>Cond<span class="token punctuation">,</span> fun <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">var</span> goroutineRunning sync<span class="token punctuation">.</span>WaitGroup
+  goroutineRunning<span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+  <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    goroutineRunning<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    c<span class="token punctuation">.</span>L<span class="token punctuation">.</span><span class="token function">Lock</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">defer</span> c<span class="token punctuation">.</span>L<span class="token punctuation">.</span><span class="token function">Unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    c<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token function">fn</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  goroutineRunning<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">// set a handler for when the mouse button is raised</span>
+<span class="token keyword">var</span> clickRegistered sync<span class="token punctuation">.</span>WaitGroup
+clickRegistered<span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span>
+<span class="token function">subscribe</span><span class="token punctuation">(</span>button<span class="token punctuation">.</span>Clicked<span class="token punctuation">,</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"Maximizing window."</span><span class="token punctuation">)</span>
+  clickRegistered<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+<span class="token function">subscribe</span><span class="token punctuation">(</span>button<span class="token punctuation">.</span>Clicked<span class="token punctuation">,</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"Displaying annoying dialog box!"</span><span class="token punctuation">)</span>
+  clickRegistered<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+<span class="token function">subscribe</span><span class="token punctuation">(</span>button<span class="token punctuation">.</span>Clicked<span class="token punctuation">,</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"Mouse clicked."</span><span class="token punctuation">)</span>
+  clickRegistered<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+button<span class="token punctuation">.</span>Clicked<span class="token punctuation">.</span><span class="token function">Broadcast</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+clickRegistered<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="once"><a href="#once" class="headerlink" title="Once"></a>Once</h2><p>As the name implies, <code>sync.Once</code> is a type that utilizes some sync primitives internally to ensure that <em>only one call</em> to <code>Do</code> ever calls the function passed in—even on different goroutines.</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">var</span> count <span class="token builtin">int</span>
+increment <span class="token operator">:=</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  count<span class="token operator">++</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">var</span> once sync<span class="token punctuation">.</span>Once
+<span class="token keyword">var</span> increments sync<span class="token punctuation">.</span>WaitGroup
+increments<span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span>
+<span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">100</span><span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">defer</span> increments<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    once<span class="token punctuation">.</span><span class="token function">Do</span><span class="token punctuation">(</span>increment<span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+increments<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token comment">// output</span>
+<span class="token comment">// Count: 1</span>
+fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"Count is %d\n"</span><span class="token punctuation">,</span> count<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">var</span> count <span class="token builtin">int</span> <span class="token operator">=</span> <span class="token number">10</span>
+increment <span class="token operator">:=</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> count<span class="token operator">++</span> <span class="token punctuation">&#125;</span>
+decrement <span class="token operator">:=</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> count<span class="token operator">--</span> <span class="token punctuation">&#125;</span>
+<span class="token keyword">var</span> once sync<span class="token punctuation">.</span>Once
+once<span class="token punctuation">.</span><span class="token function">Do</span><span class="token punctuation">(</span>increment<span class="token punctuation">)</span>
+once<span class="token punctuation">.</span><span class="token function">Do</span><span class="token punctuation">(</span>decrement<span class="token punctuation">)</span>
+<span class="token comment">// output</span>
+<span class="token comment">// Count: 11</span>
+fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"Count: %d\n"</span><span class="token punctuation">,</span> count<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>This is because <code>sync.Once</code> only counts the number of times <code>Do</code> is called, not how many times unique functions passed into <code>Do</code> are called. In this way, copies of <code>sync.Once</code> are tightly coupled to the functions they are intended to be called with. Check more details in the source file of <code>sync/once</code>.</p>
+<h2 id="pool"><a href="#pool" class="headerlink" title="Pool"></a><code>Pool</code></h2><p><code>Pool</code> is a concurrent-safe implementation of the object pool pattern.</p>
+<p>At a high level, a the pool pattern is a way to create and make available a fixed number, or pool, of things for use. It’s commonly used to constrain the creation of things that are expensive (e.g., database connections) so that only a fixed number of them are ever created, but an indeterminate number of operations can still request access to these things. In the case of Go’s <code>sync.Pool</code>, this data type can be safely used by multiple goroutines.</p>
+<p>The primary interface of <code>Pool</code> is its <code>Get</code> method. When called, <code>Get</code> will first check whether there are any available instances within the pool to return to the caller, and if not, call its <code>New</code> member variable to create a new one. When finished, callers call <code>Put</code> to place the instance they were working with back in the pool for use by other processes.</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go">myPool <span class="token operator">:=</span> <span class="token operator">&amp;</span>sync<span class="token punctuation">.</span>Pool <span class="token punctuation">&#123;</span>
+  New<span class="token punctuation">:</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"Creating new instance."</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> <span class="token keyword">struct</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+myPool<span class="token punctuation">.</span><span class="token function">Get</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+instance <span class="token operator">:=</span> myPool<span class="token punctuation">.</span><span class="token function">Get</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+myPool<span class="token punctuation">.</span><span class="token function">Put</span><span class="token punctuation">(</span>instance<span class="token punctuation">)</span>
+myPool<span class="token punctuation">.</span><span class="token function">Get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>So why use a pool and not just instantiate objects as you go? Go has a garbage collector, so the instantiated objects will be automatically cleaned up. What’s the point? Consider this example:</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">var</span> numCalcsCreated <span class="token builtin">int</span>
+calcPool <span class="token operator">:=</span> <span class="token operator">&amp;</span>sync<span class="token punctuation">.</span>Pool<span class="token punctuation">&#123;</span>
+    New<span class="token punctuation">:</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span>
+        numCalcsCreated <span class="token operator">+=</span> <span class="token number">1</span>
+        mem <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">,</span> <span class="token number">1024</span><span class="token punctuation">)</span>
+        <span class="token comment">// storing the address of the slice of bytes</span>
+        <span class="token keyword">return</span> <span class="token operator">&amp;</span>mem
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+<span class="token punctuation">&#125;</span>
+
+calcPool<span class="token punctuation">.</span><span class="token function">Put</span><span class="token punctuation">(</span>calcPool<span class="token punctuation">.</span><span class="token function">New</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+calcPool<span class="token punctuation">.</span><span class="token function">Put</span><span class="token punctuation">(</span>calcPool<span class="token punctuation">.</span><span class="token function">New</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+calcPool<span class="token punctuation">.</span><span class="token function">Put</span><span class="token punctuation">(</span>calcPool<span class="token punctuation">.</span><span class="token function">New</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+calcPool<span class="token punctuation">.</span><span class="token function">Put</span><span class="token punctuation">(</span>calcPool<span class="token punctuation">.</span><span class="token function">New</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+<span class="token keyword">const</span> numWorkers <span class="token operator">=</span> <span class="token number">1024</span> <span class="token operator">*</span> <span class="token number">1024</span>
+<span class="token keyword">var</span> wg sync<span class="token punctuation">.</span>WaitGroup
+wg<span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span>numWorkers<span class="token punctuation">)</span>
+
+<span class="token keyword">for</span> i <span class="token operator">:=</span> numWorkers<span class="token punctuation">;</span> i <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">;</span> i<span class="token operator">--</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">defer</span> wg<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token comment">// asserting the type is a pointer to a slice of bytes</span>
+        mem <span class="token operator">:=</span> calcPool<span class="token punctuation">.</span><span class="token function">Get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token operator">*</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">)</span>
+        <span class="token keyword">defer</span> calcPool<span class="token punctuation">.</span><span class="token function">Put</span><span class="token punctuation">(</span>mem<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+wg<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token comment">// output: becasue we only have 8 logic processor</span>
+<span class="token comment">// 8 calculators were created.</span>
+fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"%d calculators were created."</span><span class="token punctuation">,</span> numCalcsCreated<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Had this example is run without a <code>sync.Pool</code>, though the results are nondeterministic, in the worst case it could have been attempting to allocate a gigabyte of memory, but as you see from the output, the real memory allocation is only allocated 4 KB.</p>
+<p>Another common situation where a <code>Pool</code> is useful is for <em>warming a cache of preallocated objects</em> for operations that must run as quickly as possible. In this case, instead of trying to guard the host machine’s memory by constraining the number of objects created, we’re trying to guard consumers’ time by front-loading the time it takes to get a reference to another object.</p>
+<p>This is very common when writing high- throughput network servers that attempt to respond to requests as quickly as possible. Checkout this example:</p>
+<details>
+
+<summary>
+
+<p>A service that don’t use <code>sync.Pool</code></p>
+</summary>
+
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// simulates creating a connection to a service</span>
+<span class="token keyword">func</span> <span class="token function">connectToService</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span>
+  time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token operator">*</span>time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+  <span class="token keyword">return</span> <span class="token keyword">struct</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">// a network handler that opens a connection</span>
+<span class="token comment">// to another service for every connection</span>
+<span class="token comment">// the network handler accepts.</span>
+<span class="token keyword">func</span> <span class="token function">startNetworkDaemon</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">*</span>sync<span class="token punctuation">.</span>WaitGroup <span class="token punctuation">&#123;</span>
+  <span class="token keyword">var</span> wg sync<span class="token punctuation">.</span>WaitGroup
+  wg<span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+  <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    server<span class="token punctuation">,</span> err <span class="token operator">:=</span> net<span class="token punctuation">.</span><span class="token function">Listen</span><span class="token punctuation">(</span><span class="token string">"tcp"</span><span class="token punctuation">,</span> <span class="token string">"localhost:8080"</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+      log<span class="token punctuation">.</span><span class="token function">Fatalf</span><span class="token punctuation">(</span><span class="token string">"cannot listen: %v"</span><span class="token punctuation">,</span> err<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">defer</span> server<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    wg<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">for</span> <span class="token punctuation">&#123;</span>
+      conn<span class="token punctuation">,</span> err <span class="token operator">:=</span> server<span class="token punctuation">.</span><span class="token function">Accept</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+        log<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"cannot accept connection: %v"</span><span class="token punctuation">,</span> err<span class="token punctuation">)</span>
+        <span class="token keyword">continue</span>
+      <span class="token punctuation">&#125;</span>
+      <span class="token function">connectToService</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      fmt<span class="token punctuation">.</span><span class="token function">Fprintln</span><span class="token punctuation">(</span>conn<span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">)</span>
+      conn<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token keyword">return</span> <span class="token operator">&amp;</span>wg
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">// test functions</span>
+<span class="token keyword">func</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  daemonStarted <span class="token operator">:=</span> <span class="token function">startNetworkDaemon</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  daemonStarted<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token function">BenchmarkNetworkRequest</span><span class="token punctuation">(</span>b <span class="token operator">*</span>testing<span class="token punctuation">.</span>B<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> b<span class="token punctuation">.</span>N<span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+    conn<span class="token punctuation">,</span> err <span class="token operator">:=</span> net<span class="token punctuation">.</span><span class="token function">Dial</span><span class="token punctuation">(</span><span class="token string">"tcp"</span><span class="token punctuation">,</span> <span class="token string">"localhost:8080"</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+      b<span class="token punctuation">.</span><span class="token function">Fatalf</span><span class="token punctuation">(</span><span class="token string">"cannot dial host: %v"</span><span class="token punctuation">,</span> err<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">if</span> <span class="token boolean">_</span><span class="token punctuation">,</span> err <span class="token operator">:=</span> ioutil<span class="token punctuation">.</span><span class="token function">ReadAll</span><span class="token punctuation">(</span>conn<span class="token punctuation">)</span><span class="token punctuation">;</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+      b<span class="token punctuation">.</span><span class="token function">Fatalf</span><span class="token punctuation">(</span><span class="token string">"cannot read: %v"</span><span class="token punctuation">,</span> err<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+    conn<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</details>
+
+<details>
+
+<summary>
+
+<p>A service that use <code>sync.Pool</code> to host connections to the fictitious service.</p>
+</summary>
+
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">connectToService</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span>
+  time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token operator">*</span>time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+  <span class="token keyword">return</span> <span class="token keyword">struct</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token function">warServiceConnCache</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">*</span>sync<span class="token punctuation">.</span>Pool <span class="token punctuation">&#123;</span>
+  p <span class="token operator">:=</span> <span class="token operator">&amp;</span>sync<span class="token punctuation">.</span>Pool <span class="token punctuation">&#123;</span>
+      New<span class="token punctuation">:</span> connectToService<span class="token punctuation">,</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">10</span><span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+      p<span class="token punctuation">.</span><span class="token function">Put</span><span class="token punctuation">(</span>p<span class="token punctuation">.</span><span class="token function">New</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">return</span> p
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token function">startNetworkDaemon</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">*</span>sync<span class="token punctuation">.</span>WaitGroup <span class="token punctuation">&#123;</span>
+  <span class="token keyword">var</span> wg sync<span class="token punctuation">.</span>WaitGroup
+  wg<span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+  <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      connPool <span class="token operator">:=</span> <span class="token function">warServiceConnCache</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      server<span class="token punctuation">,</span> err <span class="token operator">:=</span> net<span class="token punctuation">.</span><span class="token function">Listen</span><span class="token punctuation">(</span><span class="token string">"tcp"</span><span class="token punctuation">,</span> <span class="token string">"localhost:9090"</span><span class="token punctuation">)</span>
+
+      <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+          log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span><span class="token string">"cannot listen: %v"</span><span class="token punctuation">,</span> err<span class="token punctuation">)</span>
+      <span class="token punctuation">&#125;</span>
+      <span class="token keyword">defer</span> server<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+      wg<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+      <span class="token keyword">for</span> <span class="token punctuation">&#123;</span>
+          conn<span class="token punctuation">,</span> err <span class="token operator">:=</span> server<span class="token punctuation">.</span><span class="token function">Accept</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+          <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+              log<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"cannot accept connection: %v"</span><span class="token punctuation">,</span> err<span class="token punctuation">)</span>
+              <span class="token keyword">continue</span>
+          <span class="token punctuation">&#125;</span>
+          svcConn <span class="token operator">:=</span> connPool<span class="token punctuation">.</span><span class="token function">Get</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+          fmt<span class="token punctuation">.</span><span class="token function">Fprintln</span><span class="token punctuation">(</span>conn<span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">)</span>
+          connPool<span class="token punctuation">.</span><span class="token function">Put</span><span class="token punctuation">(</span>svcConn<span class="token punctuation">)</span>
+          conn<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token keyword">return</span> <span class="token operator">&amp;</span>wg
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">// test functions</span>
+<span class="token keyword">func</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  daemonStarted <span class="token operator">:=</span> <span class="token function">startNetworkDaemon</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  daemonStarted<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token function">BenchmarkNetworkRequest</span><span class="token punctuation">(</span>b <span class="token operator">*</span>testing<span class="token punctuation">.</span>B<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> b<span class="token punctuation">.</span>N<span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+    conn<span class="token punctuation">,</span> err <span class="token operator">:=</span> net<span class="token punctuation">.</span><span class="token function">Dial</span><span class="token punctuation">(</span><span class="token string">"tcp"</span><span class="token punctuation">,</span> <span class="token string">"localhost:8080"</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+      b<span class="token punctuation">.</span><span class="token function">Fatalf</span><span class="token punctuation">(</span><span class="token string">"cannot dial host: %v"</span><span class="token punctuation">,</span> err<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">if</span> <span class="token boolean">_</span><span class="token punctuation">,</span> err <span class="token operator">:=</span> ioutil<span class="token punctuation">.</span><span class="token function">ReadAll</span><span class="token punctuation">(</span>conn<span class="token punctuation">)</span><span class="token punctuation">;</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+      b<span class="token punctuation">.</span><span class="token function">Fatalf</span><span class="token punctuation">(</span><span class="token string">"cannot read: %v"</span><span class="token punctuation">,</span> err<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+    conn<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</details>
+
+<p>The object pool design pattern is best used either when you have concurrent processes that require objects, but dispose of them very rapidly after instantiation, or when construction of these objects could negatively impact memory.</p>
+<p>So when working with a Pool, just remember the following points:</p>
+<ol>
+<li><p>When instantiating <code>sync.Pool</code>, give it a <code>New</code> member variable that is thread-safe when called.</p>
+</li>
+<li><p>When you receive an instance from <code>Get</code>, make no assumptions regarding the state of the object you receive back.</p>
+</li>
+<li><p>Make sure to call <code>Put</code> when you’re finished with the object you pulled out of the pool. Otherwise, the <code>Pool</code> is useless. Usually this is done with <code>defer</code>.</p>
+</li>
+<li><p>Objects in the pool must be roughly uniform in makeup.</p>
+</li>
+</ol>
+<h2 id="channels"><a href="#channels" class="headerlink" title="Channels"></a>Channels</h2><p>Channels are one of the synchronization primitives in Go derived from Hoare’s CSP. While they can be used to synchronize access of the memory, they are best used to communicate information between goroutines.</p>
+<p>Like a river, a channel serves as a conduit for a stream of information; values may be passed along the channel, and then read out downstream. When using channels, you’ll pass a value into a <code>chan</code> variable, and then somewhere else in your program read it off the channel. The disparate parts of your program don’t require knowledge of each other, only a reference to the same place in memory where the channel resides. This can be done by passing references of channels around your program.</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">var</span> readOnlyStream <span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+readOnlyStream <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+<span class="token keyword">var</span> sendOnlyStream <span class="token keyword">chan</span><span class="token operator">&lt;-</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+sendOnlyStream <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span><span class="token operator">&lt;-</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+<span class="token keyword">var</span> receiveChan <span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+<span class="token keyword">var</span> sendChan <span class="token keyword">chan</span><span class="token operator">&lt;-</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+dataStream <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token comment">// Valid statements:</span>
+receiveChan <span class="token operator">=</span> dataStream
+sendChan <span class="token operator">=</span> dataStream<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>It’s not often to see unidirectional channels instantiated, but often them are used as function parameters and return types, which is very useful. This is possible because Go will implicitly convert bidirectional channels to unidirectional channels when needed</p>
+<p>The channels in Go are said to be blocking:</p>
+<ul>
+<li><p>Any goroutine that attempts to write to a channel that is full will wait until the channel has been emptied</p>
+</li>
+<li><p>Any goroutine that attempts to read from a channel that is empty will wait until at least one item is placed on it</p>
+</li>
+</ul>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go">value<span class="token punctuation">,</span> ok <span class="token operator">:=</span> <span class="token operator">&lt;-</span>someStream
+<span class="token comment">// (true): Hello channels</span>
+fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"(%v): %v"</span><span class="token punctuation">,</span> ok<span class="token punctuation">,</span> value<span class="token punctuation">)</span>
+
+intStream <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">)</span>
+<span class="token keyword">go</span> <span class="token keyword">func</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  intStream <span class="token operator">&lt;-</span> <span class="token number">3</span>
+  intStream <span class="token operator">&lt;-</span> <span class="token number">1</span>
+  <span class="token function">close</span><span class="token punctuation">(</span>intStream<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">for</span> <span class="token punctuation">&#123;</span>
+  integer<span class="token punctuation">,</span> ok <span class="token operator">:=</span> <span class="token operator">&lt;-</span> intStream
+  fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"(%v): %v"</span><span class="token punctuation">,</span> ok<span class="token punctuation">,</span> integer<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+<span class="token comment">// output:</span>
+<span class="token comment">// (true): 3</span>
+<span class="token comment">// (true): 1</span>
+<span class="token comment">// (false): 0</span>
+<span class="token comment">// (false): 0</span>
+<span class="token comment">// ... forever (false):0</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>The second return value is a way for a read operation to indicate whether the read off the channel was a value generated by a write elsewhere in the process, or a default value generated from a closed channel.</p>
+<p>This opens up a few new patterns for us. The first is ranging over a channel. The <code>range</code> keyword—used in conjunction with the <code>for</code> statement—supports channels as arguments, and will automatically break the loop when a channel is closed. This allows for concise iteration over the values on a channel.</p>
+<details>
+
+<summary>
+
+<p>Some examples.</p>
+</summary>
+
+<pre class="line-numbers language-go" data-language="go"><code class="language-go">intStream <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">)</span>
+<span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">defer</span> <span class="token function">close</span><span class="token punctuation">(</span>intStream<span class="token punctuation">)</span>
+  <span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">1</span><span class="token punctuation">;</span> i <span class="token operator">&lt;=</span> <span class="token number">5</span><span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+    intStream <span class="token operator">&lt;-</span> i
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token keyword">for</span> integer <span class="token operator">:=</span> <span class="token keyword">range</span> intStream <span class="token punctuation">&#123;</span>
+  fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"%v "</span><span class="token punctuation">,</span> integer<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go">begin <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token keyword">var</span> wg sync<span class="token punctuation">.</span>WaitGroup
+<span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">5</span> <span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+  wg<span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+  <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span>i <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">defer</span> wg<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token operator">&lt;-</span>begin
+    fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"%v has begun\n"</span><span class="token punctuation">,</span> i<span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"Unblocking goroutines..."</span><span class="token punctuation">)</span>
+<span class="token function">close</span><span class="token punctuation">(</span>begin<span class="token punctuation">)</span>
+wg<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"Program exiting"</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</details>
+
+<p>We can also create <em>buffered channels</em>, which are channels that are given a capacity when they’re instantiated. This means that even if no reads are performed on the channel, a goroutine can still perform n writes. Here’s how to declare and instantiate one:</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// we can place four things onto the channel</span>
+<span class="token comment">// regardless of whether it’s being read from</span>
+<span class="token keyword">var</span> dataStream <span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+dataStream <span class="token operator">=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">)</span>
+
+<span class="token comment">// equivalent statement</span>
+a <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">)</span>
+b <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>The declaration of a buffered channel is no different than an unbuffered one. Unbuffered channels are also defined in terms of buffered channels: an unbuffered channel is simply a buffered channel created with a capacity of 0.</p>
+<p>It also bears mentioning that if a buffered channel is empty and has a receiver, the buffer will be bypassed and the value will be passed directly from the sender to the receiver. In practice, this happens transparently, but it’s worth knowing for understanding the performance profile of buffered channels.</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// it’s a little faster than writing to stdout directly.</span>
+<span class="token keyword">var</span> stdoutBuff bytes<span class="token punctuation">.</span>Buffer
+
+<span class="token comment">// ensure that the buffer is written out</span>
+<span class="token comment">// to stdout before the process exits.</span>
+<span class="token keyword">defer</span> stdoutBuff<span class="token punctuation">.</span><span class="token function">WriteTo</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span>Stdout<span class="token punctuation">)</span>
+
+<span class="token comment">// create a buffered channel with a capacity of 4</span>
+<span class="token comment">// change the capacity, the output will change</span>
+<span class="token comment">// because the channel is buffered with size</span>
+intStream <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">)</span>
+<span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">defer</span> <span class="token function">close</span><span class="token punctuation">(</span>intStream<span class="token punctuation">)</span>
+  <span class="token keyword">defer</span> fmt<span class="token punctuation">.</span><span class="token function">Fprintln</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>stdoutBuff<span class="token punctuation">,</span> <span class="token string">"Producer Done."</span><span class="token punctuation">)</span>
+  <span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">5</span> <span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Fprintf</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>stdoutBuff<span class="token punctuation">,</span> <span class="token string">"Sending: %d\n"</span><span class="token punctuation">,</span> i<span class="token punctuation">)</span>
+    intStream <span class="token operator">&lt;-</span> i
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token keyword">for</span> integer <span class="token operator">:=</span> <span class="token keyword">range</span> intStream <span class="token punctuation">&#123;</span>
+  fmt<span class="token punctuation">.</span><span class="token function">Fprintf</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>stdoutBuff<span class="token punctuation">,</span> <span class="token string">"Recevied %v.\n"</span><span class="token punctuation">,</span> integer<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<img data-src="./channel-operation.png" alt="Result of channel operations given a channel's state" />
+
+<p>The first thing we should do to put channels in the right context is to assign channel <em>ownership</em>. The <em>owrnership</em> is defined as being a goroutine that instantiates, writes, and closes a channel. Unidirectional channel declarations are the tool that will allow us to distinguish between goroutines that own channels and those that only utilize them: channel owners have a write-access view into the channel (<code>chan</code> or <code>chan&lt;-</code>), and channel utilizers only have a read-only view into the channel (<code>&lt;-chan</code>).</p>
+<p>The goroutine that owns a channel should:</p>
+<ol>
+<li>Instantiate the channel.</li>
+<li>Perform writes, or pass ownership to another goroutine.</li>
+<li>Close the channel.</li>
+<li>Ecapsulate the previous three things in this list and expose them via a reader channel.</li>
+</ol>
+<p>As a consumer of a channel, two things draw our attention:</p>
+<ol>
+<li><p>Knowing when the channel is closed.</p>
+</li>
+<li><p>Responsibly handling blocking for any reason.</p>
+</li>
+</ol>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go">chanOwner <span class="token operator">:=</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token builtin">int</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// instantiate a buffered channel.</span>
+  <span class="token comment">// Since we know we’ll produce six results,</span>
+  <span class="token comment">// we create a buffered channel of 5</span>
+  <span class="token comment">// so that the goroutine can complete as quickly as possible.</span>
+  resultStream <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">)</span>
+
+  <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// ensure to close the channel once we finished usages</span>
+    <span class="token keyword">defer</span> <span class="token function">close</span><span class="token punctuation">(</span>resultStream<span class="token punctuation">)</span>
+    <span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;=</span> <span class="token number">5</span><span class="token punctuation">;</span> i <span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+      resultStream <span class="token operator">&lt;-</span> i
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token comment">// return read-only channel for consumers</span>
+  <span class="token keyword">return</span> resultStream
+<span class="token punctuation">&#125;</span>
+
+resultStream <span class="token operator">:=</span> <span class="token function">chanOwner</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">for</span> result <span class="token operator">:=</span> <span class="token keyword">range</span> resultStream <span class="token punctuation">&#123;</span>
+  fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"Received: %d\n"</span><span class="token punctuation">,</span> result<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"Done Receiving!"</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>In many ways, channels are the glue that binds goroutines together.</p>
+<h2 id="the-select-statement"><a href="#the-select-statement" class="headerlink" title="The select Statement"></a>The <code>select</code> Statement</h2><p>The <code>select</code> statement is the glue that binds channels together; it’s how we’re able to compose channels together in a program to form larger abstractions.</p>
+<p>In addition to joining components, at these critical junctures in your program, select statements can help safely bring channels together with concepts like cancellations, timeouts, waiting, and default values.</p>
+<p>Just like a <code>switch</code> block, a <code>select</code> block encompasses a series of <code>case</code> statements that guard a series of statements.</p>
+<p>However, <code>case</code> statements in a <code>select</code> block aren’t tested sequentially, and execution won’t automatically fall through if none of the criteria are met. Instead, all channel reads and writes are considered simultaneously to see if any of them are ready: populated or closed channels in the case of reads, and channels that are not at capacity in the case of writes. If none of the channels are ready, the entire select statement blocks. Then when one the channels is ready, that operation will proceed, and its corresponding statements will execute. If more than one channel are ready, the Go runtime will perform a pseudo-random uniform selection over the set of case statements.</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go">start <span class="token operator">:=</span> time<span class="token punctuation">.</span><span class="token function">Now</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+c <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span><span class="token number">5</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+  <span class="token function">close</span><span class="token punctuation">(</span>c<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"Blocking or read..."</span><span class="token punctuation">)</span>
+<span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+<span class="token keyword">case</span> <span class="token operator">&lt;-</span>c<span class="token punctuation">:</span>
+  fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"Unblocked %v later.\n"</span><span class="token punctuation">,</span> time<span class="token punctuation">.</span><span class="token function">Since</span><span class="token punctuation">(</span>start<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+<span class="token comment">// output:</span>
+<span class="token comment">// Blocking on read...</span>
+<span class="token comment">// Unblocked 5.000170047s later.</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<details>
+
+<summary>
+
+<p>We introduces a random variable into your equation—in this case, which channel to select from. By weighting the chance of each channel being utilized equally, all Go programs that utilize the select statement will perform well in the average case.</p>
+</summary>
+
+<pre class="line-numbers language-go" data-language="go"><code class="language-go">c1 <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token function">close</span><span class="token punctuation">(</span>c1<span class="token punctuation">)</span>
+c2 <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token function">close</span><span class="token punctuation">(</span>c2<span class="token punctuation">)</span>
+<span class="token keyword">var</span> c1Count<span class="token punctuation">,</span> c2Count <span class="token builtin">int</span>
+<span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">1000</span><span class="token punctuation">;</span> i <span class="token operator">>=</span> <span class="token number">0</span><span class="token punctuation">;</span> i<span class="token operator">--</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">case</span> <span class="token operator">&lt;-</span>c1<span class="token punctuation">:</span>
+    c1Count<span class="token operator">++</span>
+  <span class="token keyword">case</span> <span class="token operator">&lt;-</span>c1<span class="token punctuation">:</span>
+    c1Count<span class="token operator">++</span>
+  <span class="token keyword">case</span> <span class="token operator">&lt;-</span>c2<span class="token punctuation">:</span>
+    c2Count<span class="token operator">++</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"c1Count: %d\nc2Count: %d\n"</span><span class="token punctuation">,</span> c1Count<span class="token punctuation">,</span> c2Count<span class="token punctuation">)</span>
+<span class="token comment">// c1Count is almost twice c2Count</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go">c1 <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token function">close</span><span class="token punctuation">(</span>c1<span class="token punctuation">)</span>
+c2 <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token function">close</span><span class="token punctuation">(</span>c2<span class="token punctuation">)</span>
+<span class="token keyword">var</span> c1Count<span class="token punctuation">,</span> c2Count <span class="token builtin">int</span>
+<span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">1000</span><span class="token punctuation">;</span> i <span class="token operator">>=</span> <span class="token number">0</span><span class="token punctuation">;</span> i<span class="token operator">--</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">case</span> <span class="token operator">&lt;-</span>c1<span class="token punctuation">:</span>
+    c1Count<span class="token operator">++</span>
+  <span class="token keyword">case</span> <span class="token operator">&lt;-</span>c2<span class="token punctuation">:</span>
+    c2Count<span class="token operator">++</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"c1Count: %d\nc2Count: %d\n"</span><span class="token punctuation">,</span> c1Count<span class="token punctuation">,</span> c2Count<span class="token punctuation">)</span>
+<span class="token comment">// c1 is almost same as c2Count</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</details>
+
+<p>Go’s time package provides an elegant way to do timeout problem with channels that fits nicely within the paradigm of select statements. The <code>time.After</code> function takes in a <code>time.Duration</code> argument and returns a channel that will send the current time after the duration.</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">var</span> c <span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token builtin">int</span>
+<span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+<span class="token keyword">case</span> <span class="token operator">&lt;-</span>c<span class="token punctuation">:</span>
+<span class="token keyword">case</span> <span class="token operator">&lt;-</span> time<span class="token punctuation">.</span><span class="token function">After</span><span class="token punctuation">(</span><span class="token number">1</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span><span class="token punctuation">:</span>
+  fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"Timed out."</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<details>
+
+<summary>
+
+<p>Like <code>case</code> statements, the <code>select</code> statement also allows for a <code>default</code> clause in case you’d like to do something if all the channels you’re selecting against are blocking.</p>
+<p>A <code>default</code> clause used in conjunction with a for-select loop. This allows a goroutine to make progress on work while waiting for another goroutine to report a result.</p>
+</summary>
+
+<pre class="line-numbers language-go" data-language="go"><code class="language-go">done <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token operator">*</span>time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+  <span class="token function">close</span><span class="token punctuation">(</span>done<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+workCounter <span class="token operator">:=</span> <span class="token number">0</span>
+loop<span class="token punctuation">:</span>
+<span class="token keyword">for</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">case</span> <span class="token operator">&lt;-</span>done<span class="token punctuation">:</span>
+    <span class="token keyword">break</span> loop
+  <span class="token keyword">default</span><span class="token punctuation">:</span>
+    <span class="token comment">// don't block these code,</span>
+    <span class="token comment">// let the control flow</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token comment">// Simulate work</span>
+  workCounter<span class="token operator">++</span>
+  time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token operator">*</span>time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"Achieved %v cycles of work before signalled to stop.\n"</span><span class="token punctuation">,</span> workCounter<span class="token punctuation">)</span>
+<span class="token comment">// output:</span>
+<span class="token comment">// Achieved 5 cycles of work before signalled to stop.</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</details>
+
+<p>Finally, there is a special case for empty select statements: select statements with no case clauses. These look like this:</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">select</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>This statement will simply block forever.</p>
+<h2 id="contents"><a href="#contents" class="headerlink" title="Contents"></a>Contents</h2><p><a href="./introduction.html">Introduction on Concurrency and Parallelism</a></p>
+<p><a href="./primitives.html">Go’s Concurrency Primitives</a></p>
+<p><a href="./patterns.html">Concurrency Patterns in go</a></p>
+<p><a href="./scalability.html">Concurrency at Scale</a></p>
+<p><a href="./internal.html">Goroutines and the Go Runtime</a></p>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

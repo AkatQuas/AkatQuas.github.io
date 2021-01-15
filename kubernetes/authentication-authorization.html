@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="As with any multitenant, distributed system, user management forms the basis for how Kubernetes ultimately authenticates identities, determines appropriate levels of access, enables self-service capab">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Authentication, User Management, Authorization and Adimission Control">
+<meta property="og:url" content="https://akatquas.github.io/kubernetes/authentication-authorization.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="As with any multitenant, distributed system, user management forms the basis for how Kubernetes ultimately authenticates identities, determines appropriate levels of access, enables self-service capab">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-01-15T10:21:08.390Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.390Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="akat,programmer,frontend,node,javascript,golang,python">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://akatquas.github.io/kubernetes/authentication-authorization.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>Authentication, User Management, Authorization and Adimission Control | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#user"><span class="nav-text">User</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#authentication"><span class="nav-text">Authentication</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#kubeconfig"><span class="nav-text">kubeconfig</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#service-accounts"><span class="nav-text">Service Accounts</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rest"><span class="nav-text">REST</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#authorization"><span class="nav-text">Authorization</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#role-based-access-control"><span class="nav-text">Role-Based Access Control</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#admission-control"><span class="nav-text">Admission Control</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#common-controllers"><span class="nav-text">Common Controllers</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dynamic-admission-controllers"><span class="nav-text">Dynamic Admission Controllers</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">Authentication, User Management, Authorization and Adimission Control
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <p>As with any multitenant, distributed system, user management forms the basis for how Kubernetes ultimately authenticates identities, determines appropriate levels of access, enables self-service capabilities, and maintains auditability.</p>
+<p>Before the server will accept (and subsequently act) on the request. Each of these tests falls into one of three groups: authentication, access control, and admission control.</p>
+<h2 id="user"><a href="#user" class="headerlink" title="User"></a>User</h2><p>Every request that comes to Kubernetes is associated with some identity. Even a request with no identity is associated with the <code>system:unauthenticated</code> group.</p>
+<p>The term <code>users</code> pertains to how you and I (and maybe even your continuous delivery tooling) connect and gain access to the Kubernetes API.</p>
+<p>There are many kinds of access to the Kubernetes API:</p>
+<ul>
+<li><code>kubectl</code> command-line interface</li>
+<li>custom scripts</li>
+<li>static token files on the host</li>
+<li>controllers</li>
+<li>the web user interface</li>
+<li>authentication webhooks</li>
+</ul>
+<p>The users are not a top-level supported resource, which are not manipulated directly by way of the Kubernetes API, but are defined in an external user identity management system.</p>
+<p>There is good reason for this—it stands in support of good user management hygiene.</p>
+<p>How you manage your users should remain consistent across your organization, regardless of the systems consuming it. Kubernetes supports this design tenet by providing the connectivity to leverage these existing systems, thus enabling consistent and effective user management across your infrastructure.</p>
+<h2 id="authentication"><a href="#authentication" class="headerlink" title="Authentication"></a>Authentication</h2><p>The absence of such systems does not mean that you won’t be able to use Kubernetes. It may just mean that you may need to leverage a different mechanism for authenticating users.</p>
+<p>Just as with many well-designed REST-based APIs, there are multiple strategies that Kubernetes can employ for authenticating users. We can think about each of these strategies as belonging to one of three major groups:</p>
+<ul>
+<li>Basic Authentication</li>
+<li>X.509 client certificates</li>
+<li>Bearer tokens</li>
+</ul>
+<h3 id="kubeconfig"><a href="#kubeconfig" class="headerlink" title="kubeconfig"></a>kubeconfig</h3><p>We need to craft a kubeconfig file that records the details of how we authenticate.</p>
+<p><code>kubectl</code> uses this configuration file to determine where and how to issue requests to the API server. This file is typically located in your home directory under <code>~/.kube/config</code> but may also be specified explicitly on the command line with the <code>--kubeconfig</code> parameter or by way of the <code>KUBECONFIG</code> environment variable.</p>
+<p>For someone who may not be familiar with a <code>kubeconfig</code> file, it is important to understand its three top-level structures: <code>users</code>, <code>clusters</code>, and <code>contexts</code>. With <code>users</code> we name a user and provide the mechanism by which he or she will authenticate to a cluster. The <code>clusters</code> attribute provides all of the data necessary to connect to a cluster. This, minimally, includes the IP or fully qualified domain name for the API server but may also include items like the CA bundle for a <em>self-signed certificate</em>. And <code>contexts</code> is where we associate users with clusters as a single named entity. The <code>context</code> serves as the means by which <code>kubectl</code> connects and authenticates to an API server.</p>
+<h3 id="service-accounts"><a href="#service-accounts" class="headerlink" title="Service Accounts"></a>Service Accounts</h3><p>There is another important use case to consider though, and this pertains to how the processes running inside a Pod access the API.</p>
+<p>A Kubernetes cluster is a state machine made up of a collection of controllers. Each of these controllers is responsible for reconciling the state of the user-specified resources.</p>
+<p>The way that Kubernetes handles these use cases is using the ServiceAccount resource:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kubectl create sa testsa
+kubectl get sa testsa -o yaml<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>In the output above, note that when we created the <code>ServiceAccount</code>, a Secret named <code>testsa-token-&lt;hash&gt;</code> was also created automatically. Just as with the end-user authentication we discussed earlier, this is the token that will be included as a bearer token on every API request. These credentials are mounted into the Pod in a well-known location that is accessible by the various Kubernetes clients.</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># kubectl exec into some pod</span>
+<span class="token function">ls</span> -al /var/run/secrets
+<span class="token function">ls</span> -al /var/run/secrets/kubernetes.io/serviceaccount<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>Every Pod that is launched could have an associated <code>ServiceAccount</code>.</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Pod
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> testpod
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">serviceAccountName</span><span class="token punctuation">:</span> testpod<span class="token punctuation">-</span>sa<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>If none is specified in the Pod manifest, a default <code>ServiceAccount</code> is used. This default <code>ServiceAccount</code> is available on a namespace-wide basis and is automatically created when a namespace is.</p>
+<p>Authentication is only the first challenge for a Kubernetes API request. There are two additional tests for every request: access control and admission control.</p>
+<h2 id="rest"><a href="#rest" class="headerlink" title="REST"></a>REST</h2><p>The Kubernetes API is a RESTful API. The advantageous properties of a RESTful APIs are many (e.g., scalability and portability), but its simple structure is what enables us to determine levels of access within Kubernetes.</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kubectl -v<span class="token operator">=</span><span class="token number">6</span> get pod <span class="token operator">&lt;</span>somepod<span class="token operator">></span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>Just as with HTTP, these four verbs constitute the most basic elements of how we would interact with Kubernetes resources.</p>
+<p>Within the Kubernetes API, in addition to <code>get</code>, <code>update</code>, <code>delete</code>, and <code>patch</code>, we also have access to the verbs <code>list</code>, <code>watch</code>, <code>proxy</code>, <code>redirect</code>, and <code>deletecollection</code>, when dealing with resources.</p>
+<h2 id="authorization"><a href="#authorization" class="headerlink" title="Authorization"></a>Authorization</h2><p>Just because users are authenticated does not mean that we should give equal access rights to all of them.</p>
+<p>Just as with authentication, authorization is the responsibility of the API server. The API server may be configured to implement various authorization modules using the aptly named <code>--authorization-mode</code> argument to the <code>kube-apiserver</code> executable.</p>
+<p>The API server passes each request to these modules in the order defined by the comma-delimited <code>--authorization-mode</code> argument. Each module, in turn, may either weigh in on the decision-making process or choose to abstain.</p>
+<p>In the case of abstinence, the API request simply moves on to the next module for evaluation. If, however, a module does make a decision, the authorization is terminated and reflects the decision of the authorizing module. If the module denies the request, the user receives an appropriate HTTP 403 (Forbidden) response, and if the request is allowed, the request makes its way to the final step of API flow: admission controller evaluation.</p>
+<h3 id="role-based-access-control"><a href="#role-based-access-control" class="headerlink" title="Role-Based Access Control"></a>Role-Based Access Control</h3><p>The RBAC module, shorted for role-based access control, allows for the implementation of <em>dynamic access control</em> polices at runtime.</p>
+<p>Put succinctly, Kubernetes maps the attributes of the <code>UserInfo</code> object to the resources and verbs that the user should have access to.</p>
+<p>A <em>role</em> is a set of abstract capabilities.</p>
+<p>A <em>role binding</em> is an assignment of a role to one or more identities.</p>
+<blockquote>
+<p>For example, the <em>appdev</em> role might represent the ability to create Pods and services. Thus, binding the <em>appdev</em> role to the user identity <em>alice</em> indicates that Alice has the ability to create Pods and services.</p>
+</blockquote>
+<p><strong>Role and ClusterRole</strong></p>
+<p>With the RBAC module, authorization to perform an action on a resource is defined with the <code>Role</code> or <code>ClusterRole</code> resource types.</p>
+<p>An implementation of the the example, where a user has read-write access to <code>Deployments</code> but only read access to <code>Pods</code>) might look something like this:</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">kind</span><span class="token punctuation">:</span> Role
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> rbac.authorization.k8s.io/v1
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> web<span class="token punctuation">-</span>rw<span class="token punctuation">-</span>deployment
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> some<span class="token punctuation">-</span>web<span class="token punctuation">-</span>app<span class="token punctuation">-</span>ns
+<span class="token key atrule">rules</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">apiGroups</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">''</span><span class="token punctuation">]</span>
+    <span class="token key atrule">resources</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">'pods'</span><span class="token punctuation">]</span>
+    <span class="token key atrule">verbs</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">'get'</span><span class="token punctuation">,</span> <span class="token string">'list'</span><span class="token punctuation">,</span> <span class="token string">'watch'</span><span class="token punctuation">]</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">apiGroups</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">'extensions'</span><span class="token punctuation">,</span> <span class="token string">'apps'</span><span class="token punctuation">]</span>
+    <span class="token key atrule">resources</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">'deployments'</span><span class="token punctuation">]</span>
+    <span class="token key atrule">verbs</span><span class="token punctuation">:</span>
+      <span class="token punctuation">[</span><span class="token string">'get'</span><span class="token punctuation">,</span> <span class="token string">'list'</span><span class="token punctuation">,</span> <span class="token string">'watch'</span><span class="token punctuation">,</span> <span class="token string">'create'</span><span class="token punctuation">,</span> <span class="token string">'update'</span><span class="token punctuation">,</span> <span class="token string">'patch'</span><span class="token punctuation">,</span> <span class="token string">'delete'</span><span class="token punctuation">]</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>The <code>apiGroups</code> field of each rule simply indicates to the API server the namespace of the API that it should act on. (This reflects the API namespace defined in the <code>apiVersion</code> field of your resource definition.)</p>
+<p>In the next two fields, <code>resources</code> and <code>verbs</code>, we encounter those REST constructs we discussed earlier. And, in the case of RBAC, we explicitly allow these types of API requests for a user with this <code>web-rw-deployment</code> role. Since rules is an array, we may add as many combinations of permissions as are appropriate. All of these permissions are additive. With RBAC, we can only <code>grant</code> actions, and this module otherwise denies by default.</p>
+<table>
+<thead>
+<tr>
+<th align="left">Verb</th>
+<th align="left">HTTP method</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>create</code></td>
+<td align="left"><code>POST</code></td>
+<td align="left">Create a new resource</td>
+</tr>
+<tr>
+<td align="left"><code>delete</code></td>
+<td align="left"><code>DELETE</code></td>
+<td align="left">Delete an existing resource</td>
+</tr>
+<tr>
+<td align="left"><code>get</code></td>
+<td align="left"><code>GET</code></td>
+<td align="left">Get a resource</td>
+</tr>
+<tr>
+<td align="left"><code>list</code></td>
+<td align="left"><code>GET</code></td>
+<td align="left">List a collection of resources</td>
+</tr>
+<tr>
+<td align="left"><code>patch</code></td>
+<td align="left"><code>PATCH</code></td>
+<td align="left">Modify an existing resource via partial change</td>
+</tr>
+<tr>
+<td align="left"><code>update</code></td>
+<td align="left"><code>PUT</code></td>
+<td align="left">Modify an existing resource via a complete object</td>
+</tr>
+<tr>
+<td align="left"><code>watch</code></td>
+<td align="left"><code>GET</code></td>
+<td align="left">Watch for streaming updates to a resource</td>
+</tr>
+<tr>
+<td align="left"><code>proxy</code></td>
+<td align="left"><code>GET</code></td>
+<td align="left">Connect to resource via a streaming WebSocket proxy</td>
+</tr>
+</tbody></table>
+<p><code>Role</code> and <code>ClusterRole</code> are identical in functionality and differ only in their scope. The previous example policy is bound to the resources in the <code>some-web-app-ns</code> namespaces.</p>
+<p>If we want to grant a permission that has cross-namespace capabilities, we use the ClusterRole resource. This resource, in the same manner, grants fine-grained control but on a cluster-wide basis.</p>
+<p><code>ClusterRoles</code> are typically employed for two primary use cases—to easily grant cluster administrators a wide degree of freedom or to grant very specific permissions to a Kubernetes controller.</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># built-in cluster roles</span>
+kubectl get clusterroles
+
+<span class="token comment"># view cluster-role-bindings</span>
+kubectl get clusterrolebindings<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>While most of these built-in roles are for system utilities, four are designed for generic end users:</p>
+<ul>
+<li>The <code>cluster-admin</code> role provides complete access to the entire cluster.</li>
+<li>The <code>admin</code> role provides complete access to a complete namespace.</li>
+<li>The <code>edit</code> role allows an end user to modify things in a namespace.</li>
+<li>The <code>view</code> role allows for read-only access to a namespace.</li>
+</ul>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> rbac.authorization.k8s.io/v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> ClusterRole
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> external<span class="token punctuation">-</span>dns
+<span class="token key atrule">rules</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">apiGroups</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">''</span><span class="token punctuation">]</span>
+    <span class="token key atrule">resources</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">'services'</span><span class="token punctuation">]</span>
+    <span class="token key atrule">verbs</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">'get'</span><span class="token punctuation">,</span> <span class="token string">'watch'</span><span class="token punctuation">,</span> <span class="token string">'list'</span><span class="token punctuation">]</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">apiGroups</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">'extensions'</span><span class="token punctuation">]</span>
+    <span class="token key atrule">resources</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">'ingresses'</span><span class="token punctuation">]</span>
+    <span class="token key atrule">verbs</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">'get'</span><span class="token punctuation">,</span> <span class="token string">'watch'</span><span class="token punctuation">,</span> <span class="token string">'list'</span><span class="token punctuation">]</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>When the Kubernetes API server starts up, it automatically installs a number of default <code>ClusterRoles</code> that are defined in the code of the API server itself. This means that if you modify any built-in cluster role, those modifications are <em>transient</em>. Whenever the API server is restarted (e.g., for an upgrade) your changes will be overwritten.</p>
+<p>To prevent this from happening, before you make any other modifications you need to add the <code>rbac.authorization.kubernetes.io/autoupdate</code> annotation with a value of <code>false</code> to the built-in <code>ClusterRole</code> resource.</p>
+<p><strong>RoleBinding and ClusterRoleBinding</strong></p>
+<p>To associate these policies with users, groups, or <code>ServiceAccounts</code>, we can use the <code>RoleBinding</code> and <code>ClusterRoleBinding</code> resources.</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment"># Associate the `web-rw-deployment` Role</span>
+<span class="token comment"># in the `some-web-app-ns` namespace</span>
+<span class="token comment"># to _joesmith@example.com`, as well as to a group `webdevs`.</span>
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> RoleBinding
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> rbac.authorization.k8s.io/v1
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> web<span class="token punctuation">-</span>rw<span class="token punctuation">-</span>deployment
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> some<span class="token punctuation">-</span>web<span class="token punctuation">-</span>app<span class="token punctuation">-</span>ns
+<span class="token key atrule">subjects</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">kind</span><span class="token punctuation">:</span> User
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> <span class="token string">'joesmith@example.com'</span>
+    <span class="token key atrule">apiGroup</span><span class="token punctuation">:</span> rbac.authorization.k8s.io
+  <span class="token punctuation">-</span> <span class="token key atrule">kind</span><span class="token punctuation">:</span> Group
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> <span class="token string">'webdevs'</span>
+    <span class="token key atrule">apiGroup</span><span class="token punctuation">:</span> rbac.authorization.k8s.io
+  <span class="token punctuation">-</span> <span class="token key atrule">kind</span><span class="token punctuation">:</span> ServiceAccount
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> testsa
+    <span class="token key atrule">namespace</span><span class="token punctuation">:</span> some<span class="token punctuation">-</span>web<span class="token punctuation">-</span>app<span class="token punctuation">-</span>ns
+<span class="token key atrule">roleRef</span><span class="token punctuation">:</span>
+  <span class="token key atrule">kind</span><span class="token punctuation">:</span> Role
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> web<span class="token punctuation">-</span>rw<span class="token punctuation">-</span>deployment
+  <span class="token key atrule">apiGroup</span><span class="token punctuation">:</span> rbac.authorization.k8s.io<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> rbac.authorization.k8s.io/v1beta1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> ClusterRoleBinding
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> external<span class="token punctuation">-</span>dns<span class="token punctuation">-</span>binding
+<span class="token key atrule">roleRef</span><span class="token punctuation">:</span>
+  <span class="token key atrule">apiGroup</span><span class="token punctuation">:</span> rbac.authorization.k8s.io
+  <span class="token key atrule">kind</span><span class="token punctuation">:</span> ClusterRole
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> external<span class="token punctuation">-</span>dns
+<span class="token key atrule">subjects</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">kind</span><span class="token punctuation">:</span> ServiceAccount
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> external<span class="token punctuation">-</span>dns
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> default<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>Testing Authorization with can-i</strong></p>
+<p>The first useful tool is the <code>auth can-i</code> command for <code>kubectl</code>.</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kubectl auth can-i create pod
+
+<span class="token comment"># subresourec flag</span>
+kubectl auth can-i get pod --subresource<span class="token operator">=</span>log<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="admission-control"><a href="#admission-control" class="headerlink" title="Admission Control"></a>Admission Control</h2><p><em>Admission control</em> is the third phase of API request onboarding.</p>
+<p>By the time we have reached this phase of an API request life cycle, we have already determined that the request has come from a real, authenti‐ cated user and that the user is authorized to perform this request. What we care about now is whether <em>the request meets the criteria for what we consider to be a valid request</em>.</p>
+<p>Enabling admission control is extremely simple. Since this is an API function, we add the <code>--enable-admission-plugins</code> flag to the <code>kube-apiserver</code> runtime parameters. This is a comma-delimited list of the admission controllers that we want to enable.</p>
+<h3 id="common-controllers"><a href="#common-controllers" class="headerlink" title="Common Controllers"></a>Common Controllers</h3><p>Much of the functionality that users take for granted in Kubernetes actually happens by way of admission controllers.</p>
+<blockquote>
+<p>For example, the <em>ServiceAccount admission controller</em> automatically allocates <code>Pods</code> to a <code>ServiceAccount</code>. Similarly, if you have tried to add new resources to a <code>Namespace</code> that is currently in a terminating state, your request was likely rejected by the <em>NamespaceLifecycle controller</em>.</p>
+</blockquote>
+<p><strong>PodSecurityPolicies</strong></p>
+<p>With <code>PodSecurityPolicies</code> controller, administrators can specify the constraints of the pro‐ cesses under Kubernetes’ control.</p>
+<p><strong>ResourceQuota</strong></p>
+<p>Generally speaking, it is good practice to enforce <em>quotas</em> on your cluster. Quotas ensure that no one user is able to utilize more than she has been allocated and is a critical component in driving overall cluster utilization. If you intend to enforce user quotas, you should also enable the <code>ResourceQuota</code> controller.</p>
+<p>This controller ensures that any newly declared Pods are first evaluated against the current quota utilization for the given namespace.</p>
+<p>Note that when a quota is defined for a namespace, all Pod definitions (even if originating from another resource, such as <code>Deployments</code> or <code>ReplicaSets</code>) are required to specify resource requests and limits.</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment"># quota.yaml</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> ResourceQuota
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> memoryquota
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> memoryexample
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">hard</span><span class="token punctuation">:</span>
+    <span class="token key atrule">requests.memory</span><span class="token punctuation">:</span> 256Mi
+    <span class="token key atrule">limits.memory</span><span class="token punctuation">:</span> 512Mi<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>LimitRange</strong></p>
+<p>A <code>LimitRange</code> allows you to place <em>default resource limits</em> for <code>Pods</code> that are declared as a member of a particular <code>Namespace</code>.</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> LimitRange
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> default<span class="token punctuation">-</span>mem
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">limits</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">default</span><span class="token punctuation">:</span>
+        <span class="token key atrule">memory</span><span class="token punctuation">:</span> 1024Mi
+      <span class="token key atrule">defaultRequest</span><span class="token punctuation">:</span>
+        <span class="token key atrule">memory</span><span class="token punctuation">:</span> 512Mi
+      <span class="token key atrule">type</span><span class="token punctuation">:</span> Container<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="dynamic-admission-controllers"><a href="#dynamic-admission-controllers" class="headerlink" title="Dynamic Admission Controllers"></a>Dynamic Admission Controllers</h2><p>Dynamic admission control is the mechanism by which we inject custom business logic into the admission control pipeline.</p>
+<p>There are two types of dynamic admission control: validating and mutating.</p>
+<p>With <em>validating admission control</em>, the business logic simply accepts or rejects a user’s request, based upon our requirements. In the event of failure, an appropriate HTTP status code and reason for failure is returned to the user.</p>
+<p>In the <em>mutating admission controller</em> case, we are again evaluating requests against the API server, but in this case we are selectively changing the declaration to meet our objectives.</p>
+<p>In both cases, this functionality is implemented using user-defined webhooks. These downstream webhooks are called by the API server when it sees that a qualifying request has been made.</p>
+<p>The API server POSTs an <code>AdmissionReview</code> object to these webhooks. The body of this request includes the original request, the status of the object, and metadata about the requesting user.</p>
+<p>In turn, the webhook provides a simple <code>AdmissionResponse</code> object. This object includes fields for whether this request is allowed, a reason and code for failure, and even a field for what a mutating patch would look like.</p>
+<p>In order to utilize Dynamic Admission Controllers, you must first configure the API server with a change to the <code>--enable-admission-plugins</code> parameter:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">--enable-admission-plugins<span class="token operator">=</span><span class="token punctuation">..</span>.,MutatingAdmissionWebhook,ValidatingAdmissionWebhook<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="document A complete library code could be found here MinimalismThe Lisp we’ve built has been purposefully minimal. We’ve only added the fewest number of core structures and builtins. If we chose these">
+<meta property="og:type" content="website">
+<meta property="og:title" content="13 Standard Library">
+<meta property="og:url" content="https://akatquas.github.io/lisp-interpreter-in-c/13-standard-library.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="document A complete library code could be found here MinimalismThe Lisp we’ve built has been purposefully minimal. We’ve only added the fewest number of core structures and builtins. If we chose these">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-01-15T10:21:08.394Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.394Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="lisp">
+<meta property="article:tag" content="interpreter">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://akatquas.github.io/lisp-interpreter-in-c/13-standard-library.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>13 Standard Library | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#minimalism"><span class="nav-text">Minimalism</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#atoms"><span class="nav-text">Atoms</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#building-blocks"><span class="nav-text">Building Blocks</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#logical-operators"><span class="nav-text">Logical Operators</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#miscellaneous-functions"><span class="nav-text">Miscellaneous Functions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#list-functions"><span class="nav-text">List Functions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#conditional-functions"><span class="nav-text">Conditional Functions</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">13 Standard Library
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <p><a target="_blank" rel="noopener" href="http://www.buildyourownlisp.com/chapter15_standard_library">document</a></p>
+<p>A complete library code could be found <a href="./codes/prelude.lspy">here</a></p>
+<h2 id="minimalism"><a href="#minimalism" class="headerlink" title="Minimalism"></a>Minimalism</h2><p>The Lisp we’ve built has been purposefully minimal. We’ve only added the fewest number of core structures and builtins. If we chose these carefully, as we did, then it should allow us to add in everything else required to the language.</p>
+<p>The motivation behind minimalism is two-fold. The first advantage is that it makes the core language simple to debug and easy to learn. This is a great benefit to developers and users. Like <a target="_blank" rel="noopener" href="http://en.wikipedia.org/wiki/Occam%27s_razor">Occam’s Razor</a> it is almost always better to trim away any waste if it results in a equally expressive language. The second reason is that having a small language is also aesthetically nicer. It is clever, interesting and fun to see how small we can make the core of a language, and still get something useful out of the other side. As hackers, which we should be by now, this is something we enjoy.</p>
+<h2 id="atoms"><a href="#atoms" class="headerlink" title="Atoms"></a>Atoms</h2><p>When dealing with conditionals we added no new boolean type to the language. Because fo this we didn’t add <code>true</code> or <code>false</code> either. Instead we just used numbers. Readability is still important though, so we can define some constants to represent these values.</p>
+<p>On a similar note, many lisps use the word <code>nil</code> to represent the empty list <code>&#123;&#125;</code>. We can add this in too. These constants are sometimes called <strong>atoms</strong> because they are fundamental and constant.</p>
+<p>The user is not forced to use these named constants, and can use numbers and empty lists instead as they like. This choice empowers users.</p>
+<h2 id="building-blocks"><a href="#building-blocks" class="headerlink" title="Building Blocks"></a>Building Blocks</h2><p>We’ve already come up with a number of cool functions. One of these is <code>fun</code> function that allows us to declare functions in a neater way. We should definitely include this in our standard library. We also had the <code>unpack</code> and <code>pack</code> functions. These too are going to be essential for users. We should include these along with their <code>curry</code> and <code>uncurry</code> alias.</p>
+<pre class="line-numbers language-none"><code class="language-none">; Fuction Definitions
+(def &#123; fun &#125; ( \ &#123;f b&#125; &#123;
+    def (head f) (\ (tail f) b )
+&#125;))
+
+; Unpack List for Function
+(fun &#123; unpack f l &#125; &#123;
+    eval (join (list f) l)
+&#125;)
+
+; Pack List for Function
+(fun &#123; pack f &amp; xs &#125; &#123; f xs &#125;)
+
+; Curried and Uncurried calling
+(def &#123; curry &#125; unpack)
+(def &#123; uncurry &#125; pack)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Say we want to do several things in order. One way we can do this is to put each thing to do as an argument to some function. We know that arguments are evaluated in order from left to right, which is essentially sequencing events. For functions such as <code>print</code> and <code>load</code> we don’t care much about what it evaluates to, but do care about the order in which it happens.</p>
+<p>Therefore we can create a <code>do</code> function which evaluates a number of expressions in order and returns the last one. This relies an the <code>last</code> function, which returns the final element of a list.</p>
+<pre class="line-numbers language-none"><code class="language-none">; Perform Several things in Sequence
+(fun &#123; do &amp; l &#125; &#123;
+    if ( &#x3D;&#x3D; l nil)
+    &#123; nil &#125;
+    &#123; last l &#125;
+&#125;)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Sometimes we want to save results to local variables using the <code>=</code> operator. When we’re inside a function this will implicitly only save results locally, but sometimes we want to open up an even more local scope. For this we can create a function <code>let</code> which creates an empty function for code to take place in, and evaluates it.</p>
+<pre class="line-numbers language-none"><code class="language-none">; Open new scope
+(fun &#123; let b &#125; &#123;
+    ((\ &#123;_&#125; b) ())
+&#125;)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>We can use this in conjunction with <code>do</code> to ensure that variables do not leak out of their scope.</p>
+<h2 id="logical-operators"><a href="#logical-operators" class="headerlink" title="Logical Operators"></a>Logical Operators</h2><p>We didn’t define any logical operators such as <code>and</code> and <code>or</code> in our language. This might be a good thing to add in later. For now we can use arithmetic operators to emulate them. Think about how these functions work when encountering <code>0</code> or <code>1</code> for their various inputs.</p>
+<pre class="line-numbers language-none"><code class="language-none">; Logical Functions
+(fun &#123;not x&#125; &#123; - 1 x &#125; )
+(fun &#123; or x y &#125; &#123; + x y &#125; )
+(fun &#123; and x y &#125; &#123; * x y &#125;)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="miscellaneous-functions"><a href="#miscellaneous-functions" class="headerlink" title="Miscellaneous Functions"></a>Miscellaneous Functions</h2><p>Here are a couple of miscellaneous functions that don’t really fit in anywhere. See if you can guess their intended functionality.</p>
+<pre class="line-numbers language-none"><code class="language-none">(fun &#123; flip f a b &#125; &#123; f b a &#125;)
+(fun &#123; ghost &amp; xs &#125; &#123; eval xs &#125;)
+(fun &#123; comp f g x &#125; &#123; f (g x) &#125;)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>The <code>flip</code> function takes a function <code>f</code> and two arguments <code>a</code> and <code>b</code>. It then applies <code>f</code> to <code>a</code> and <code>b</code> in the reversed order. This might be useful when we want a function to be <strong>partially evaluated</strong>. If we want to partially evaluate a function by only passing it in it<code>s second argument we can use </code>flip` to give us a new function that takes the first two arguments in reversed order.</p>
+<p>The <code>ghost</code> function is kind of interesting. It simply takes in any number of arguments and evaluates them as if they were the expressions itself. So it just sits at the front of an expression like a ghost, not interacting with or changing the behaviour of the program at all.</p>
+<p>The <code>comp</code> function is used to compose two functions. It takes as input <code>f</code>, <code>g</code>, and an argument to <code>g</code>. It then applies this argument to <code>g</code> and applies the result again to <code>f</code>. This can be used to compose two functions together into a new function that applies both of them in series.</p>
+<h2 id="list-functions"><a href="#list-functions" class="headerlink" title="List Functions"></a>List Functions</h2><p>The <code>head</code> function is used to get the first element of a list, but what it returns is still wrapped in the list. If we want to actually get the element out of this list we need to extract it somehow.</p>
+<p>Single element lists evaluate to just that element, so we can use the <code>eval</code> function to do this extraction. We can also define a couple of helper functions for aid extracting the firs, second and third elements of a list. We’ll use these function more later.</p>
+<pre class="line-numbers language-none"><code class="language-none">; First, Second, or Third Item in List
+(fun &#123;fst l&#125; &#123; eval (head l) &#125;)
+(fun &#123;snd l&#125; &#123; eval (head (tail l)) &#125;)
+(fun &#123;trd l&#125; &#123; eval (head (tail (tail l))) &#125;)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>To find the length of a list we can recursive over it adding <code>1</code> to the length of the tail. To find the <code>nth</code> element af a list we can perform the <code>tail</code> operation and count down until we reach <code>0</code>. To geth the last element of a list we can just access the element at the length minus one.</p>
+<pre class="line-numbers language-none"><code class="language-none">; List Length
+(fun &#123;len l&#125; &#123;
+    if (&#x3D;&#x3D; l nil)
+    &#123; 0 &#125;
+    &#123; + 1 (len (tail) l) &#125;
+&#125;)
+
+; Nth item in List
+(fun &#123;nth n l&#125; &#123;
+    if (&#x3D;&#x3D; n 0)
+    &#123; fst l &#125;
+    &#123; nth (- n 1) (tail l) &#125;
+&#125;)
+
+; Last item in List
+(fun &#123;last l&#125; &#123;nth (- (len l) 1) l&#125;)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>There are lots of other useful functions that follow this same pattern. We can define functions for taking and dropping the first so many elements of a list, or functions for checking if a value is an element of a list.</p>
+<pre class="line-numbers language-none"><code class="language-none">; Take N items
+(fun &#123;take n l&#125; &#123;
+    if (&#x3D;&#x3D; n 0)
+    &#123;nil&#125;
+    &#123;join (head l) (take (- n 1) (tail l))&#125;
+&#125;)
+
+; Drop N items
+(fun &#123;drop n l&#125; &#123;
+    if (&#x3D;&#x3D; n 0)
+    &#123;l&#125;
+    &#123;drop (- n 1) (tail l)&#125;
+&#125;)
+
+; Split at N
+(fun &#123;split n l&#125; &#123;list (take n l) (drop n l)&#125;)
+
+; Element of List
+(fun &#123;elem x l&#125; &#123;
+    if (&#x3D;&#x3D; l nil)
+    &#123;false&#125;
+    &#123;if (&#x3D;&#x3D; x (fst l)) &#123;true&#125; &#123;elem x (tail l)&#125;&#125;
+&#125;)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>For example we may want a way we can perform some function on every element of a list. This is a function we can define called <code>map</code>. It takes as input some function, and some list. For each item in the list it applies <code>f</code> to that item and appends it back onto the front of the list. It then applies <code>map</code> to the tail of the list.</p>
+<pre class="line-numbers language-none"><code class="language-none">; Apply Function to List
+(fun &#123;map f l&#125; &#123;
+    if (&#x3D;&#x3D; l nil)
+    &#123;nil&#125;
+    &#123;join (list (f (fst l))) (map f (tail l))&#125;
+&#125;)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>An adaptation of this <code>map</code> is a <code>filter</code> function which takes in some functional condition, and only includes items of a list which match that condition.</p>
+<pre class="line-numbers language-none"><code class="language-none">; Apply Filter to List
+(fun &#123;filter f l&#125; &#123;
+    if (&#x3D;&#x3D; l nil)
+    &#123;nil&#125;
+    &#123;join (if (f (fst l)) &#123;head l&#125; &#123;nil&#125;) (filter f (tail l))&#125;
+&#125;)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="conditional-functions"><a href="#conditional-functions" class="headerlink" title="Conditional Functions"></a>Conditional Functions</h2><p>By defining the <code>fun</code> function we’ve already shown how powerful the language is in its ability to define functions that look like new syntax. Another example of this is found in emulating the C <code>switch</code> and <code>case</code> statements. In C these are built into the language, but for our <strong>LISP</strong> we can define them as part of a library.</p>
+<p>We can define a function <code>select</code> that takes in zero or more two-element lists as input. For each two element list in the arguments it first evaluates the first element of the pair. If this is true then it evaluates and returns the second item, otherwise it performs the same thing again on the rest of the list.</p>
+<pre class="line-numbers language-none"><code class="language-none">(fun &#123;select &amp; cs&#125; &#123;
+    if (&#x3D;&#x3D; cs nil)
+    &#123; error &quot;No Selection Found&quot;&#125;
+    &#123; if (fst (fst cs)) &#123;snd (fst cs)&#125; &#123;unpack select (tail cs)&#125;&#125;
+&#125;)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>We can also define a function <code>otherwise</code> to always evaluate to <code>true</code>. This works a little bit like the <code>default</code> keyword in C.</p>
+<pre class="line-numbers language-none"><code class="language-none">; Default Case
+(def &#123;otherwise&#125; true)
+
+; Print Day of Month suffix
+(fun &#123;month-day-suffix i&#125; &#123;
+    select
+    &#123;(&#x3D;&#x3D; i 0) &quot;st&quot;&#125;
+    &#123;(&#x3D;&#x3D; i 1) &quot;nd&quot;&#125;
+    &#123;(&#x3D;&#x3D; i 2) &quot;rd&quot;&#125;
+    &#123;otherwise &quot;th&quot;&#125;
+&#125;)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>This is actually more powerful than the C <code>switch</code> statement. In C rather than passing in conditions the input value is compared only for equality with a number of constant candidates. We can also define this function in our Lisp, where we compare a value to a number of candidates. In this function we take some value <code>x</code> followed by zero or more two-element lists again. If the first element in the two-element list is equal to <code>x</code>, the second element is evaluated, otherwise the process continues down the list.</p>
+<pre class="line-numbers language-none"><code class="language-none">(fun &#123;case x &amp; cs&#125; &#123;
+    if (&#x3D;&#x3D; cs nil)
+    &#123;error &quot;No case Found&quot;&#125;
+    &#123; if (&#x3D;&#x3D; x (fst (fst cs))) &#123;snd (fst cs)&#125; &#123;
+        unpack case(join (list x) (tail cs))&#125;&#125;
+&#125;)
+
+(fun &#123;day-name x&#125; &#123;
+    case x
+    &#123;0 &quot;Monday&quot;&#125;
+    &#123;1 &quot;Tuesday&quot;&#125;
+    &#123;2 &quot;Wendesday&quot;&#125;
+    &#123;3 &quot;Thursday&quot;&#125;
+    &#123;4 &quot;Friday&quot;&#125;
+    &#123;5 &quot;Saturday&quot;&#125;
+    &#123;6 &quot;Sunday&quot;&#125;
+&#125;)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

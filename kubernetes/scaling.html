@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="Deployments are the recommended way to deal with scaling and application updates going forward. kubectl get pods -l name&#x3D;&lt;pod-name&gt; kubectl scale --replicas&#x3D;3 rc&#x2F;&lt;pod-name&gt; The rolling-update co">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Updates, Gradual Rollouts, AutoScaling">
+<meta property="og:url" content="https://akatquas.github.io/kubernetes/scaling.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="Deployments are the recommended way to deal with scaling and application updates going forward. kubectl get pods -l name&#x3D;&lt;pod-name&gt; kubectl scale --replicas&#x3D;3 rc&#x2F;&lt;pod-name&gt; The rolling-update co">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-01-15T10:21:08.390Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.390Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="akat,programmer,frontend,node,javascript,golang,python">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://akatquas.github.io/kubernetes/scaling.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>Updates, Gradual Rollouts, AutoScaling | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#application-autoscaling"><span class="nav-text">Application autoscaling</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#scaling-a-cluster"><span class="nav-text">Scaling a cluster</span></a></li></ol></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">Updates, Gradual Rollouts, AutoScaling
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <p>Deployments are the recommended way to deal with scaling and application updates going forward.</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kubectl get pods -l <span class="token assign-left variable">name</span><span class="token operator">=</span><span class="token operator">&lt;</span>pod-name<span class="token operator">></span>
+kubectl scale --replicas<span class="token operator">=</span><span class="token number">3</span> rc/<span class="token operator">&lt;</span>pod-name<span class="token operator">></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>The <code>rolling-update</code> command allows us to update entire RCs or just the underlying Docker image used by each replica.</p>
+<p>We can also specify an update interval, which will allow us to update one pod at a time and wait until proceeding to the next.</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kubectl rolling-update <span class="token operator">&lt;</span>pod-name<span class="token operator">></span> <span class="token punctuation">[</span><span class="token operator">&lt;</span>new-pod-name<span class="token operator">></span><span class="token punctuation">]</span> <span class="token punctuation">[</span>OPTION<span class="token punctuation">]</span> --update-period<span class="token operator">=</span><span class="token string">"2m"</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<details>
+<summary>
+
+<p>A/B test configuration example</p>
+</summary>
+
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment"># pod-AB-service.yaml</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Service
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>scale<span class="token punctuation">-</span>ab
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">service</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>scale<span class="token punctuation">-</span>ab
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">type</span><span class="token punctuation">:</span> LoadBalancer
+  <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">80</span>
+  <span class="token key atrule">sessionAffinity</span><span class="token punctuation">:</span> ClientIP <span class="token comment"># session affinity to service and node</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">service</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>scale<span class="token punctuation">-</span>ab
+
+<span class="token comment">#  pod-A-controller.yaml</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> ReplicationController
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>scale<span class="token punctuation">-</span>a
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>scale<span class="token punctuation">-</span>a
+    <span class="token key atrule">version</span><span class="token punctuation">:</span> <span class="token string">'0.2'</span>
+    <span class="token key atrule">service</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>scale<span class="token punctuation">-</span>ab
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">replicas</span><span class="token punctuation">:</span> <span class="token number">2</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>scale<span class="token punctuation">-</span>a
+    <span class="token key atrule">version</span><span class="token punctuation">:</span> <span class="token string">'0.2'</span>
+    <span class="token key atrule">service</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>scale<span class="token punctuation">-</span>ab
+  <span class="token key atrule">template</span><span class="token punctuation">:</span>
+    <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+        <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>scale<span class="token punctuation">-</span>a
+        <span class="token key atrule">version</span><span class="token punctuation">:</span> <span class="token string">'0.2'</span>
+        <span class="token key atrule">service</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>scale<span class="token punctuation">-</span>ab
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>scale
+          <span class="token key atrule">image</span><span class="token punctuation">:</span> pod<span class="token punctuation">-</span>scaling<span class="token punctuation">:</span><span class="token number">0.2</span>
+          <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+            <span class="token punctuation">-</span> <span class="token key atrule">containerPort</span><span class="token punctuation">:</span> <span class="token number">80</span>
+          <span class="token key atrule">livenessProbe</span><span class="token punctuation">:</span>
+            <span class="token key atrule">httpGet</span><span class="token punctuation">:</span>
+              <span class="token key atrule">path</span><span class="token punctuation">:</span> /
+              <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">80</span>
+            <span class="token key atrule">initialDelaySeconds</span><span class="token punctuation">:</span> <span class="token number">30</span>
+            <span class="token key atrule">timeoutSeconds</span><span class="token punctuation">:</span> <span class="token number">5</span>
+          <span class="token key atrule">readinessProbe</span><span class="token punctuation">:</span>
+            <span class="token key atrule">httpGet</span><span class="token punctuation">:</span>
+              <span class="token key atrule">path</span><span class="token punctuation">:</span> /
+              <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">80</span>
+            <span class="token key atrule">initialDelaySeconds</span><span class="token punctuation">:</span> <span class="token number">30</span>
+            <span class="token key atrule">timeoutSeconds</span><span class="token punctuation">:</span> <span class="token number">1</span>
+
+<span class="token comment">#  pod-A-controller.yaml</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> ReplicationController
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>scale<span class="token punctuation">-</span>b
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>scale<span class="token punctuation">-</span>b
+    <span class="token key atrule">version</span><span class="token punctuation">:</span> <span class="token string">'0.3'</span>
+    <span class="token key atrule">service</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>scale<span class="token punctuation">-</span>ab
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">replicas</span><span class="token punctuation">:</span> <span class="token number">2</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>scale<span class="token punctuation">-</span>b
+    <span class="token key atrule">version</span><span class="token punctuation">:</span> <span class="token string">'0.3'</span>
+    <span class="token key atrule">service</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>scale<span class="token punctuation">-</span>ab
+  <span class="token key atrule">template</span><span class="token punctuation">:</span>
+    <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+        <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>scale<span class="token punctuation">-</span>b
+        <span class="token key atrule">version</span><span class="token punctuation">:</span> <span class="token string">'0.3'</span>
+        <span class="token key atrule">service</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>scale<span class="token punctuation">-</span>ab
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>scale
+          <span class="token key atrule">image</span><span class="token punctuation">:</span> pod<span class="token punctuation">-</span>scaling<span class="token punctuation">:</span><span class="token number">0.3</span>
+          <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+            <span class="token punctuation">-</span> <span class="token key atrule">containerPort</span><span class="token punctuation">:</span> <span class="token number">80</span>
+          <span class="token key atrule">livenessProbe</span><span class="token punctuation">:</span>
+            <span class="token key atrule">httpGet</span><span class="token punctuation">:</span>
+              <span class="token key atrule">path</span><span class="token punctuation">:</span> /
+              <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">80</span>
+            <span class="token key atrule">initialDelaySeconds</span><span class="token punctuation">:</span> <span class="token number">30</span>
+            <span class="token key atrule">timeoutSeconds</span><span class="token punctuation">:</span> <span class="token number">5</span>
+          <span class="token key atrule">readinessProbe</span><span class="token punctuation">:</span>
+            <span class="token key atrule">httpGet</span><span class="token punctuation">:</span>
+              <span class="token key atrule">path</span><span class="token punctuation">:</span> /
+              <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">80</span>
+            <span class="token key atrule">initialDelaySeconds</span><span class="token punctuation">:</span> <span class="token number">30</span>
+            <span class="token key atrule">timeoutSeconds</span><span class="token punctuation">:</span> <span class="token number">1</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>In a true A/B test, we would now want to start collecting metrics on the visit to each version. Again, we have <code>sessionAffinity</code> set to ClientIP, so all requests will go to the same pod.</p>
+<p>Since the versions are each on their own pod, one can easily separate logging and even add a logging container to the pod definition for a sidecar logging pattern.</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># finish the A/B test, transition to version 0.3</span>
+kubectl scale --replicas<span class="token operator">=</span><span class="token number">3</span> rc/node-js-scale-b
+kubectl scale --replicas<span class="token operator">=</span><span class="token number">1</span> rc/node-js-scale-a
+kubectl scale --replicas<span class="token operator">=</span><span class="token number">4</span> rc/node-js-scale-b
+kubectl scale --replicas<span class="token operator">=</span><span class="token number">0</span> rc/node-js-scale-a
+
+<span class="token comment"># remove the controller</span>
+kubectl delete rc/node-js-scale-a<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</details>
+
+<h2 id="application-autoscaling"><a href="#application-autoscaling" class="headerlink" title="Application autoscaling"></a>Application autoscaling</h2><blockquote>
+<p>Kubernetes makes a distinction between <em>horizontal scaling</em>, which involves creating additional replicas of a Pod, and <em>vertical scaling</em>, which involves increasing the resources required for a particular Pod (e.g., increasing the CPU required for the Pod).</p>
+</blockquote>
+<p><strong>Horizontal Pod Autoscaler</strong>: This resource type is really useful as it gives us a way to automatically set thresholds (CPU/QPS/Memory) for scaling our application.</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment"># HPA configurations</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> HorizontalPodAutoscaler
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>scale<span class="token punctuation">-</span>ab
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">minReplicas</span><span class="token punctuation">:</span> <span class="token number">1</span>
+  <span class="token key atrule">maxReplicas</span><span class="token punctuation">:</span> <span class="token number">3</span>
+  <span class="token key atrule">scaleTargetRef</span><span class="token punctuation">:</span>
+    <span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+    <span class="token key atrule">kind</span><span class="token punctuation">:</span> ReplicationController
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>scale
+  <span class="token key atrule">targetCPUUtilizationPercentage</span><span class="token punctuation">:</span> <span class="token number">20</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kubectl get hpa<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment"># generate soom load to the service</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> ReplicationController
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> boomload
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">replicas</span><span class="token punctuation">:</span> <span class="token number">1</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> loadgenerator
+  <span class="token key atrule">template</span><span class="token punctuation">:</span>
+    <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+        <span class="token key atrule">app</span><span class="token punctuation">:</span> loadgenerator
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> boom
+          <span class="token key atrule">image</span><span class="token punctuation">:</span> williamyeh/boom
+          <span class="token key atrule">command</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">'/bin/sh'</span><span class="token punctuation">,</span> <span class="token string">'-c'</span><span class="token punctuation">]</span>
+          <span class="token key atrule">args</span><span class="token punctuation">:</span>
+            <span class="token punctuation">[</span>
+              <span class="token string">'while true; do boom http://node-js-scale/ -c 10 -n 100; sleep 1; done'</span>
+            <span class="token punctuation">]</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="scaling-a-cluster"><a href="#scaling-a-cluster" class="headerlink" title="Scaling a cluster"></a>Scaling a cluster</h3><p>Additionally, we need some autoscaling capability in the clusters other than appliactions.</p>
+<p>The following example shows how to set the environment variables for autoscaling before running <code>kube-up.sh</code>:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">export</span> <span class="token assign-left variable">NUM_MINIONS</span><span class="token operator">=</span><span class="token number">5</span>
+<span class="token builtin class-name">export</span> <span class="token assign-left variable">KUBE_AUTOSCALER_MIN_NODES</span><span class="token operator">=</span><span class="token number">2</span>
+<span class="token builtin class-name">export</span> <span class="token assign-left variable">KUBE_AUTOSCALER_MAX_NODES</span><span class="token operator">=</span><span class="token number">5</span>
+<span class="token builtin class-name">export</span> <span class="token assign-left variable">KUBE_ENABLE_CLUSTER_AUTOSCALER</span><span class="token operator">=</span>true<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Once you start a cluster with these settings, your cluster will automatically scale up and down with the minimum and maximum limits based on compute resource usage in the cluster.</p>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

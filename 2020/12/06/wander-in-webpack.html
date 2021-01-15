@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="Setup the projectgit clone https:&#x2F;&#x2F;github.com&#x2F;webpack&#x2F;webpack.git &amp;&amp; cd webpack  # maybe switch to some branch&#x2F;tag  # manually npm install -g yarn yarn yarn link yarn link webpack  # automatic">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Wander in webpack">
+<meta property="og:url" content="https://akatquas.github.io/2020/12/06/wander-in-webpack.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="Setup the projectgit clone https:&#x2F;&#x2F;github.com&#x2F;webpack&#x2F;webpack.git &amp;&amp; cd webpack  # maybe switch to some branch&#x2F;tag  # manually npm install -g yarn yarn yarn link yarn link webpack  # automatic">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-12-06T04:40:44.000Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.366Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="webpack">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://akatquas.github.io/2020/12/06/wander-in-webpack.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>Wander in webpack | 🔭</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#setup-the-project"><span class="nav-text">Setup the project</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#entry-files"><span class="nav-text">Entry files</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#webpack-in-script"><span class="nav-text">Webpack in script</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#webpack-module"><span class="nav-text">Webpack module</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#compiler"><span class="nav-text">Compiler</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#compiler-run"><span class="nav-text">compiler.run()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#compiler-watch"><span class="nav-text">compiler.watch()</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#webpack-in-cli"><span class="nav-text">Webpack in CLI</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#webpack-on-the-fly"><span class="nav-text">Webpack on the Fly</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#webpack-dev-middleware"><span class="nav-text">webpack-dev-middleware</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hack-with-webpack"><span class="nav-text">Hack with webpack</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#utilities"><span class="nav-text">Utilities</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://akatquas.github.io/2020/12/06/wander-in-webpack.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Akat">
+      <meta itemprop="description" content="Take notes aperiodically">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="🔭">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Wander in webpack
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-12-06 12:40:44" itemprop="dateCreated datePublished" datetime="2020-12-06T12:40:44+08:00">2020-12-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/frontend/" itemprop="url" rel="index"><span itemprop="name">frontend</span></a>
+        </span>
+          , 
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/frontend/javascript/" itemprop="url" rel="index"><span itemprop="name">javascript</span></a>
+        </span>
+          , 
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/frontend/javascript/webpack/" itemprop="url" rel="index"><span itemprop="name">webpack</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="setup-the-project"><a href="#setup-the-project" class="headerlink" title="Setup the project"></a>Setup the project</h2><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> clone https://github.com/webpack/webpack.git <span class="token operator">&amp;&amp;</span> <span class="token builtin class-name">cd</span> webpack
+
+<span class="token comment"># maybe switch to some branch/tag</span>
+
+<span class="token comment"># manually</span>
+<span class="token function">npm</span> <span class="token function">install</span> -g <span class="token function">yarn</span>
+<span class="token function">yarn</span>
+<span class="token function">yarn</span> <span class="token function">link</span>
+<span class="token function">yarn</span> <span class="token function">link</span> webpack
+
+<span class="token comment"># automatically</span>
+<span class="token function">npm</span> run setup
+<span class="token comment"># or</span>
+<span class="token function">yarn</span> setup<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>At webpack, <code>yarn</code> is preferred.</p>
+<p>If you already have <code>yarn</code> installed, do: <code>yarn setup</code>. This will complete all required steps.</p>
+<p>If not, do: <code>npm run setup</code>, the setup will also install <code>yarn</code> for you.</p>
+<p>And you are good to go.</p>
+<a id="more"></a>
+
+<h2 id="entry-files"><a href="#entry-files" class="headerlink" title="Entry files"></a>Entry files</h2><p>The command-line executable file is <code>bin/webpack.js</code>, which will invoke the <code>webpack-cli</code> command.</p>
+<p>The normal script entry file is <code>lib/index.js</code>, which groups the main webpack module from <code>lib/webpack.js</code> and other plugins, such as <code>DefinePlugin</code>, <code>DllPlugin</code>, and utilities.</p>
+<h2 id="webpack-in-script"><a href="#webpack-in-script" class="headerlink" title="Webpack in script"></a>Webpack in script</h2><h3 id="webpack-module"><a href="#webpack-module" class="headerlink" title="Webpack module"></a>Webpack module</h3><p>The entry function is the module exported from <code>lib/webpack.js</code>.</p>
+<p>It has an nested function to create a compiler (one of <code>lib/Compiler.js</code> and <code>lib/MultiCompiler.js</code>), and check the <a target="_blank" rel="noopener" href="https://webpack.js.org/configuration/watch/">watch mode</a>.</p>
+<p>During the compiler creating time, the input options are normalized (<code>getNormalizedWebpackOptions</code> from <code>lib/config/normalization.js</code>), base-defaults-applied (<code>applyWebpackOptionsBaseDefaults</code> from <code>lib/config/defaults.js</code>), plugin-injected, defaults-applied (<code>applyWebpackOptionsDefaults</code> from <code>lib/config/defaults.js</code>).</p>
+<p>Some hooks of the compiler is called, <code>hooks.environment</code>, <code>hooks.afterEnvironment</code>, <code>hooks.initialize</code>.</p>
+<p><code>MultiCompiler</code> would be created if the options is an array of multiple options. This type of compiler is build upon <code>Compiler</code> with some tweaks.</p>
+<p>Anyway, when the compiler is available, it’s time to run in normal mode via <code>compiler.run()</code> or watch mode <code>compiler.watch()</code>.</p>
+<h4 id="compiler"><a href="#compiler" class="headerlink" title="Compiler"></a><code>Compiler</code></h4><pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token comment">// in lib/webpack.js, createCompiler</span>
+<span class="token keyword">const</span> compiler <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Compiler</span><span class="token punctuation">(</span>options<span class="token punctuation">.</span>context<span class="token punctuation">)</span><span class="token punctuation">;</span>
+compiler<span class="token punctuation">.</span>options <span class="token operator">=</span> options<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>When created, the <code>Compiler</code> instance is almost a collection of lots of configurations with default values.</p>
+<p>More details on <code>hooks</code> later. Before that, It’s important to take a look at <a target="_blank" rel="noopener" href="https://github.com/webpack/tapable"><code>tapable</code></a>.</p>
+<blockquote>
+<p>Understanding how <code>tapable</code> works is quite helpful when figuring out how webpack works. It’s the backbone of webpack anyway. References: <a target="_blank" rel="noopener" href="https://webpack.js.org/api/compiler-hooks/">compiler hooks</a>, <a target="_blank" rel="noopener" href="https://webpack.js.org/api/compilation-hooks/">compilation hooks</a>, <a target="_blank" rel="noopener" href="https://webpack.js.org/api/parser/">JavascriptParser Hooks</a>.</p>
+</blockquote>
+<p>Since we have the <code>Compiler</code> instance, it’s time to register plugins into the instance, aka, <em>tap into hooks</em>.</p>
+<pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">new</span> <span class="token class-name">NodeEnvironmentPlugin</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
+  infrastructureLogging<span class="token operator">:</span> options<span class="token punctuation">.</span>infrastructureLogging
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">apply</span><span class="token punctuation">(</span>compiler<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p><code>NodeEnvironmentPlugin</code> basically inject the some filesystem utils, whether wrapped or not, <code>inputFileSystem</code>, <code>outputFileSystem</code>, <code>watchFileSystem</code> , into the instance.</p>
+<pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token comment">/**
+ * plugins defined in config
+ */</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span>Array<span class="token punctuation">.</span><span class="token function">isArray</span><span class="token punctuation">(</span>options<span class="token punctuation">.</span>plugins<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">const</span> plugin <span class="token keyword">of</span> options<span class="token punctuation">.</span>plugins<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">typeof</span> plugin <span class="token operator">===</span> <span class="token string">'function'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token function">plugin</span><span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span>compiler<span class="token punctuation">,</span> compiler<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+      <span class="token function">plugin</span><span class="token punctuation">.</span><span class="token function">apply</span><span class="token punctuation">(</span>compiler<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<blockquote>
+<p>It’s not surprise that you have to write an <code>apply</code> method in plugin class defintions.</p>
+</blockquote>
+<h4 id="compiler-run"><a href="#compiler-run" class="headerlink" title="compiler.run()"></a><code>compiler.run()</code></h4><p>After some necessary checks and closure functions, the compiler would trigger <code>beforeRun</code>, <code>run</code> hooks, at the callback, the compiler invoke the <code>readRecords</code> methods, and in its callback, the real <code>compile</code> (a method of the compiler) is called.</p>
+<p><strong><code>readRecords</code></strong></p>
+<p>It will check the <code>recordsInputPath</code>, which is a JSON file, to load the previous records. <a target="_blank" rel="noopener" href="https://webpack.js.org/configuration/other-options/#recordspath">Related documentation</a></p>
+<p><strong><code>compile</code></strong></p>
+<p>Finally, we are going to <em>compile</em> something.</p>
+<ul>
+<li><code>beforeCompile</code> hook is taped</li>
+<li><code>compile</code> hook is taped</li>
+<li><code>compilation</code> is created to do some compile works, heavy works, which is an instance of <code>lib/Compilation.js</code>. The function <code>compilation.finish</code> and <code>compliation.seal</code> are called.</li>
+<li>after compilation, <code>emitAssets</code>,</li>
+<li>add additional compilation round.</li>
+</ul>
+<p><strong><code>compilation</code></strong></p>
+<p><code>Compilation</code> can:</p>
+<ul>
+<li><code>processModuleDependencies</code></li>
+<li><code>buildModule</code></li>
+<li><code>addRuntimeModule</code></li>
+<li><code>createModuleHashes</code></li>
+<li><code>emitAsset</code></li>
+<li><code>codeGeneration</code></li>
+<li><code>addChunk</code>, <code>addChunkInGroup</code></li>
+<li><code>processRuntimeRequirements</code></li>
+<li>generate <code>Stats</code></li>
+<li><code>finish</code> to build moduleGraph</li>
+<li><code>seal</code> to<ul>
+<li>optimize dependencies</li>
+<li>create chunks</li>
+<li>optimize modules and chunks</li>
+<li>assign ids to module/chunk</li>
+<li>hash module and chunks</li>
+<li>code generation, it’s a long way to get here :).</li>
+<li>runtime requirements, hashing,</li>
+<li>tackle module assets, chunk assets,</li>
+</ul>
+</li>
+<li>…</li>
+</ul>
+<h4 id="compiler-watch"><a href="#compiler-watch" class="headerlink" title="compiler.watch()"></a><code>compiler.watch()</code></h4><p>This would return a compiler watcher (a <code>Watching</code> instance defined in <code>lib/Watching.js</code>) if successfully executed.</p>
+<p>The watch instance would invoke <code>compiler.compiler()</code> after the <code>hook.watchRun</code> is triggered. And after each <code>emitRecords</code> from compiler, after some necessary checks, the watcher would invoke <code>compiler.compile</code> again to rebuild. And the rest is much like the <code>compiler.run()</code></p>
+<h2 id="webpack-in-cli"><a href="#webpack-in-cli" class="headerlink" title="Webpack in CLI"></a>Webpack in CLI</h2><p><code>webpack-cli</code> is a <a target="_blank" rel="noopener" href="https://github.com/webpack/webpack-cli">monorepo</a>. Navigate to the package directory at <code>package/webpack-cli</code>.</p>
+<p>The entry file is located at <code>bin/cli.js</code>, and the real work is done by <code>lib/webpack-cli.js</code>, before which there’s a <em>bootstrape</em> stage (<code>lib/bootstrap.js</code>) to deal with the arguments coming from command line input.</p>
+<p>During bootstrap, a <code>WebpackCLI</code> instance would be created, and <code>WebpackCLI.run()</code> starts the <em>webpack</em> job.</p>
+<p>Aha, in the <code>run</code> method, the cli first resolve the <code>config</code> options, pass it to create a webpack compiler using the <code>webpack</code> package. And it’s where all the dirty work done by webpack. we have already talked about how webpack does its work in previous section.</p>
+<p>Besides calling <code>webpack</code> from command line, <code>WebpackCLI</code> also provides many useful commands to:</p>
+<ul>
+<li>Init a webpack config, <code>webpack-cli init</code></li>
+<li>Scaffold a loader repository template, <code>webpack-cli loader</code></li>
+<li>Scaffold a plugin repository template, <code>webpack-cli plugin</code></li>
+<li>Inspect system information and dependencies, <code>webpack-cli info</code></li>
+<li>Run webpack Dev Server, <code>webpack-cli server</code></li>
+</ul>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://yeoman.io/learning/">Yeoman</a> is used for generating loader/plugin repository.</p>
+</blockquote>
+<p>More detailed usage could be found <a target="_blank" rel="noopener" href="https://webpack.js.org/api/cli/">here</a>.</p>
+<h2 id="webpack-on-the-fly"><a href="#webpack-on-the-fly" class="headerlink" title="Webpack on the Fly"></a>Webpack on the Fly</h2><p><code>webpack-dev-server</code> is a development server that provides live reloading.</p>
+<p>The entry point is <code>lib/Server.js</code>. It’s create a node server using express.</p>
+<p>Inside the <code>constructor()</code>, the server would:</p>
+<ul>
+<li>hooks into webpack <code>compiler</code> lifecycle,</li>
+<li>initialize the application using <code>express</code>, which will serve as for <code>http.server</code></li>
+<li>set up host check middleware, <code>server.checkHost()</code></li>
+<li>set up development middleware using <code>webpack-dev-middleware</code></li>
+<li>enable feature middlewares according to the given options, such as <em>webpack-dev-middleware</em>, <em>compression</em>, <em>proxy</em>, <em>historyApiFallback</em></li>
+<li>optinally set up https configuration</li>
+<li>create the server using <code>http.createServer</code></li>
+<li>set up some supplementary routes, <code>lib/utils/routes.js</code></li>
+<li>set server sockets graceful killable</li>
+<li>set up websocketProxies, <a target="_blank" rel="noopener" href="https://github.com/chimurai/http-proxy-middleware#external-websocket-upgrade">details</a></li>
+</ul>
+<p>This server cand send data to page via sockets connection.</p>
+<blockquote>
+<p>For example, if watching on static files is enabled, when these files change, the server would send <code>&#39;content-change&#39;</code> event to its sockets.</p>
+</blockquote>
+<h3 id="webpack-dev-middleware"><a href="#webpack-dev-middleware" class="headerlink" title="webpack-dev-middleware"></a>webpack-dev-middleware</h3><p>This is an express-style development middleware for use with webpack bundles and allows for serving of the files emitted from webpack.</p>
+<p>Some of the benefits of using this middleware include:</p>
+<ul>
+<li>No files are written to disk, rather it handles files in memory</li>
+<li>If files changed in watch mode, the middleware delays requests until compiling has completed.</li>
+<li>Supports hot module reload (HMR).</li>
+</ul>
+<p>The entry file is <code>src/index.js</code> which is a function, accepting two parameters, <code>compiler</code> instance created by webpack, and optional <code>options</code> object.</p>
+<p>Again, <code>webpack-dev-middleware</code> hooks into webpack <code>compiler</code> lifecycle, doing its work after some hooks triggered.</p>
+<p>The real middleware function is defined at <code>src/middleware.js</code>. While handling the valid requests, the response content is read from the webpack <code>compiler</code>‘s <code>outputFileSystem</code>. <code>setupOutputFileSystem</code> (<code>src/utils/setupOutputFileSystem.js</code>) does the trick.</p>
+<pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
+  content <span class="token operator">=</span> context<span class="token punctuation">.</span>outputFileSystem<span class="token punctuation">.</span><span class="token function">readFileSync</span><span class="token punctuation">(</span>filename<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span>_ignoreError<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">await</span> <span class="token function">goNext</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>So whenever the webpack <code>compiler</code> compiles something new:</p>
+<ol>
+<li>the <code>webpack-dev-server</code> would send sockets data to the front client</li>
+<li>client refresh its pages, re-request data</li>
+<li>server read the new content from <code>compiler.outputFileSystem</code> with the help of <code>webpack-dev-middleware</code>, response with new data</li>
+</ol>
+<h2 id="hack-with-webpack"><a href="#hack-with-webpack" class="headerlink" title="Hack with webpack"></a>Hack with webpack</h2><p>There are two major ways to play with webpack:</p>
+<ol>
+<li>Tap into the webpack hooks</li>
+<li>Tap into the compilation hooks</li>
+</ol>
+<p>These commands would create a plugin/loader project using webpack-cli plugin/loader templates.</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># install webpack-cli @webpack-cli/generate-plugin</span>
+./node_modules/.bin/webpack-cli plugin
+
+<span class="token comment"># install webpack-cli @webpack-cli/generate-loader</span>
+./node_modules/.bin/webpack-cli loader<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Detailed documentations for <a target="_blank" rel="noopener" href="https://webpack.js.org/contribute/writing-a-plugin/">plugin</a> and <a target="_blank" rel="noopener" href="https://webpack.js.org/contribute/writing-a-loader">loader</a>.</p>
+<p>Tricky for writing composed plugins:</p>
+<pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token comment">// some-plugin/src/index.js</span>
+<span class="token keyword">const</span> debug <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'debug'</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token string">'someplugin'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> <span class="token punctuation">&#123;</span> DefinePlugin <span class="token punctuation">&#125;</span> <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'webpack'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">class</span> <span class="token class-name">SomePlugin</span> <span class="token punctuation">&#123;</span>
+  <span class="token function">constructor</span><span class="token punctuation">(</span><span class="token parameter">options</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>options <span class="token operator">=</span> options<span class="token punctuation">;</span>
+    <span class="token comment">// ...</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token function">apply</span><span class="token punctuation">(</span><span class="token parameter">compiler</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token function">debug</span><span class="token punctuation">(</span><span class="token string">'apply function from bundlesize plugin'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">// some plugin functionality</span>
+    compiler<span class="token punctuation">.</span>hooks<span class="token punctuation">.</span>some<span class="token punctuation">.</span><span class="token function">tap</span><span class="token punctuation">(</span><span class="token string">'SomePlugin'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter"><span class="token operator">...</span>args</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+      <span class="token function">debug</span><span class="token punctuation">(</span><span class="token string">'compiler some hook!'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">// compose other plugins</span>
+    <span class="token comment">// for example</span>
+    <span class="token keyword">new</span> <span class="token class-name">DefinePlugin</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
+      <span class="token constant">MAGIC_VALUE</span><span class="token operator">:</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span><span class="token string">'magic_value'</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">apply</span><span class="token punctuation">(</span>compiler<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> SomePlugin<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="utilities"><a href="#utilities" class="headerlink" title="Utilities"></a>Utilities</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/webpack/webpack-sources">webpack-sources</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/webpack/analyse">stats analyse</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/webpack/enhanced-resolve">enhanced-resolve</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/webpack/" rel="tag"># webpack</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/12/25/shells.html" rel="prev" title="Quick learning on Shells">
+                  <i class="fa fa-chevron-left"></i> Quick learning on Shells
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/11/28/docker-n-kubernetes.html" rel="next" title="Learn some Docker and Kubernetes">
+                  Learn some Docker and Kubernetes <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

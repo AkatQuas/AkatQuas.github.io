@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="DisclaimerI haven’t read all the source code of React as well as understand its functionality very well, so there may be some wrong understandings, feel free to point out and rectify them. Main Conten">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Class Component ?&#x3D; Function Component &amp;plus; Hooks">
+<meta property="og:url" content="https://akatquas.github.io/2020/02/15/class-fc-hooks.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="DisclaimerI haven’t read all the source code of React as well as understand its functionality very well, so there may be some wrong understandings, feel free to point out and rectify them. Main Conten">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-02-15T01:32:51.000Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.366Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="reactjs">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://akatquas.github.io/2020/02/15/class-fc-hooks.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>Class Component ?= Function Component &plus; Hooks | 🔭</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#disclaimer"><span class="nav-text">Disclaimer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#main-content"><span class="nav-text">Main Content</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#in-the-end"><span class="nav-text">In the end</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#useful-reference"><span class="nav-text">Useful Reference</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://akatquas.github.io/2020/02/15/class-fc-hooks.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Akat">
+      <meta itemprop="description" content="Take notes aperiodically">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="🔭">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Class Component ?= Function Component &plus; Hooks
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-02-15 09:32:51" itemprop="dateCreated datePublished" datetime="2020-02-15T09:32:51+08:00">2020-02-15</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/frontend/" itemprop="url" rel="index"><span itemprop="name">frontend</span></a>
+        </span>
+          , 
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/frontend/javascript/" itemprop="url" rel="index"><span itemprop="name">javascript</span></a>
+        </span>
+          , 
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/frontend/javascript/reactjs/" itemprop="url" rel="index"><span itemprop="name">reactjs</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="disclaimer"><a href="#disclaimer" class="headerlink" title="Disclaimer"></a>Disclaimer</h2><p>I haven’t read all the source code of React as well as understand its functionality very well, so there may be some wrong understandings, feel free to point out and rectify them.</p>
+<h2 id="main-content"><a href="#main-content" class="headerlink" title="Main Content"></a>Main Content</h2><p>Long time ago, I came across to <a target="_blank" rel="noopener" href="https://blog.webf.zone/contemporary-front-end-architectures-fb5b500b0231">this awesome article</a> about several architectures used in front end from the beginning of PC.</p>
+<a id="more"></a>
+
+<p><a id="concerns"></a>In summary, what the front end mainly concerns are the following things:</p>
+<ol>
+<li><p>The current data, also known as state,</p>
+</li>
+<li><p>The current view, which is user interface,</p>
+</li>
+<li><p>Reaction to the user action, such as mutating data, animating the view, even side effects,</p>
+</li>
+<li><p>Rendering the view according to the current data, in other phrase, synchronizing the view to the data.</p>
+</li>
+</ol>
+<p>In React, we mainly write two kinds of component: <em>stateful</em> <code>Class component</code> and <em>stateless</em> <code>Function component</code>. The differences between these two are not only the <em>state</em> maintained by the component, but also the lifecycle events. So what are the lifecycle events?</p>
+<p>Before talking about the lifecycle events, we need to understand some basic concepts in React.</p>
+<p>When it comes to rendering, there are three concepts we need to keep in mind, <strong>Component</strong>, <strong>Elements</strong>, <strong>Instances</strong>. <a target="_blank" rel="noopener" href="https://reactjs.org/blog/2015/12/18/react-components-elements-and-instances.html">here is the official explanation on their differences</a>.</p>
+<blockquote>
+<p>An <strong>element</strong> is a plain object describing what you want to appear on the screen in terms of the DOM nodes or other components. Elements can contain other elements in their props. Creating a React element is cheap. <em>Once an element is created, it is never mutated.</em></p>
+</blockquote>
+<p>So we have to re-create a new element, (indeed, every time when the render function is invoked) if we need to update the DOM nodes. The React helps us to differ elements and patch the differences to the DOM nodes.</p>
+<blockquote>
+<p>A <strong>component</strong> can be declared in several different ways. It can be a class with a <code>render()</code> method. Alternatively, in simple cases, it can be defined as a function. <em>In either case, it takes props as an input, and returns an element tree as the output</em>.</p>
+</blockquote>
+<p>A component tells React how to create the elements using props and states, if necessary. But we can not use the component directly, we need to instantize it.</p>
+<blockquote>
+<p>An <strong>instance</strong> is what you refer to as <code>this</code> in the component class you write. <em>It is useful for storing local state, (local property/method) and reacting to the lifecycle events.</em></p>
+<p>Function components don’t have instances at all.</p>
+<p>Class components have instances, but you never need to create a component instance directly—React takes care of this.</p>
+</blockquote>
+<p>Why we have to instantize the Class component?</p>
+<p>The funtion components don’t need instances because all the data, which used to create elements, can be accessed directly from the function invokation arguments. <em>It means we don’t need to create closure to preserve the references.</em></p>
+<p>However, we need the references to the local state, local property/method when using Class components. We have to instantize an instance of a Class components. The <code>render</code> function is one of the local property/method belongs to this instance. So it can access to <code>this</code> instance easily.</p>
+<pre class="line-numbers language-jsx" data-language="jsx"><code class="language-jsx"><span class="token keyword">class</span> <span class="token class-name">MyComponent</span> <span class="token keyword">extends</span> <span class="token class-name">Component</span> <span class="token punctuation">&#123;</span>
+  <span class="token function">constructor</span><span class="token punctuation">(</span><span class="token parameter">props<span class="token punctuation">,</span> context</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">super</span><span class="token punctuation">(</span>props<span class="token punctuation">,</span> context<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>state <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>nonStateProperty <span class="token operator">=</span> <span class="token string">'non state property'</span><span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>methodA <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">methodA</span><span class="token punctuation">.</span><span class="token function">bind</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token function">methodA</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+
+  <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>The above codes show how we to bind the local method to the specific instance. The bind statement is necessary in React for that JavaScript has the <em>magic</em> <code>this</code>. It’s implicit that the instance is encapsulated as <code>this</code> during the runtime. <strong>Believe it or not, it is a specical case of closure.</strong></p>
+<p>Besides local state, the Class components have the lifecycle events.</p>
+<blockquote>
+<p><strong>lifecycle events</strong> are those you can override to run code at particular times in the process.</p>
+</blockquote>
+<p><a target="_blank" rel="noopener" href="https://reactjs.org/docs/react-component.html#the-component-lifecycle">Summary from the official document</a> indicates that when somethig changes, the lifecycle events would be triggered.</p>
+<p>Here is list of the types of change and the according lifecycle method, which would help you to understand when the certain lifecycle events will be invoked:</p>
+<ul>
+<li><p>element patched to DOM nodes:</p>
+<ul>
+<li><p><code>componentDidMount</code>, which is invoked immediately after a component is mounted (inserted into the tree), aka, <em>null -&gt; new node</em>.</p>
+</li>
+<li><p><code>componentDidUpdate</code>, which is invoked immediately after updating occurs. This method is not called for the initial render, aka, <em>old node -&gt; new node</em>.</p>
+</li>
+<li><p><code>componentWillUnmount</code>, which is invoked immediately before a component is unmounted and destroyed, aka, <em>old node -&gt; null</em>.</p>
+</li>
+</ul>
+</li>
+<li><p>props/state updates:</p>
+<ul>
+<li><p><em>static</em> <code>getDerivedStateFromProps</code>, synchronized function which should return an object to update the state, or null to update nothing.</p>
+</li>
+<li><p><em>deprecated</em> <code>componentWillReceiveProps</code>, Use this as an opportunity to perform preparation before an update occurs. This method is not called for the initial render.</p>
+</li>
+<li><p><code>componentDidUpdate</code>, after the render function called to create the possible new elements, it will be invoked after updating occurs.</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>By using the name <em>lifecycle</em>, we could imagine that the instances of Class components has a <em>lifetime</em> to span. but what about Function components, what do they have if they don’t have lifecycle events?</p>
+<p>Actually, Function components have <em>lifecycle</em> as well. To understand this saying, we have to rethink what the <em>lifecycle</em> really is.</p>
+<p><em>Lifecyle methods are the response action to certain changes and events</em>.</p>
+<p>In simple words, when the state/props changes, we have to re-create elements. But, we could make some actions before, during and after the re-rendering process.</p>
+<pre class="line-numbers language-jsx" data-language="jsx"><code class="language-jsx"><span class="token keyword">const</span> <span class="token function-variable function">FunctionComponent</span> <span class="token operator">=</span> <span class="token parameter">props</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// doing side effects</span>
+  <span class="token keyword">return</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">ComponentTree</span></span> <span class="token punctuation">/></span></span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Before hooks come out, we can only make the actions before the re-rendering process. The equivalent lifecycle method is <code>componentWillReceiveProps</code>. There is not much we can do after the re-rendering process.</p>
+<p>Here comes the <code>useEffect</code> to rescue. This aritcle, written by Dan, <a target="_blank" rel="noopener" href="https://overreacted.io/a-complete-guide-to-useeffect/"><code>A complete guide to useEffect</code></a>, shows how <code>useEffect</code> works, specificly, staring from <a target="_blank" rel="noopener" href="https://overreacted.io/a-complete-guide-to-useeffect/#each-render-has-its-own-effects">here</a>;</p>
+<pre class="line-numbers language-jsx" data-language="jsx"><code class="language-jsx"><span class="token keyword">function</span> <span class="token function">Counter</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">const</span> <span class="token punctuation">[</span>count<span class="token punctuation">,</span> setCount<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token function">useState</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token keyword">const</span> increment <span class="token operator">=</span> <span class="token function">useCallback</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+    <span class="token function">setCount</span><span class="token punctuation">(</span><span class="token parameter">c</span> <span class="token operator">=></span> c <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token function">useEffect</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+    document<span class="token punctuation">.</span>title <span class="token operator">=</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">You clicked </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span>count<span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string"> times</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token keyword">return</span> <span class="token punctuation">(</span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">></span></span><span class="token plain-text">
+      </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">></span></span><span class="token plain-text">You clicked </span><span class="token punctuation">&#123;</span>count<span class="token punctuation">&#125;</span><span class="token plain-text"> times</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">></span></span><span class="token plain-text">
+      </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>button</span> <span class="token attr-name">onClick</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">&#123;</span>increment<span class="token punctuation">&#125;</span></span><span class="token punctuation">></span></span><span class="token plain-text">Click me</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">></span></span><span class="token plain-text">
+    </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+  <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<ol>
+<li><p><strong>React</strong>: Give me the UI when the state is 0.</p>
+</li>
+<li><p><strong>The component</strong>:</p>
+<p>Here’s the render result: <code>&lt;p&gt;You clicked 0 times&lt;/p&gt;</code>. Also remember to run this <em>effect</em> after you’re done: <code>() =&gt; &#123; document.title = &#39;You clicked 0 times&#39; &#125;</code>.</p>
+</li>
+<li><p><strong>React</strong>: Sure. Updating the UI. Hey browser, I’m adding some stuff to the DOM.</p>
+</li>
+<li><p><strong>Browser</strong>: Cool, I painted it to the screen.</p>
+</li>
+<li><p><strong>React</strong>: OK, now I’m going to run the <em>effect</em> you gave me.</p>
+<p>Running <code>() =&gt; &#123; document.title = &#39;You clicked 0 times&#39; &#125;</code>.</p>
+</li>
+</ol>
+<p>Now we click the button:</p>
+<ol>
+<li><p><strong>The component</strong>: Hey React, set my state to 1.</p>
+</li>
+<li><p><strong>React</strong>: Give me the UI for when the state is 1.</p>
+</li>
+<li><p><strong>The component</strong>:</p>
+</li>
+</ol>
+<p>Here’s the render result: <code>&lt;p&gt;You clicked 1 times&lt;/p&gt;</code>. Also remember to run this <em>effect</em> after you’re done: () =&gt; { document.title = ‘You clicked 1 times’ }.</p>
+<ol>
+<li><p><strong>React</strong>: Sure. Updating the UI. Hey browser, I’ve changed the DOM.</p>
+</li>
+<li><p><strong>Browser</strong>: Cool, I painted your changes to the screen.</p>
+</li>
+<li><p><strong>React</strong>: OK, now I’ll run the <em>effect</em> that belongs to the render I just did.</p>
+<p>Running <code>() =&gt; &#123; document.title = &#39;You clicked 1 times&#39; &#125;</code>.</p>
+</li>
+</ol>
+<p>The function defined in the <code>useEffect</code> is different on every render, because no dependency is specified.</p>
+<p>More generally, effects could:</p>
+<ol>
+<li><p>run after every render, because it’s specified by the rendering mechanism</p>
+</li>
+<li><p>are conceptually a part of the component output, because it can do some side effects after rendering element.</p>
+</li>
+<li><p>“see” the props and state from that particular render, because it creates a closure when creating the effect function.</p>
+</li>
+</ol>
+<p><strong>React synchronizes the DOM according to our current props and state</strong>, it just create/re-create elements according to our jsx code. There is no distinction between a “mount” or an “update” when rendering.</p>
+<p>Whilst, <strong>useEffect lets you synchronize things outside of the React tree according to our props and state</strong>. When looking back at, take <code>componentWillReceiveProps</code>, <code>componentDidUpdate</code> as exapmles, we used to do these synchronization in these lifecycle events.</p>
+<p>So <code>useEffect</code> is not something that replicate the lifecycle events such as <code>componentDidMount</code>, and their mental model is closer to implementing synchronization than to responding to lifecycle events. Trying to find effects exact equivalents with lifecycle events may confuse you more than help.</p>
+<p>In Class component, we can access to the state by referring to <code>this</code> in a instance, <em>implicit closure</em>.</p>
+<p>By using <code>useState</code> in Function components, we also create a closure to encapsulate the state. Also, React ensures the <code>setState</code> function stable for the render, still with the help of closure. (So does the <code>dispatch</code> generated by <code>useReducer</code> as long as the reducer stable.)</p>
+<p>The instance methods are bound to <code>this</code> instance. Whilst hooks provide us with <code>useCallback</code>, which also would create closures to encapsulate the props/state it can access to in the scope.</p>
+<p>Conceptually, the instances of the Class components implicitly create closures for us to keep the reference to the methods, props, state. Whilst, hooks have to do the closure encapsulating since there’s no instance in Function components.</p>
+<h2 id="in-the-end"><a href="#in-the-end" class="headerlink" title="In the end"></a>In the end</h2><p>Is Class component the combination of Function component and hooks?</p>
+<p>The answer is no. They both could work very well with their own pros and cons. They are just two means of tackling the above <a href="#concerns">concerns</a>.</p>
+<p>It’s fine to use either of them, as long as it meets your requirements.</p>
+<h2 id="useful-reference"><a href="#useful-reference" class="headerlink" title="Useful Reference"></a>Useful Reference</h2><ol>
+<li><p><a target="_blank" rel="noopener" href="https://overreacted.io/a-complete-guide-to-useeffect/">A complete guide to useEffect</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://blog.webf.zone/contemporary-front-end-architectures-fb5b500b0231">Contemporary front end architectures</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://leewarrick.com/blog/react-use-effect-explained/">React’s useEffect and useRef Explained for Mortals</a></p>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/reactjs/" rel="tag"># reactjs</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/03/31/fullstack-starter.html" rel="prev" title="Fullstack Starter Project Boilerplate">
+                  <i class="fa fa-chevron-left"></i> Fullstack Starter Project Boilerplate
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/02/13/simple-querybuilder.html" rel="next" title="一个简单的QueryBuilder设计">
+                  一个简单的QueryBuilder设计 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

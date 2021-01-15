@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="Today we’re going to write a compiler together. But not just any compiler… A super duper teeny tiny compiler! We’re going to compile some lisp-like function calls into some C-like function calls.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Super tiny interpreter in JavaScript">
+<meta property="og:url" content="https://akatquas.github.io/2018/08/23/super-tiny-interpreter.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="Today we’re going to write a compiler together. But not just any compiler… A super duper teeny tiny compiler! We’re going to compile some lisp-like function calls into some C-like function calls.">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2018-08-23T00:05:56.000Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.366Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="javascript">
+<meta property="article:tag" content="interpreter">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://akatquas.github.io/2018/08/23/super-tiny-interpreter.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>Super tiny interpreter in JavaScript | 🔭</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#parsing"><span class="nav-text">Parsing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#transformation"><span class="nav-text">Transformation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#traversal"><span class="nav-text">Traversal</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#visitors"><span class="nav-text">Visitors</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#code-generation"><span class="nav-text">Code Generation</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://akatquas.github.io/2018/08/23/super-tiny-interpreter.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Akat">
+      <meta itemprop="description" content="Take notes aperiodically">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="🔭">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Super tiny interpreter in JavaScript
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2018-08-23 08:05:56" itemprop="dateCreated datePublished" datetime="2018-08-23T08:05:56+08:00">2018-08-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/programming-language/" itemprop="url" rel="index"><span itemprop="name">programming language</span></a>
+        </span>
+          , 
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/programming-language/interpreter/" itemprop="url" rel="index"><span itemprop="name">interpreter</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>Today we’re going to write a compiler together. But not just any compiler… A super duper teeny tiny compiler!</p>
+<p>We’re going to compile some lisp-like function calls into some C-like function calls.</p>
+<a id="more"></a>
+
+<p>If you are not familiar with one or the other. I’ll just give you a quick intro.</p>
+<p>If we had two functions <code>add</code> and <code>subtract</code> they would be written like this:</p>
+<table>
+<thead>
+<tr>
+<th align="left"></th>
+<th align="left">LISP</th>
+<th align="left">C</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">2 + 2</td>
+<td align="left">(add 2 2)</td>
+<td align="left">add(2, 2)</td>
+</tr>
+<tr>
+<td align="left">4 - 2</td>
+<td align="left">(subtract 4 2)</td>
+<td align="left">subtract(4, 2)</td>
+</tr>
+<tr>
+<td align="left">2 + (4 - 2)</td>
+<td align="left">(add 2 (subtract 4 2))</td>
+<td align="left">add(2, subtract(4, 2))</td>
+</tr>
+</tbody></table>
+<p>Easy peezy right?</p>
+<p>Well good, because this is exactly what we are going to compile. While this is neither a complete LISP or C syntax, it will be enough of the syntax to demonstrate many of the major pieces of a modern compiler.</p>
+<p>Most compilers break down into three primary stages: Parsing, Transformation, and Code Generation</p>
+<ol>
+<li><p> Parsing: is taking raw code and turning it into a more abstract representation of the code.</p>
+</li>
+<li><p> Transformation: takes this abstract representation and manipulates to do whatever the compiler wants it to.</p>
+</li>
+<li><p> Code Generation: takes the transformed representation of the code and turns it into new code.</p>
+</li>
+</ol>
+<h2 id="parsing"><a href="#parsing" class="headerlink" title="Parsing"></a>Parsing</h2><p><a href="/super-tiny-interpreter/tokenizer.js">tokenizer.js</a></p>
+<p><a href="/super-tiny-interpreter/parser.js">parser.js</a></p>
+<p>Parsing typically gets broken down into two phases: Lexical Analysis and Syntactic Analysis.</p>
+<ol>
+<li><p>Lexical Analysis takes the raw code and splits it apart into these things called tokens by a thing called a tokenizer (or lexer).</p>
+<p> Tokens are an array of tiny little objects that describe an isolated piece of the syntax. They could be numbers, labels, punctuation, operators, whatever.</p>
+</li>
+<li><p>Syntactic Analysis takes the tokens and reformats them into a representation that describes each part of the syntax and their relation to one another. This is known as an intermediate representation or Abstract Syntax Tree.</p>
+<p> An Abstract Syntax Tree, or AST for short, is a deeply nested object that represents code in a way that is both easy to work with and tells us a lot of information.</p>
+</li>
+</ol>
+<p>For the following syntax:</p>
+<pre><code>(add 2 (subtract 4 2))</code></pre>
+<p>Tokens might look something like this:</p>
+<pre><code>[
+    &#123; type: &#39;paren&#39;,  value: &#39;(&#39;        &#125;,
+    &#123; type: &#39;name&#39;,   value: &#39;add&#39;      &#125;,
+    &#123; type: &#39;number&#39;, value: &#39;2&#39;        &#125;,
+    &#123; type: &#39;paren&#39;,  value: &#39;(&#39;        &#125;,
+    &#123; type: &#39;name&#39;,   value: &#39;subtract&#39; &#125;,
+    &#123; type: &#39;number&#39;, value: &#39;4&#39;        &#125;,
+    &#123; type: &#39;number&#39;, value: &#39;2&#39;        &#125;,
+    &#123; type: &#39;paren&#39;,  value: &#39;)&#39;        &#125;,
+    &#123; type: &#39;paren&#39;,  value: &#39;)&#39;        &#125;,
+]</code></pre>
+<p>And an Abstract Syntax Tree (AST) might look like this:</p>
+<pre><code>&#123;
+    type: &#39;Program&#39;,
+    body: [&#123;
+        type: &#39;CallExpression&#39;,
+        name: &#39;add&#39;,
+        params: [&#123;
+            type: &#39;NumberLiteral&#39;,
+            value: &#39;2&#39;,
+        &#125;, &#123;
+            type: &#39;CallExpression&#39;,
+            name: &#39;subtract&#39;,
+            params: [&#123;
+                type: &#39;NumberLiteral&#39;,
+                value: &#39;4&#39;,
+            &#125;, &#123;
+                type: &#39;NumberLiteral&#39;,
+                value: &#39;2&#39;,
+            &#125;]
+        &#125;]
+    &#125;]
+&#125;</code></pre>
+<h2 id="transformation"><a href="#transformation" class="headerlink" title="Transformation"></a>Transformation</h2><p><a href="/super-tiny-interpreter/transformer.js">transformer.js</a></p>
+<p>The next type of stage for a compiler is transformation. Again, this just takes the AST from the last step and makes changes to it. It can manipulate the AST in the same language or it can translate it into an entirely new language.</p>
+<p>Let’s look at how we would transform an AST.</p>
+<p>You might notice that our AST has elements within it that look very similar.</p>
+<p>There are these objects with a type property. Each of these are known as an AST Node. These nodes have defined properties on them that describe one isolated part of the tree.</p>
+<p>We can have a node for a “NumberLiteral”:</p>
+<pre><code>&#123;
+    type: &#39;NumberLiteral&#39;,
+    value: &#39;2&#39;,
+&#125;</code></pre>
+<p>Or maybe a node for a “CallExpression”:</p>
+<pre><code>&#123;
+    type: &#39;CallExpression&#39;,
+    name: &#39;subtract&#39;,
+    params: [...nested nodes go here...],
+&#125;</code></pre>
+<p>When transforming the AST we can manipulate nodes by adding/removing/replacing properties, we can add new nodes, remove nodes, or we could leave the existing AST alone and create an entirely new one based on it.</p>
+<p>Since we’re targeting a new language, we’re going to focus on creating an entirely new AST that is specific to the target language.</p>
+<h2 id="traversal"><a href="#traversal" class="headerlink" title="Traversal"></a>Traversal</h2><p>In order to navigate through all of these nodes, we need to be able to traverse through them. This traversal process goes to each node in the AST depth-first.</p>
+<pre><code>&#123;
+    type: &#39;Program&#39;,
+    body: [&#123;
+        type: &#39;CallExpression&#39;,
+        name: &#39;add&#39;,
+        params: [&#123;
+            type: &#39;NumberLiteral&#39;,
+            value: &#39;2&#39;
+        &#125;, &#123;
+            type: &#39;CallExpression&#39;,
+            name: &#39;subtract&#39;,
+            params: [&#123;
+                type: &#39;NumberLiteral&#39;,
+                value: &#39;4&#39;
+            &#125;, &#123;
+                type: &#39;NumberLiteral&#39;,
+                value: &#39;2&#39;
+            &#125;]
+        &#125;]
+    &#125;]
+&#125;</code></pre>
+<p>So for the above AST we would go:</p>
+<ol>
+<li><p>Program - Starting at the top level of the AST</p>
+</li>
+<li><p>CallExpression (add) - Moving to the first element of the Program’s body</p>
+</li>
+<li><p>NumberLiteral (2) - Moving to the first element of CallExpression’s params</p>
+</li>
+<li><p>CallExpression (subtract) - Moving to the second element of CallExpression’s params</p>
+</li>
+<li><p>NumberLiteral (4) - Moving to the first element of CallExpression’s params</p>
+</li>
+<li><p>NumberLiteral (2) - Moving to the second element of CallExpression’s params</p>
+</li>
+</ol>
+<p>If we were manipulating this AST directly, instead of creating a separate AST, we would likely introduce all sorts of abstractions here. But just visiting each node in the tree is enough for what we’re trying to do.</p>
+<p>The reason I use the word “visiting” is because there is this pattern of how to represent operations on elements of an object structure.</p>
+<h2 id="visitors"><a href="#visitors" class="headerlink" title="Visitors"></a>Visitors</h2><p>The basic idea here is that we are going to create a “visitor” object that has methods that will accept different node types.</p>
+<pre><code>var visitor = &#123;
+    NumberLiteral() &#123;&#125;,
+    CallExpression() &#123;&#125;,
+&#125;;</code></pre>
+<p>When we traverse our AST, we will call the methods on this visitor whenever we “enter” a node of a matching type.</p>
+<p>In order to make this useful we will also pass the node and a reference to the parent node.</p>
+<pre><code>var visitor = &#123;
+    NumberLiteral(node, parent) &#123;&#125;,
+    CallExpression(node, parent) &#123;&#125;,
+&#125;;</code></pre>
+<p>However, there also exists the possibility of calling things on “exit”. Imagine our tree structure from before in list form:</p>
+<pre><code>- Program
+    - CallExpression
+        - NumberLiteral
+        - CallExpression
+        - NumberLiteral
+        - NumberLiteral</code></pre>
+<p>As we traverse down, we’re going to reach branches with dead ends. As we finish each branch of the tree we “exit” it. So going down the tree we “enter” each node, and going back up we “exit”.</p>
+<pre><code>-&gt; Program (enter)
+    -&gt; CallExpression (enter)
+        -&gt; Number Literal (enter)
+        &lt;- Number Literal (exit)
+        -&gt; Call Expression (enter)
+        -&gt; Number Literal (enter)
+        &lt;- Number Literal (exit)
+        -&gt; Number Literal (enter)
+        &lt;- Number Literal (exit)
+        &lt;- CallExpression (exit)
+    &lt;- CallExpression (exit)
+&lt;- Program (exit)</code></pre>
+<p>In order to support that, the final form of our visitor will look like this:</p>
+<pre><code>var visitor = &#123;
+    NumberLiteral: &#123;
+        enter(node, parent) &#123;&#125;,
+        exit(node, parent) &#123;&#125;,
+    &#125;
+&#125;;</code></pre>
+<h2 id="code-generation"><a href="#code-generation" class="headerlink" title="Code Generation"></a>Code Generation</h2><p><a href="/super-tiny-interpreter/generator.js">generator.js</a></p>
+<p>The final phase of a compiler is code generation. Sometimes compilers will do things that overlap with transformation, but for the most part code generation just means take our AST and stringify code back out.</p>
+<p>Code generators work several different ways, some compilers will reuse the tokens from earlier, others will have created a separate representation of the code so that they can print node linearly, but from what I can tell most will use the same AST we just created, which is what we’re going to focus on.</p>
+<p>Effectively our code generator will know how to “print” all of the different node types of the AST, and it will recursively call itself to print nested nodes until everything is printed into one long string of code.</p>
+<p>The complete <a href="/super-tiny-interpreter/interpreter.js">interpreter.js</a>.</p>
+<p><a href="/super-tiny-interpreter/test.js">test.js</a> to test these functions.</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/javascript/" rel="tag"># javascript</a>
+              <a href="/tags/interpreter/" rel="tag"># interpreter</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/08/31/build-a-compiler.html" rel="prev" title="Build a Compiler">
+                  <i class="fa fa-chevron-left"></i> Build a Compiler
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/08/14/react-stores.html" rel="next" title="React 状态库的使用">
+                  React 状态库的使用 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

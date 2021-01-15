@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="document codes:  strings.c  LibrariesNow the Lisp is fully functional in the terminal. In this chapter, we’ll add the functionality to load code from a file and run it. This will allow us to start bui">
+<meta property="og:type" content="website">
+<meta property="og:title" content="12 Strings">
+<meta property="og:url" content="https://akatquas.github.io/lisp-interpreter-in-c/12-strings.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="document codes:  strings.c  LibrariesNow the Lisp is fully functional in the terminal. In this chapter, we’ll add the functionality to load code from a file and run it. This will allow us to start bui">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-01-15T10:21:08.394Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.394Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="lisp">
+<meta property="article:tag" content="interpreter">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://akatquas.github.io/lisp-interpreter-in-c/12-strings.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>12 Strings | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#libraries"><span class="nav-text">Libraries</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#string-type"><span class="nav-text">String Type</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reading-strings"><span class="nav-text">Reading Strings</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#comments"><span class="nav-text">Comments</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#load-function"><span class="nav-text">Load Function</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#command-line-arguments"><span class="nav-text">Command Line Arguments</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#print-function"><span class="nav-text">Print Function</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#error-function"><span class="nav-text">Error Function</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#wrapping-up"><span class="nav-text">Wrapping Up</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">12 Strings
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <p><a target="_blank" rel="noopener" href="http://www.buildyourownlisp.com/chapter14_strings">document</a></p>
+<p>codes:</p>
+<ul>
+<li><a href="./codes/strings.c">strings.c</a></li>
+</ul>
+<h2 id="libraries"><a href="#libraries" class="headerlink" title="Libraries"></a>Libraries</h2><p>Now the Lisp is fully functional in the terminal. In this chapter, we’ll add the functionality to load code from a file and run it. This will allow us to start building up a standard library up. Along the way we’ll also add support for code comments, strings, and printing.</p>
+<h2 id="string-type"><a href="#string-type" class="headerlink" title="String Type"></a>String Type</h2><p>For the user to load a file we’ll have to let them supply a string consisting of the file name, which can include spaces and other characters. We nee to add this possible <code>lval</code> type to specify the file names we need.</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">enmu <span class="token punctuation">&#123;</span> LVAL_ERR<span class="token punctuation">,</span> LVAL_NUM<span class="token punctuation">,</span> LVAL_SYM<span class="token punctuation">,</span> LVAL_STR<span class="token punctuation">,</span> LVAL_FUN<span class="token punctuation">,</span> LVAL_SEXPR<span class="token punctuation">,</span> LVAL_QEXPR <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+
+<span class="token keyword">struct</span> <span class="token class-name">lval</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">//...</span>
+    <span class="token keyword">long</span> num<span class="token punctuation">;</span>
+    <span class="token keyword">char</span><span class="token operator">*</span> err<span class="token punctuation">;</span>
+    <span class="token keyword">char</span><span class="token operator">*</span> sym<span class="token punctuation">;</span>
+    <span class="token keyword">char</span><span class="token operator">*</span> str<span class="token punctuation">;</span>
+    <span class="token comment">//...</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+
+lval<span class="token operator">*</span> <span class="token function">lval_str</span><span class="token punctuation">(</span><span class="token keyword">char</span><span class="token operator">*</span> s<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    lval<span class="token operator">*</span> v <span class="token operator">=</span> <span class="token function">malloc</span><span class="token punctuation">(</span><span class="token keyword">sizeof</span><span class="token punctuation">(</span>lval<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    v<span class="token operator">-></span>type <span class="token operator">=</span> LVAL_STR<span class="token punctuation">;</span>
+    v<span class="token operator">-></span>str <span class="token operator">=</span> <span class="token function">malloc</span><span class="token punctuation">(</span><span class="token function">strlen</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">strcpy</span><span class="token punctuation">(</span>v<span class="token operator">-></span>str<span class="token punctuation">,</span> s<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> v<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>We also need to add relevant entries into the functions that deal with <code>lval</code>.</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">// for deletion</span>
+<span class="token keyword">case</span> LVAL_STR<span class="token operator">:</span> <span class="token function">free</span><span class="token punctuation">(</span>v<span class="token operator">-></span>str<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token keyword">break</span><span class="token punctuation">;</span>
+
+<span class="token comment">// for copying</span>
+<span class="token keyword">case</span> LVAL_STR<span class="token operator">:</span> x<span class="token operator">-></span>str <span class="token operator">=</span> <span class="token function">malloc</span><span class="token punctuation">(</span><span class="token function">strlen</span><span class="token punctuation">(</span>v<span class="token operator">-></span>str<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token function">strcpy</span><span class="token punctuation">(</span>x<span class="token operator">-></span>str<span class="token punctuation">,</span> v<span class="token operator">-></span>str<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token keyword">break</span><span class="token punctuation">;</span>
+
+<span class="token comment">// for equality</span>
+<span class="token keyword">case</span> LVAL_STR<span class="token operator">:</span> <span class="token keyword">return</span> <span class="token punctuation">(</span> <span class="token function">strcmp</span><span class="token punctuation">(</span>x<span class="token operator">-></span>str<span class="token punctuation">,</span> y<span class="token operator">-></span>str<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// for type name</span>
+<span class="token keyword">case</span> LVAL_STR<span class="token operator">:</span> <span class="token keyword">return</span> <span class="token string">"string"</span><span class="token punctuation">;</span>
+
+<span class="token comment">// for print</span>
+<span class="token keyword">case</span> LVAL_STR<span class="token operator">:</span> <span class="token function">lval_print_str</span><span class="token punctuation">(</span>v<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token keyword">break</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>For Printing we need to do a little more. The string we store internally is different to the string we want to print. We want to print a string as a user might input it, using escape characters such as <code>\n</code> to represent a new line.</p>
+<p>We therefore need to escape it before we print it. Luckily we can make use of a <code>mpc</code> function that will do this for us.</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">lval_print_str</span><span class="token punctuation">(</span>lval<span class="token operator">*</span> v<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">char</span><span class="token operator">*</span> escaped <span class="token operator">=</span> <span class="token function">malloc</span><span class="token punctuation">(</span><span class="token function">strlen</span><span class="token punctuation">(</span>v<span class="token operator">-></span>str<span class="token punctuation">)</span><span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">strcpy</span><span class="token punctuation">(</span>escaped<span class="token punctuation">,</span> v<span class="token operator">-></span>str<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    escaped <span class="token operator">=</span> <span class="token function">mpcf_escape</span><span class="token punctuation">(</span>escaped<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"\"%s\""</span><span class="token punctuation">,</span> escaped<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token function">free</span><span class="token punctuation">(</span>escaped<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="reading-strings"><a href="#reading-strings" class="headerlink" title="Reading Strings"></a>Reading Strings</h2><p>Now we need to add support for parsing strings. As usual this requires first adding a new grammar rule called <code>string</code> and adding it to the parser.</p>
+<p>The rule we are going to use that represents a string is going to be the same as for C style strings. This means a string is essentially series of escaped characters, or normal characters, between twe quotation marks <code>&quot;&quot;</code>. We can specify this as a regular expression inside the grammar string as follows.</p>
+<pre><code>string: /\&quot;(\\\\.|[^\&quot;])*\&quot;/;  //???</code></pre>
+<p>This looks complicated but makes a lot more sense when explained in parts. A string is a <code>&quot;</code> character, followed by zero or more of either a backslash <code>\\</code> followed by any other character <code>.</code>, or anything this isn’t a <code>&quot;</code>, character <code>[^\&quot;]</code>. Finally it ends with another <code>&quot;</code> character.</p>
+<p>We also need to add a case to deal with this in the <code>lval_read</code> function.</p>
+<pre><code>if (strstr(t-&gt;tag, &quot;string&quot;)) &#123; return lval_read_str(t); &#125;</code></pre>
+<p>Because the input string is input in an escaped from we need to create a function <code>lval_read_str</code> which deals with this. This function is a little tricky because it has to do a few tasks. First it must strip the input string of the <code>&quot;</code> characters on either side. Then it must unescape the string, converting series of characters such as <code>\n</code> to their actual encoded characters. Finally it has to create a new <code>lval</code> and clean up anything that has happened in-between.</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">lval<span class="token operator">*</span> <span class="token function">lval_read_str</span><span class="token punctuation">(</span>mcp_ast_t<span class="token operator">*</span> t<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">/* Cut off the final quote character */</span>
+    t<span class="token operator">-></span>contents<span class="token punctuation">[</span><span class="token function">strlen</span><span class="token punctuation">(</span><span class="token function">strlen</span><span class="token punctuation">(</span>t<span class="token operator">-></span>contents<span class="token punctuation">)</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">'\0'</span><span class="token punctuation">;</span>
+    <span class="token comment">/* Copy the string missing out the first quote character */</span>
+    <span class="token keyword">char</span><span class="token operator">*</span> unescaped <span class="token operator">=</span> <span class="token function">malloc</span><span class="token punctuation">(</span><span class="token function">strlen</span><span class="token punctuation">(</span>t<span class="token operator">-></span>contents<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// ??</span>
+    <span class="token function">strcpy</span><span class="token punctuation">(</span>unescaped<span class="token punctuation">,</span> t<span class="token operator">-></span>contents<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    unescaped <span class="token operator">=</span> <span class="token function">mpcf_unescape</span><span class="token punctuation">(</span>unescaped<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    lval<span class="token operator">*</span> str <span class="token operator">=</span> <span class="token function">lval_str</span><span class="token punctuation">(</span>unescaped<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">free</span><span class="token punctuation">(</span>unescaped<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> str<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="comments"><a href="#comments" class="headerlink" title="Comments"></a>Comments</h2><p>While we’re building in new syntax to the language we may as well look at comments.</p>
+<p>Just like in C, we can use comments in inform other people (or ourselves) about what the code is meant to do or why it has been written. In C comments go between <code>/*</code> and <code>*/</code>. Lisp comments, on the other hand, start with <code>;</code> and run to the end of the line.</p>
+<p>I attempted to research why Lisps use <code>;</code> for comments, but it appears that the origins of this have been lost in the mists of time. I imagine it as a small rebellion against the imperative languages such as C and Java which use semicolons so shamelessly and frequently to separate/terminate statements. Compared to Lisp all these languages are just comments.</p>
+<p>So in lisp a comment is defined by a semicolon <code>;</code> followed by any number of characters that are not newline characters represented by either <code>\r</code> or <code>\n</code>. We can use another regex to define it.</p>
+<pre><code>comment : /;[^\\r^\\n]*/;</code></pre>
+<p>As with strings we need to create a new parser and use this to update the language in <code>mpca_lang</code>. We also need to remember to add the parser to <code>mpc_cleanup</code>, and update the first integer argument to reflect the new number of parsers passed in.</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token function">mpca_lang</span><span class="token punctuation">(</span> MPCA_LANG_DEFAULT<span class="token punctuation">,</span>
+    "
+        number<span class="token operator">:</span> <span class="token operator">/</span><span class="token operator">-</span><span class="token operator">?</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token operator">-</span><span class="token number">9</span><span class="token punctuation">]</span><span class="token operator">+</span><span class="token operator">/</span><span class="token punctuation">;</span> \
+        symbol<span class="token operator">:</span> <span class="token operator">/</span><span class="token punctuation">[</span>a<span class="token operator">-</span>zA<span class="token operator">-</span>Z0<span class="token operator">-</span><span class="token number">9</span>_<span class="token operator">+</span>\\<span class="token operator">-</span><span class="token operator">*</span>\\<span class="token operator">/</span>\\\\<span class="token operator">=</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token operator">!</span><span class="token operator">&amp;</span><span class="token punctuation">]</span><span class="token operator">+</span><span class="token operator">/</span><span class="token punctuation">;</span> \
+        string<span class="token operator">:</span> <span class="token operator">/</span>\<span class="token string">"(\\\\.|[^\"])*\"/; \
+        comment: /;[^\\r\\n]*/; \
+        sexpr: '(' &lt;expr>* ')'; \
+        qexpr: '&#123;' &lt;expr>* '&#125;'; \
+        expr: &lt;number> | &lt;symbol> | &lt;string> | &lt;comment> | &lt;sexpr> | &lt;qexpr> ; \
+        lispy: /^/ &lt;expr> * /$/; \
+    "</span><span class="token punctuation">,</span>
+    Number<span class="token punctuation">,</span> Symbol<span class="token punctuation">,</span> String<span class="token punctuation">,</span> Comment<span class="token punctuation">,</span> Sexpr<span class="token punctuation">,</span> Qexpr<span class="token punctuation">,</span> Expr<span class="token punctuation">,</span> Lispy<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token function">mpc_cleanup</span><span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">,</span> Number<span class="token punctuation">,</span> Symbol<span class="token punctuation">,</span> String<span class="token punctuation">,</span> Comment<span class="token punctuation">,</span> Sexpr<span class="token punctuation">,</span> Qexpr<span class="token punctuation">,</span> Expr<span class="token punctuation">,</span> Lispy<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Because comments are only for programmers reading the code, our internal function for reading them in just consists of ignoring them. We can add a clause to deal with them in a similar way to brackets and parenthesis in <code>lval_read</code>.</p>
+<pre><code>if (strstr(t-&gt;children[i]-&gt;tag, &quot;comment&quot;)) &#123; continue; &#125;</code></pre>
+<h2 id="load-function"><a href="#load-function" class="headerlink" title="Load Function"></a>Load Function</h2><p>We want to built a function that can load and evaluate a file when passed a string of its name. To implement this function we’ll need to make use of the grammar as we’ll need ti to read in the file contents, parse, and evaluate them. The load function is going to rely on the <code>mpc_parser*</code> called <code>Lispy</code>.</p>
+<p>Therefore, just like with functions, we need to forward declare the parser pointers, and place them at the top of the file.</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">mpc_parser_t<span class="token operator">*</span> Number<span class="token punctuation">;</span>
+mpc_parser_t<span class="token operator">*</span> Symbol<span class="token punctuation">;</span>
+mpc_parser_t<span class="token operator">*</span> String<span class="token punctuation">;</span>
+mpc_parser_t<span class="token operator">*</span> Comment<span class="token punctuation">;</span>
+mpc_parser_t<span class="token operator">*</span> Sexpr<span class="token punctuation">;</span>
+mpc_parser_t<span class="token operator">*</span> Qexpr<span class="token punctuation">;</span>
+mpc_parser_t<span class="token operator">*</span> Expr<span class="token punctuation">;</span>
+mpc_parser_t<span class="token operator">*</span> Lispy<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>The <code>load</code> function will just like any other builtin. We need to start by checking that the input argument is a single string. Then we can use the <code>mpc_parse_contents</code> function to read in the contents of a file using a grammar. Just like <code>mpc_parse</code> this parses the contents of a file into some <code>mpc_result</code> object, which in our case is an <strong>abstract syntax tree</strong> again or an <strong>error</strong>.</p>
+<p>Slightly differently to the command prompt, on successfully parsing a file we shouldn’t treat it like on expression. When typing into a file we let users list multiple expressions and evaluate all of them individually. To achieve this behaviour we need to loop over each expression in the contents of the file and evaluate it one by one. If there are any errors we should print them and continue.</p>
+<p>If there is a parse error we’re going to extract the message and put it into a error <code>lval</code> which we return. If there are no errors the return value for this builtin can just be the empty expression. The full code for this:</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">lval<span class="token operator">*</span> <span class="token function">builtin_load</span><span class="token punctuation">(</span>lenv<span class="token operator">*</span> e<span class="token punctuation">,</span> lval<span class="token operator">*</span> a<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token function">LASSERT_NUM</span><span class="token punctuation">(</span><span class="token string">"load"</span><span class="token punctuation">,</span> a<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">LASSERT_TYPE</span><span class="token punctuation">(</span><span class="token string">"load"</span><span class="token punctuation">,</span> a<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> LVAL_STR<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">/* Parse File given by string name*/</span>
+    mpc_result_t r<span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">mpc_parse_contents</span><span class="token punctuation">(</span>a<span class="token operator">-></span>cell<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token operator">-></span>str<span class="token punctuation">,</span> Lispy<span class="token punctuation">,</span> <span class="token operator">&amp;</span>r<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        lval<span class="token operator">*</span> expr <span class="token operator">=</span> <span class="token function">lval_read</span><span class="token punctuation">(</span>r<span class="token punctuation">.</span>output<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">mpc_ast_delete</span><span class="token punctuation">(</span>r<span class="token punctuation">.</span>output<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">while</span> <span class="token punctuation">(</span>expr<span class="token operator">-></span>count<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            lval<span class="token operator">*</span> x <span class="token operator">=</span> <span class="token function">lval_eval</span><span class="token punctuation">(</span>e<span class="token punctuation">,</span> <span class="token function">lval_pop</span><span class="token punctuation">(</span>expr<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>x<span class="token operator">-></span>type <span class="token operator">==</span> LVAL_ERR<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token function">lval_println</span><span class="token punctuation">(</span>x<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">&#125;</span>
+            <span class="token function">lval_del</span><span class="token punctuation">(</span>x<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token function">lval_del</span><span class="token punctuation">(</span>expr<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">lval_del</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token function">lval_sexpr</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">char</span><span class="token operator">*</span> err_msg <span class="token operator">=</span> <span class="token function">mpc_err_string</span><span class="token punctuation">(</span>r<span class="token punctuation">.</span>error<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">mpc_err_delete</span><span class="token punctuation">(</span>r<span class="token punctuation">.</span>error<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        lval<span class="token operator">*</span> err <span class="token operator">=</span> <span class="token function">lval_err</span><span class="token punctuation">(</span><span class="token string">"could not load library %s"</span><span class="token punctuation">,</span> err_msg<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">free</span><span class="token punctuation">(</span>err_msg<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">lval_del</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token keyword">return</span> err<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="command-line-arguments"><a href="#command-line-arguments" class="headerlink" title="Command Line Arguments"></a>Command Line Arguments</h2><p>With the ability to load files, we can take the chance to add in some functionality typical of other programming languages. When file names are given as arguments to the command line we can try to run these files. For example to run a python file one might write <code>python filename.py</code>.</p>
+<p>These command line arguments are accessible using the <code>argc</code> and <code>argv</code> variables that are given to <code>main</code>. The <code>argc</code> variable gives the number of arguments, and <code>argv</code> specifies each string. The <code>argc</code> is always set to at least one, where the first argument is always the complete command invoked.</p>
+<p>That means if <code>argc</code> is set to <code>1</code> we can invoke the interpreter, otherwise we can run each of the arguments through the <code>builtin_load</code> function.</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">if</span> <span class="token punctuation">(</span>argc <span class="token operator">>=</span> <span class="token number">2</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> argc<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        lval<span class="token operator">*</span> args <span class="token operator">=</span> <span class="token function">lval_add</span><span class="token punctuation">(</span><span class="token function">lval_sexpr</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token function">lval_str</span><span class="token punctuation">(</span>argv<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        lval<span class="token operator">*</span> x <span class="token operator">=</span> <span class="token function">builtin_load</span><span class="token punctuation">(</span>e<span class="token punctuation">,</span> args<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>x<span class="token operator">-></span>type <span class="token operator">==</span> LVAL_ERR<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token function">lval_println</span><span class="token punctuation">(</span>x<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">&#125;</span>
+        <span class="token function">lval_del</span><span class="token punctuation">(</span>x<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="print-function"><a href="#print-function" class="headerlink" title="Print Function"></a>Print Function</h2><p>If we are running programs form the command line we might want them to output some data, rather than just define functions and other values. We can add a <code>print</code> function to the Lisp which makes use of the existing <code>lval_print</code> function.</p>
+<p>This function prints each arguments separated by a space and then prints a newline character to finish. It returns the empty expression.</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">lval<span class="token operator">*</span> <span class="token function">builin_print</span><span class="token punctuation">(</span>lenv<span class="token operator">*</span> e<span class="token punctuation">,</span> lval<span class="token operator">*</span> a<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> a<span class="token operator">-></span>count<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">lval_print</span><span class="token punctuation">(</span>a<span class="token operator">-></span>cell<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token function">putchar</span><span class="token punctuation">(</span><span class="token string">' '</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token function">putchar</span><span class="token punctuation">(</span><span class="token string">'\n'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">lval_del</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">return</span> <span class="token function">lval_sexpr</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="error-function"><a href="#error-function" class="headerlink" title="Error Function"></a>Error Function</h2><p>We can also make use of strings to add in an error reporting functions. This can take as input a user supplied string and provide it as an error message <code>lval_err</code>.</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">lval<span class="token operator">*</span> <span class="token function">builtin_error</span><span class="token punctuation">(</span>lenv<span class="token operator">*</span> e<span class="token punctuation">,</span> lval<span class="token operator">*</span> a<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token function">LASSERT_NUM</span><span class="token punctuation">(</span><span class="token string">"error"</span><span class="token punctuation">,</span> a<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">LASSERT_TYPE</span><span class="token punctuation">(</span><span class="token string">"error"</span><span class="token punctuation">,</span> a<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> LVAL_STR<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    lval<span class="token operator">*</span> err <span class="token operator">=</span> <span class="token function">lval_err</span><span class="token punctuation">(</span>a<span class="token operator">-></span>cell<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token operator">-></span>str<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token function">lval_del</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> err<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>And remember to register these as builtins.</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token function">lenv_add_builtin</span><span class="token punctuation">(</span>e<span class="token punctuation">,</span> <span class="token string">"load"</span><span class="token punctuation">,</span> builtin_load<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">lenv_add_builtin</span><span class="token punctuation">(</span>e<span class="token punctuation">,</span> <span class="token string">"error"</span><span class="token punctuation">,</span> builtin_error<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">lenv_add_builtin</span><span class="token punctuation">(</span>e<span class="token punctuation">,</span> <span class="token string">"print"</span><span class="token punctuation">,</span> builtin_print<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<h2 id="wrapping-up"><a href="#wrapping-up" class="headerlink" title="Wrapping Up"></a>Wrapping Up</h2><p>This is the last chapter in which we are going to explicitly work on our C implementation of Lisp. The result of this chapter will be the final state of your language implementation.</p>
+<p>The final line count should clock in somewhere close to 1000 lines of code. Writing this amount of code is not trivial. If you’ve made it this far you’ve written a real program and started on a proper project. The skills you’ve learnt here should be transferable, and give you the confidence to seek out your own goals and targets. You now have a complex and beautiful program which you can interact and play with. This is something you should be proud of. Go show it off to your friends and family!</p>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

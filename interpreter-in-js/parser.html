@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="As mentioned, the parser will build a structure which faithfully represents the semantics of the program. An AST node is a plain JavaScript object that has a type property specifying what kind of node">
+<meta property="og:type" content="website">
+<meta property="og:title" content="The AST">
+<meta property="og:url" content="https://akatquas.github.io/interpreter-in-js/parser.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="As mentioned, the parser will build a structure which faithfully represents the semantics of the program. An AST node is a plain JavaScript object that has a type property specifying what kind of node">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-01-15T10:21:08.390Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.390Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="interpreter">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://akatquas.github.io/interpreter-in-js/parser.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>The AST | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#the-parser"><span class="nav-text">The parser</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">The AST
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <p>As mentioned, the parser will build a structure which faithfully represents the semantics of the program. An AST node is a plain JavaScript object that has a <code>type</code> property specifying what kind of node it is, and additional information, depending on the particular <code>type</code>.</p>
+<p>In short:</p>
+<table>
+<thead>
+<tr>
+<th align="center"></th>
+<th align="left"></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">num</td>
+<td align="left"><code>&#123; type: &quot;num&quot;, value: NUMBER &#125;</code></td>
+</tr>
+<tr>
+<td align="center">str</td>
+<td align="left"><code>&#123; type: &quot;str&quot;, value: STRING &#125;</code></td>
+</tr>
+<tr>
+<td align="center">bool</td>
+<td align="left"><code>&#123; type: &quot;bool&quot;, value: true or false &#125;</code></td>
+</tr>
+<tr>
+<td align="center">var</td>
+<td align="left"><code>&#123; type: &quot;var&quot;, value: NAME &#125;</code></td>
+</tr>
+<tr>
+<td align="center">lambda</td>
+<td align="left"><code>&#123; type: &quot;lambda&quot;, vars: [ NAME... ], body: AST &#125;</code></td>
+</tr>
+<tr>
+<td align="center">call</td>
+<td align="left"><code>&#123; type: &quot;call&quot;, func: AST, args: [ AST... ] &#125;</code></td>
+</tr>
+<tr>
+<td align="center">if</td>
+<td align="left"><code>&#123; type: &quot;if&quot;, cond: AST, then: AST, else: AST &#125;</code></td>
+</tr>
+<tr>
+<td align="center">assign</td>
+<td align="left"><code>&#123; type: &quot;assign&quot;, operator: &quot;=&quot;, left: AST, right: AST &#125;</code></td>
+</tr>
+<tr>
+<td align="center">binary</td>
+<td align="left"><code>&#123; type: &quot;binary&quot;, operator: OPERATOR, left: AST, right: AST &#125;</code></td>
+</tr>
+<tr>
+<td align="center">prog</td>
+<td align="left"><code>&#123; type: &quot;prog&quot;, prog: [ AST... ] &#125;</code></td>
+</tr>
+<tr>
+<td align="center">let</td>
+<td align="left"><code>&#123; type: &quot;let&quot;, vars: [ VARS... ], body: AST &#125;</code></td>
+</tr>
+</tbody></table>
+<p>Examples:</p>
+<p><strong>Functions (“lambda”)</strong></p>
+<pre class="line-numbers language-none"><code class="language-none">lambda (x) 10   -&gt;  &#123;
+   # or                 type: &quot;lambda&quot;,
+λ (x) 10                vars: [ &quot;x&quot; ],
+                        body: &#123; type: &quot;num&quot;, value: 10 &#125;
+                    &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>Function calls (“call”)</strong></p>
+<pre class="line-numbers language-none"><code class="language-none">foo(a, 1)  -&gt;   &#123;
+                    &quot;type&quot;: &quot;call&quot;,
+                    &quot;func&quot;: &#123; &quot;type&quot;: &quot;var&quot;, &quot;value&quot;: &quot;foo&quot; &#125;,
+                    &quot;args&quot;: [
+                        &#123; &quot;type&quot;: &quot;var&quot;, &quot;value&quot;: &quot;a&quot; &#125;,
+                        &#123; &quot;type&quot;: &quot;num&quot;, &quot;value&quot;: 1 &#125;
+                    ]
+                &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>Conditionals (“if”)</strong></p>
+<pre class="line-numbers language-none"><code class="language-none">if foo then bar else baz  -&gt;   &#123;
+                                    &quot;type&quot;: &quot;if&quot;,
+                                    &quot;cond&quot;: &#123; &quot;type&quot;: &quot;var&quot;, &quot;value&quot;: &quot;foo&quot; &#125;,
+                                    &quot;then&quot;: &#123; &quot;type&quot;: &quot;var&quot;, &quot;value&quot;: &quot;bar&quot; &#125;,
+                                    &quot;else&quot;: &#123; &quot;type&quot;: &quot;var&quot;, &quot;value&quot;: &quot;baz&quot; &#125;
+                                &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>Assignment (“assign)</strong></p>
+<pre class="line-numbers language-none"><code class="language-none">a &#x3D; 10  -&gt;  &#123;
+                &quot;type&quot;: &quot;assign&quot;,
+                &quot;operator&quot;: &quot;&#x3D;&quot;,
+                &quot;left&quot;: &#123; &quot;type&quot;: &quot;var&quot;, &quot;value&quot; : &quot;a&quot; &#125;,
+                &quot;right&quot;: &#123; &quot;type&quot;: &quot;num&quot;, &quot;value&quot;: 10 &#125;
+            &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>Binary experssion (“binary”)</strong></p>
+<pre class="line-numbers language-none"><code class="language-none">x + y * z  -&gt;   &#123;
+                    &quot;type&quot;: &quot;binary&quot;,
+                    &quot;operator&quot;: &quot;+&quot;,
+                    &quot;left&quot;: &#123; &quot;type&quot; : &quot;var&quot;, &quot;value&quot;: &quot;x&quot; &#125;,
+                    &quot;right&quot;: &#123;
+                        &quot;type&quot;: &quot;binary&quot;,
+                        &quot;operator&quot;: &quot;*&quot;,
+                        &quot;left&quot;: &#123; &quot;type&quot;: &quot;var&quot;, &quot;value&quot;: &quot;y&quot; &#125;,
+                        &quot;right&quot;: &#123; &quot;type&quot;: &quot;var&quot;, &quot;value&quot;: &quot;z&quot; &#125;
+                    &#125;
+                &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>Sequences (“prog”)</strong></p>
+<pre class="line-numbers language-none"><code class="language-none">&#123;                   &#123;
+  a &#x3D; 5;                &quot;type&quot;: &quot;prog&quot;,
+  b &#x3D; a * 2;    -&gt;      &quot;prog&quot;: [
+  a + b;                     &#123;
+&#125;                               &quot;type&quot;: &quot;assign&quot;,
+                                &quot;operator&quot;: &quot;&#x3D;&quot;,
+                                &quot;left&quot;: &#123; &quot;type&quot;: &quot;var&quot;, &quot;value&quot;: &quot;a&quot; &#125;,
+                                &quot;right&quot;: &#123; &quot;type&quot;: &quot;num&quot;, &quot;value&quot;: 5 &#125;
+                            &#125;,
+                            &#123;
+                                &quot;type&quot;: &quot;assign&quot;,
+                                &quot;operator&quot;: &quot;&#x3D;&quot;,
+                                &quot;left&quot;: &#123; &quot;type&quot;: &quot;var&quot;, &quot;value&quot;: &quot;b&quot; &#125;,
+                                &quot;right&quot;: &#123;
+                                    &quot;type&quot;: &quot;binary&quot;,
+                                    &quot;operator&quot;: &quot;*&quot;,
+                                    &quot;left&quot;: &#123; &quot;type&quot;: &quot;var&quot;, &quot;value&quot;: &quot;a&quot; &#125;,
+                                    &quot;right&quot;: &#123; &quot;type&quot;: &quot;num&quot;, &quot;value&quot;: 2 &#125;
+                                &#125;
+                            &#125;,
+                            &#123;
+                                &quot;type&quot;: &quot;binary&quot;,
+                                &quot;operator&quot;: &quot;+&quot;,
+                                &quot;left&quot;: &#123; &quot;type&quot;: &quot;var&quot;, &quot;value&quot;: &quot;a&quot; &#125;,
+                                &quot;right&quot;: &#123; &quot;type&quot;: &quot;var&quot;, &quot;value&quot;: &quot;b&quot; &#125;
+                            &#125;
+                        ]
+                    &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>Block scoped variables (“let”)</strong></p>
+<pre class="line-numbers language-none"><code class="language-none">let (a &#x3D; 10, b &#x3D; a * 10) &#123;      &#123;
+  a + b;                     -&gt;     &quot;type&quot;: &quot;let&quot;,
+&#125;                                   &quot;vars&quot;: [
+                                        &#123;
+                                            &quot;name&quot;: &quot;a&quot;,
+                                            &quot;def&quot;: &#123; &quot;type&quot;: &quot;num&quot;, &quot;value&quot;: 10 &#125;
+                                        &#125;,
+                                        &#123;
+                                            &quot;name&quot;: &quot;b&quot;,
+                                            &quot;def&quot;: &#123;
+                                                &quot;type&quot;: &quot;binary&quot;,
+                                                &quot;operator&quot;: &quot;*&quot;,
+                                                &quot;left&quot;: &#123; &quot;type&quot;: &quot;var&quot;, &quot;value&quot;: &quot;a&quot; &#125;,
+                                                &quot;right&quot;: &#123; &quot;type&quot;: &quot;num&quot;, &quot;value&quot;: 10 &#125;
+                                            &#125;
+                                        &#125;
+                                    ],
+                                    &quot;body&quot;: &#123;
+                                        &quot;type&quot;: &quot;binary&quot;,
+                                        &quot;operator&quot;: &quot;+&quot;,
+                                        &quot;left&quot;: &#123; &quot;type&quot;: &quot;var&quot;, &quot;value&quot;: &quot;a&quot; &#125;,
+                                        &quot;right&quot;: &#123; &quot;type&quot;: &quot;var&quot;, &quot;value&quot;: &quot;b&quot; &#125;
+                                    &#125;
+                                &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="the-parser"><a href="#the-parser" class="headerlink" title="The parser"></a>The parser</h2><p>The parser creates AST nodes.</p>
+<p>Thanks to the work we did in the tokenizer, the parser operates on a stream of tokens instead of dealing with individual characters. It still defines many helpers to keep complexity down.</p>
+<p>I’ll discuss here the main functions that comprise the parser. Let’s start with a high level one, the <code>lambda</code> parser:</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">parse_lambda</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">return</span> <span class="token punctuation">&#123;</span>
+    type<span class="token operator">:</span> <span class="token string">'lambda'</span><span class="token punctuation">,</span>
+    vars<span class="token operator">:</span> <span class="token function">delimited</span><span class="token punctuation">(</span><span class="token string">'('</span><span class="token punctuation">,</span> <span class="token string">')'</span><span class="token punctuation">,</span> <span class="token string">','</span><span class="token punctuation">,</span> parse_varname<span class="token punctuation">)</span><span class="token punctuation">,</span>
+    body<span class="token operator">:</span> <span class="token function">parse_expression</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>This function will be invoked when the <code>lambda</code> keywords has already been seen and “eaten” from the input, so all it cares for is to parse the argument names; but they’re in parenthesese and delimited by commas. Rather than placing that code in <code>parse_lambda</code>, it is better to write a <code>delimited</code> function that takes these arguments: the <code>start</code> token, the <code>end</code> token, the <code>separator</code>, and a <em>function</em> which parses whatever must be between those <em>start/end</em> tokens. In this case, it’s <code>parse_varname</code>, which takes care to throw an error if it encounters anything which doesn’t look like a variable. The body of the function is an expression, so we get it with <code>parse_expression</code>.</p>
+<p><code>delimited</code> is a bit lower-level:</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">delimited</span><span class="token punctuation">(</span><span class="token parameter">start<span class="token punctuation">,</span> stop<span class="token punctuation">,</span> separator<span class="token punctuation">,</span> parser</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">var</span> a <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    first <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+  <span class="token function">skip_punc</span><span class="token punctuation">(</span>start<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token operator">!</span>input<span class="token punctuation">.</span><span class="token function">eof</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">is_punc</span><span class="token punctuation">(</span>stop<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">break</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>first<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      first <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+      <span class="token function">skip_punc</span><span class="token punctuation">(</span>separator<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">is_punc</span><span class="token punctuation">(</span>stop<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">break</span><span class="token punctuation">;</span>
+
+    a<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token function">parser</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token function">skip_punc</span><span class="token punctuation">(</span>stop<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> a<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>As it can be seen, it uses more utilities: <code>is_punc</code> and <code>skip_punc</code>. The former will return true if the current token is the given punctuation sign (without “eating” it), while <code>skip_punc</code> will ensure that the current token is that punctuation (throws an error otherwise) and will discard it from the input.</p>
+<p>The function that parses the whole program is probably the simplest:</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">parse_toplevel</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">var</span> prog <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+  <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token operator">!</span>input<span class="token punctuation">.</span><span class="token function">eof</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    prog<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token function">parse_expression</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>input<span class="token punctuation">.</span><span class="token function">eof</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token function">skip_punc</span><span class="token punctuation">(</span><span class="token string">';'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">return</span> <span class="token punctuation">&#123;</span> type<span class="token operator">:</span> <span class="token string">'prog'</span><span class="token punctuation">,</span> prog<span class="token operator">:</span> prog <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Since we have no statements, we simply call <code>parse_expression()</code> and read expressions until we get to the end of the input. Using <code>skip_punc(&quot;;&quot;)</code> we demand semicolons between these expressions.</p>
+<p>Another simple example <code>parse_if()</code>:</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">parse_if</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token function">skip_kw</span><span class="token punctuation">(</span><span class="token string">'if'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">var</span> cond <span class="token operator">=</span> <span class="token function">parse_expression</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// condition exp not in parenthese</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">is_punc</span><span class="token punctuation">(</span><span class="token string">'&#123;'</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token function">skip_kw</span><span class="token punctuation">(</span><span class="token string">'then'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">var</span> then <span class="token operator">=</span> <span class="token function">parse_expression</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">var</span> ret <span class="token operator">=</span> <span class="token punctuation">&#123;</span> type<span class="token operator">:</span> <span class="token string">'if'</span><span class="token punctuation">,</span> cond<span class="token operator">:</span> cond<span class="token punctuation">,</span> then<span class="token operator">:</span> then <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">is_kw</span><span class="token punctuation">(</span><span class="token string">'else'</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    input<span class="token punctuation">.</span><span class="token function">next</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    ret<span class="token punctuation">.</span>else <span class="token operator">=</span> <span class="token function">parse_expression</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">return</span> ret<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>It skips over the <code>if</code> keyword with <code>skip_kw</code>(and this throws an error if the current token is not the given keyword), reads the condition using <code>parse_expression()</code>. Next, if the consequent branch doesn’t start with a <code>&#123;</code> we require the keyword <code>then</code> to be present (I feel like the syntax is too scarce without it). The branches are just expressions, so again we use <code>parse_expression()</code> for them. The <code>else</code> branch in optional so we need to check if the keyword is present before parsing it.</p>
+<p>Having many small utilities helps a lot in keeping the code simple. We almost write the parser like we had a high level language dedicated for parsing. All these functions are “mutually recursive”, e.g.: there’s a <code>parse_atom()</code> function which is the main dispatcher — based on the current token it calls other functions. One of them is <code>parse_if()</code> (called when the current token is <code>if</code>) and that in turn calls <code>parse_expression()</code>. But <code>parse_expression()</code> calls <code>parse_atom()</code>. The reason why there’s no infinite loop is that at each step, one function or another will advance at least one token.</p>
+<p>This kind of parser is called a <strong>recursive descent parser</strong> and it’s probably the easiest kind to write manually.</p>
+<p><code>parse_atom()</code> does the main dispacthing job, depending on the current token:</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">parse_atom</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">return</span> <span class="token function">maybe_call</span><span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">is_punc</span><span class="token punctuation">(</span><span class="token string">'('</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      input<span class="token punctuation">.</span><span class="token function">next</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">var</span> exp <span class="token operator">=</span> <span class="token function">parse_expression</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token function">skip_punc</span><span class="token punctuation">(</span><span class="token string">')'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">return</span> exp<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">is_punc</span><span class="token punctuation">(</span><span class="token string">'&#123;'</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token function">parse_prog</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">is_kw</span><span class="token punctuation">(</span><span class="token string">'if'</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token function">parse_if</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">is_kw</span><span class="token punctuation">(</span><span class="token string">'true'</span><span class="token punctuation">)</span> <span class="token operator">||</span> <span class="token function">is_kw</span><span class="token punctuation">(</span><span class="token string">'false'</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token function">parse_bool</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">is_kw</span><span class="token punctuation">(</span><span class="token string">'lambda'</span><span class="token punctuation">)</span> <span class="token operator">||</span> <span class="token function">is_kw</span><span class="token punctuation">(</span><span class="token string">'λ'</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      input<span class="token punctuation">.</span><span class="token function">next</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">return</span> <span class="token function">parse_lambda</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">var</span> tok <span class="token operator">=</span> input<span class="token punctuation">.</span><span class="token function">next</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>
+      tok<span class="token punctuation">.</span>type <span class="token operator">==</span> <span class="token string">'var'</span> <span class="token operator">||</span>
+      tok<span class="token punctuation">.</span>type <span class="token operator">==</span> <span class="token string">'number'</span> <span class="token operator">||</span>
+      tok<span class="token punctuation">.</span>type <span class="token operator">==</span> <span class="token string">'str'</span>
+    <span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span> tok<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token function">unexpected</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>If it sees an open paren, then it must be a parenthesized expression — thus, skip over paren, call <code>parse_expression()</code> and expect a closing paren. If it sees some keyword, it calls the appropriate parser function. If it sees a constant or an identifier, it’s just returned as is. And if nothing works, <code>unexpected()</code> will throw an error.</p>
+<p>When an atomic expression is expected and it sees <code>&#123;</code>, it calls <code>parse_prog()</code> to parse a sequence of expressions. That’s defined below. It will do some minor optimization at this point — if the prog is empty, then it just returns <code>FALSE</code>. If it has a single expression, it is returned instead of a <code>prog</code> node. Otherwise it returns a <code>prog</code> node containing the expressions.</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">var</span> <span class="token constant">FALSE</span> <span class="token operator">=</span> <span class="token punctuation">&#123;</span> type<span class="token operator">:</span> <span class="token string">'bool'</span><span class="token punctuation">,</span> value<span class="token operator">:</span> <span class="token boolean">false</span> <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+
+<span class="token keyword">function</span> <span class="token function">parse_prog</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">var</span> prog <span class="token operator">=</span> <span class="token function">delimited</span><span class="token punctuation">(</span><span class="token string">'&#123;'</span><span class="token punctuation">,</span> <span class="token string">'&#125;'</span><span class="token punctuation">,</span> <span class="token string">';'</span><span class="token punctuation">,</span> parse_expression<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>prog<span class="token punctuation">.</span>length <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token constant">FALSE</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>prog<span class="token punctuation">.</span>length <span class="token operator">==</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token keyword">return</span> prog<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token punctuation">&#123;</span> type<span class="token operator">:</span> <span class="token string">'prog'</span><span class="token punctuation">,</span> prog<span class="token operator">:</span> prog <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Here’s the <code>parse_expression()</code> function. Contrary to <code>parse_atom()</code>, this one will extend an expression as much as possible to the right using <code>maybe_binary()</code>, which is explained below.</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">parse_expression</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">return</span> <span class="token function">maybe_call</span><span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> <span class="token function">maybe_binary</span><span class="token punctuation">(</span><span class="token function">parse_atom</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>What are these <code>maybe_*</code> functions?</p>
+<p>These functions check what follows <em>after</em> an expression in order to decied whether to wrap that expression in another node, or just return it as is.</p>
+<p><code>maybe_call()</code> is very simple. It receives a function that is expected to parse the current expression. If after that expression it sees a <code>(</code> punctuation token, then it must be a <code>call</code> node, which is what <code>parse_call()</code> makes. Notice again how <code>delimited()</code> comes in handy for reading the argument list.</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">maybe_call</span><span class="token punctuation">(</span><span class="token parameter">expr</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  expr <span class="token operator">=</span> <span class="token function">expr</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token function">is_punc</span><span class="token punctuation">(</span><span class="token string">'('</span><span class="token punctuation">)</span> <span class="token operator">?</span> <span class="token function">parse_call</span><span class="token punctuation">(</span>expr<span class="token punctuation">)</span> <span class="token operator">:</span> expr<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">function</span> <span class="token function">parse_call</span><span class="token punctuation">(</span><span class="token parameter">func</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">return</span> <span class="token punctuation">&#123;</span>
+    type<span class="token operator">:</span> <span class="token string">'call'</span><span class="token punctuation">,</span>
+    func<span class="token operator">:</span> func<span class="token punctuation">,</span>
+    args<span class="token operator">:</span> <span class="token function">delimited</span><span class="token punctuation">(</span><span class="token string">'('</span><span class="token punctuation">,</span> <span class="token string">')'</span><span class="token punctuation">,</span> <span class="token string">','</span><span class="token punctuation">,</span> parse_expression<span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>How about <strong>Operator precedence</strong>?</p>
+<p><code>maybe_binary(left, my_prec)</code> is used to compose binary expression like <code>1 + 2 * 3</code>. The trick to parse them properly is to correctly define the operator precedence like this:</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">var</span> <span class="token constant">PRECEDENCE</span> <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+  <span class="token string">'='</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+  <span class="token string">'||'</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span>
+  <span class="token string">'&amp;&amp;'</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span>
+  <span class="token string">'&lt;'</span><span class="token operator">:</span> <span class="token number">7</span><span class="token punctuation">,</span>
+  <span class="token string">'>'</span><span class="token operator">:</span> <span class="token number">7</span><span class="token punctuation">,</span>
+  <span class="token string">'&lt;='</span><span class="token operator">:</span> <span class="token number">7</span><span class="token punctuation">,</span>
+  <span class="token string">'>='</span><span class="token operator">:</span> <span class="token number">7</span><span class="token punctuation">,</span>
+  <span class="token string">'=='</span><span class="token operator">:</span> <span class="token number">7</span><span class="token punctuation">,</span>
+  <span class="token string">'!='</span><span class="token operator">:</span> <span class="token number">7</span><span class="token punctuation">,</span>
+  <span class="token string">'+'</span><span class="token operator">:</span> <span class="token number">10</span><span class="token punctuation">,</span>
+  <span class="token string">'-'</span><span class="token operator">:</span> <span class="token number">10</span><span class="token punctuation">,</span>
+  <span class="token string">'*'</span><span class="token operator">:</span> <span class="token number">20</span><span class="token punctuation">,</span>
+  <span class="token string">'/'</span><span class="token operator">:</span> <span class="token number">20</span><span class="token punctuation">,</span>
+  <span class="token string">'%'</span><span class="token operator">:</span> <span class="token number">20</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>This says that <code>*</code> binds tighter than <code>+</code>, so an expression like <code>1 + 2 * 3</code> must be read as <code>(1 + (2 * 3))</code> instead of <code>((1 + 2) * 3)</code>, which would be the normal left-to-right order in which the parser operates.</p>
+<p>The trick is to read an atomic expression (only the <code>1</code>) and pass it to <code>maybe_binary()</code> (the left argument), along with the current precedence (the <code>my_prec</code>). <code>maybe_binary</code> will look at what follows. If it doesn’t see an operator, or if it has a smaller priority, then left is returned as is.</p>
+<p>If it’s an operator that has a higher precedence than ours, then it wraps left in a new <code>&quot;binary&quot;</code> node, and for the right side it repeats the trick at the new precedence level <code>(*)</code>:</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">maybe_binary</span><span class="token punctuation">(</span><span class="token parameter">left<span class="token punctuation">,</span> my_prec</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">var</span> tok <span class="token operator">=</span> <span class="token function">is_op</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>tok<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">var</span> his_prec <span class="token operator">=</span> <span class="token constant">PRECEDENCE</span><span class="token punctuation">[</span>tok<span class="token punctuation">.</span>value<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>his_prec <span class="token operator">></span> my_prec<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      input<span class="token punctuation">.</span><span class="token function">next</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">var</span> right <span class="token operator">=</span> <span class="token function">maybe_binary</span><span class="token punctuation">(</span><span class="token function">parse_atom</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> his_prec<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">var</span> binary <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+        type<span class="token operator">:</span> tok<span class="token punctuation">.</span>value <span class="token operator">==</span> <span class="token string">'='</span> <span class="token operator">?</span> <span class="token string">'assign'</span> <span class="token operator">:</span> <span class="token string">'binary'</span><span class="token punctuation">,</span>
+        operator<span class="token operator">:</span> tok<span class="token punctuation">.</span>value<span class="token punctuation">,</span>
+        left<span class="token operator">:</span> left<span class="token punctuation">,</span>
+        right<span class="token operator">:</span> right
+      <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+      <span class="token keyword">return</span> <span class="token function">maybe_binary</span><span class="token punctuation">(</span>binary<span class="token punctuation">,</span> my_prec<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">return</span> left<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Note that before returning the binary expression we must also call <code>maybe_binary</code> at the old precedence level (my_prec), in order to wrap the expression in another one, should an operator with a higher precedence follow. If all this is confusing, read the code again and again (perhaps try to execute it mentally on some input expressions) until you get it.</p>
+<p>Finally, since <code>my_prec</code> is initially zero, any operator will trigger the building of a <code>&quot;binary&quot;</code> node (or <code>&quot;assign&quot;</code> when the operator is <code>=</code>).</p>
+<p>The whole <a href="./codes/parser.js">parse function</a>.</p>
+<p>Next, we move on to the <a href="./interpreter.html">interpreter</a>.</p>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

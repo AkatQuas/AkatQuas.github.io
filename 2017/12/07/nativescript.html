@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="I meet NativeScript by chane when learning the Angular. I write several demo projects using NativeScript. The book is wonderful when learning this cross-platform framework. Demo projects: groceries-NS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Quick play with NativeScript">
+<meta property="og:url" content="https://akatquas.github.io/2017/12/07/nativescript.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="I meet NativeScript by chane when learning the Angular. I write several demo projects using NativeScript. The book is wonderful when learning this cross-platform framework. Demo projects: groceries-NS">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://akatquas.github.io/images/nativescript/actionbar-position.png">
+<meta property="og:image" content="https://akatquas.github.io/images/nativescript/image-resolution.png">
+<meta property="og:image" content="https://akatquas.github.io/images/nativescript/ngmodel-ui-components.png">
+<meta property="og:image" content="https://akatquas.github.io/images/nativescript/color-schemas-all.png">
+<meta property="article:published_time" content="2017-12-07T18:51:45.000Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.366Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="nativescript">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://akatquas.github.io/images/nativescript/actionbar-position.png">
+
+
+<link rel="canonical" href="https://akatquas.github.io/2017/12/07/nativescript.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>Quick play with NativeScript | 🔭</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#demo-projects"><span class="nav-text">Demo projects:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#quick-notes-from-the-book"><span class="nav-text">Quick notes from the book</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#best-practice"><span class="nav-text">Best practice:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#global"><span class="nav-text">global</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#template-list"><span class="nav-text">template list</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#label"><span class="nav-text">Label</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#date-picker"><span class="nav-text">Date Picker</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#actionbar"><span class="nav-text">ActionBar</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#es6-syntax"><span class="nav-text">ES6 Syntax</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#navigation"><span class="nav-text">Navigation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#file-system"><span class="nav-text">File System</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#camera"><span class="nav-text">Camera</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#image"><span class="nav-text">Image</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#gps"><span class="nav-text">GPS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#themes"><span class="nav-text">Themes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#i18n"><span class="nav-text">i18n</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#build-on-ios"><span class="nav-text">Build on iOS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#routing-in-ns-ng"><span class="nav-text">Routing in NS-Ng</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#forms-in-ng"><span class="nav-text">Forms in Ng</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#amazing-plugins"><span class="nav-text">Amazing Plugins</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tabview"><span class="nav-text">Tabview</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#color-schemas"><span class="nav-text">Color Schemas</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://akatquas.github.io/2017/12/07/nativescript.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Akat">
+      <meta itemprop="description" content="Take notes aperiodically">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="🔭">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Quick play with NativeScript
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2017-12-08 02:51:45" itemprop="dateCreated datePublished" datetime="2017-12-08T02:51:45+08:00">2017-12-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/frontend/" itemprop="url" rel="index"><span itemprop="name">frontend</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>I meet <a target="_blank" rel="noopener" href="https://nativescript.org/">NativeScript</a> by chane when learning the <a target="_blank" rel="noopener" href="https://angular.io/">Angular</a>.</p>
+<p>I write several demo projects using NativeScript. The <a target="_blank" rel="noopener" href="https://www.nativescript.org/get-the-nativescript-book?utm_medium=website&utm_campaign=yellowstrip&utm_source=nativescriptdotorg">book</a> is wonderful when learning this cross-platform framework.</p>
+<h2 id="demo-projects"><a href="#demo-projects" class="headerlink" title="Demo projects:"></a>Demo projects:</h2><ul>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/AkatQuas/kiddo-plays/tree/master/nativescript/groceries-NS-tutorial-ts">groceries-NS-tutorial-ts</a></p>
+</li>
+<li><p>Tkemo-core throughout the book:</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/AkatQuas/kiddo-plays/tree/master/nativescript/Tekmo-ns-core">project</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.nativescript.org/get-the-nativescript-book?utm_medium=website&utm_campaign=yellowstrip&utm_source=nativescriptdotorg">The NativeScript book</a></li>
+</ul>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/AkatQuas/kiddo-plays/tree/master/nativescript/petscrapbook-ns-ng">Pet ScrapBook</a></p>
+</li>
+</ul>
+<a id="more"></a>
+
+<h2 id="quick-notes-from-the-book"><a href="#quick-notes-from-the-book" class="headerlink" title="Quick notes from the book"></a>Quick notes from the book</h2><p>Chapter 3 discusses something on how to support different devices, from iPhone to iPad. <br>Chapter 11 Section 2 shows an example to make that happen.</p>
+<p>Let’s build an iOS App target iOS 8 and above, forget about the iOS 7 and berfore.</p>
+<p>Add the <code>moduleId: module.Id</code> attribute in <code>@Component</code> decorator make it fine to resolve the relative path in <code>templateUrl</code> and <code>styleUrls</code></p>
+<p>Two-way binding needs <code>NativeScriptFormsModule</code> from <code>nativescript-angular/forms</code>.</p>
+<p>Many amazing code samples are <a target="_blank" rel="noopener" href="https://docs.nativescript.org/angular/code-samples/overview">here</a></p>
+<p>When open a dialog modal, you should declare the component both in <code>declaration</code> and <code>entryComponent</code> property in the <code>@NgModule</code> in <code>app.module.ts</code>.</p>
+<p><code>ScrollView</code> can not be nested!</p>
+<h2 id="best-practice"><a href="#best-practice" class="headerlink" title="Best practice:"></a>Best practice:</h2><ul>
+<li><a href="#amazing-plugins">Amazing Plugins</a></li>
+<li><a href="#global">global</a></li>
+<li><a href="#template-list">template list</a></li>
+<li><a href="#label">Label</a></li>
+<li><a href="#date-picker">Date Picker</a></li>
+<li><a href="#es6-syntax">ES6 syntax</a></li>
+<li><a href="#navigation">Navigation</a></li>
+<li><a href="#actionbar">Icons &amp; positions in ActionBar</a></li>
+<li><a href="#image">Image and its resolution</a></li>
+<li><a href="#file-system">File System</a></li>
+<li><a href="#camera">Camera</a></li>
+<li><a href="#gps">GPS</a></li>
+<li><a href="#themes">Themes</a></li>
+<li><a href="#build-on-ios">Build on iOS</a></li>
+<li><a href="#routing-in-ns-ng">Routing in NS-Ng</a></li>
+<li><a href="#forms-in-ng">Forms in Ng</a></li>
+<li><a href="#tabview">TabView</a></li>
+</ul>
+<h2 id="global"><a href="#global" class="headerlink" title="global"></a>global</h2><p>Sometimes we need the <code>global</code> to accomplish something. What NativeScript offers us is <code>Application Resources</code> which can be referred as the following ways:</p>
+<pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token comment">// filePath: app/app.js</span>
+
+<span class="token keyword">var</span> application <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'application'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// ...</span>
+<span class="token keyword">var</span> resources <span class="token operator">=</span> application<span class="token punctuation">.</span><span class="token function">getResources</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+resources<span class="token punctuation">.</span>globalObject <span class="token operator">=</span> globalObject<span class="token punctuation">;</span>
+<span class="token comment">// the globalObject should be registered in this way, and can be reached all over the application</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<blockquote>
+<p>page <code>load</code> before <code>shown modal</code></p>
+</blockquote>
+<h2 id="template-list"><a href="#template-list" class="headerlink" title="template list"></a>template list</h2><p>Created from <code>tns create [projcet name] --template</code></p>
+<ul>
+<li>vanilla, <a target="_blank" rel="noopener" href="https://github.com/NativeScript/template-blank">tns-template-blank</a></li>
+<li>vanilla tutorial, nativescript-template-hello-world</li>
+<li>typescript no Angular, <a target="_blank" rel="noopener" href="https://github.com/NativeScript/template-blank-ts">tns-template-blank-ts</a></li>
+<li>Angular Tutorial, nativescript-template-ng-turorial</li>
+<li>Angular, <a target="_blank" rel="noopener" href="https://github.com/NativeScript/template-blank-ng">tns-template-blank-ng</a></li>
+</ul>
+<h2 id="label"><a href="#label" class="headerlink" title="Label"></a>Label</h2><p>set the <code>textWrap=&quot;true&quot;</code> immediately after creating <code>Label</code></p>
+<h2 id="date-picker"><a href="#date-picker" class="headerlink" title="Date Picker"></a>Date Picker</h2><p>It is recommended to use timestamp in the app rather the date string.</p>
+<h2 id="actionbar"><a href="#actionbar" class="headerlink" title="ActionBar"></a>ActionBar</h2><ul>
+<li><p>icons <code>seeting icons</code> in <code>ActionBar.ActionItem</code>, <a target="_blank" rel="noopener" href="https://docs.nativescript.org/ui/action-bar#setting-icons">ios</a>, <a target="_blank" rel="noopener" href="http://androiddrawables.com/">android</a></p>
+</li>
+<li><p>position</p>
+</li>
+</ul>
+<p><img data-src="/images/nativescript/actionbar-position.png"></p>
+<p><a href="#best-practice">top</a></p>
+<h2 id="es6-syntax"><a href="#es6-syntax" class="headerlink" title="ES6 Syntax"></a>ES6 Syntax</h2><ul>
+<li><p><code>arrow function</code> is supported both in <code>NS-core</code> and <code>NS-Ng</code></p>
+</li>
+<li><p><code>short handed</code> property is supported</p>
+</li>
+</ul>
+<p><a href="#best-practice">top</a></p>
+<h2 id="navigation"><a href="#navigation" class="headerlink" title="Navigation"></a>Navigation</h2><p><code>backstackVisible</code> makes the target page only can be navigated once, and can not be navigated back to. <a target="_blank" rel="noopener" href="https://docs.nativescript.org/api-reference/interfaces/_ui_frame_.navigationentry#backstackvisible">doc</a></p>
+<p><code>transition</code> between page navigation:</p>
+<ul>
+<li><p><code>fade</code>: Android, iOS</p>
+</li>
+<li><p><code>flipRight</code>: Android, iOS</p>
+</li>
+<li><p><code>flipLeft</code>: Android, iOS</p>
+</li>
+<li><p><code>slideLeft</code>: Android, iOS</p>
+</li>
+<li><p><code>slideRight</code>: Android, iOS</p>
+</li>
+<li><p><code>slideTop</code>: Android, iOS</p>
+</li>
+<li><p><code>slideBottom</code>: Android, iOS</p>
+</li>
+<li><p><code>explode</code>: Android</p>
+</li>
+<li><p><code>curlUp</code>: iOS</p>
+</li>
+<li><p><code>curlDown</code>: iOS</p>
+</li>
+<li><p>better to pre-defined the propertyName you need in the bindingContext on <code>loaded</code> function</p>
+</li>
+</ul>
+<p><a href="#best-practice">top</a></p>
+<h2 id="file-system"><a href="#file-system" class="headerlink" title="File System"></a>File System</h2><p><a target="_blank" rel="noopener" href="https://docs.nativescript.org/api-reference/modules/_file_system_">doc</a> 2 different folders in <code>knownFolders</code>, referred as <code>documents()</code> and <code>temp()</code></p>
+<p>Class <a target="_blank" rel="noopener" href="https://docs.nativescript.org/api-reference/classes/_file_system_.folder">Folder</a> has many useful methods:</p>
+<ul>
+<li><code>exists</code></li>
+<li><code>getFile</code> &amp; <code>clear</code></li>
+<li><code>rename</code> &amp; <code>renameSync</code></li>
+<li><code>remove</code> &amp; <code>removeSync</code></li>
+</ul>
+<p>After <code>getFile()</code> from a <code>Folder</code>, useful methods, <a target="_blank" rel="noopener" href="https://docs.nativescript.org/api-reference/classes/_file_system_.file">doc</a>:</p>
+<ul>
+<li><code>extension</code></li>
+<li><code>readSync</code> &amp; <code>writeSync</code></li>
+<li><code>readText</code> &amp; <code>readTextSync</code></li>
+<li><code>writeText</code> &amp; <code>writeTextSync</code></li>
+<li><code>rename</code> &amp; <code>renameSync</code></li>
+<li>it is ok to deal with binary in files, to be found!</li>
+</ul>
+<p><a href="#best-practice">top</a></p>
+<h2 id="camera"><a href="#camera" class="headerlink" title="Camera"></a>Camera</h2><p>run <code>npm install nativescript-camera --save</code> first. ( or use <code>tns plugin add nativescript-camera</code>). After import or require, <code>camera.requestPermissions()</code> in the function. The documentation is <a target="_blank" rel="noopener" href="https://github.com/NativeScript/nativescript-camera">here</a>, camera is not in the core module.</p>
+<h2 id="image"><a href="#image" class="headerlink" title="Image"></a>Image</h2><p>the data is always binary after taking the shot (though the image resource path is a string?), be careful when dealing with binary. <code>Base64</code> is a good one and NativeScript’s image module already has implementations for converting images to and from base64 encoded strings.</p>
+<p><strong>Image resolution</strong></p>
+<p><img data-src="/images/nativescript/image-resolution.png"></p>
+<p>And As for image resources, <a target="_blank" rel="noopener" href="http://nsimage.brosteins.com/">NativeScript Image Builder</a> helps a lot.</p>
+<p><a href="#best-practice">top</a></p>
+<h2 id="gps"><a href="#gps" class="headerlink" title="GPS"></a>GPS</h2><p>run <code>npm install nativescript-geolocation --save</code>. <a target="_blank" rel="noopener" href="https://github.com/NativeScript/nativescript-geolocation">Doc is here</a>, geolocation is not in the core module. Kind of failure because of the so-called <code>Google Plaer service</code>.</p>
+<h2 id="themes"><a href="#themes" class="headerlink" title="Themes"></a>Themes</h2><p>Only a limited number of styles are <a target="_blank" rel="noopener" href="https://docs.nativescript.org/ui/styling">supported</a></p>
+<p>in the core theme, <a target="_blank" rel="noopener" href="https://ell.stackexchange.com/questions/506/usage-in-spite-of-and-despite-of/508">desipte</a> the color differentiation, the same class are:</p>
+<ul>
+<li>Text size: <code>h1, h2, h3, h4, h5, h6</code></li>
+<li>Label: <code>label</code></li>
+<li>Text align: <code>text-center</code>, <code>&#123;margin/padding&#125;- &#123;top/bottom/left/right&#125;-&#123;amount&#125;</code></li>
+<li>Button: <code>btn btn-primary btn-outline btn-rounded-sm/lg btn-active</code> (recommended to be used with margin/padding)</li>
+<li>ListView: <code>list-group, list-group-item, list-group-item-heading list-group-item-text</code>, <code>thumb</code> (under <code>list-group-item</code>)</li>
+<li>Image: <code>image-circle, image-rounded, image-thumbnail</code></li>
+<li>Form: <code>form, input-field</code>,</li>
+</ul>
+<h2 id="i18n"><a href="#i18n" class="headerlink" title="i18n"></a>i18n</h2><p>There is an npm plugin named <code>nativescript-i18n</code> that implements i18n. By using this plugin, you can build you app so it can support multiple languages and cultures.</p>
+<p>If your app requires support for i18n, or you want to build an app that is accessible to multiple languages and cultures, check out this plugin at <a target="_blank" rel="noopener" href="https://www.npmjs.com/package/nativescript-i18n.">here</a></p>
+<p><a href="#best-practice">top</a></p>
+<h2 id="build-on-ios"><a href="#build-on-ios" class="headerlink" title="Build on iOS"></a>Build on iOS</h2><p><strong>id:</strong> in the <code>package.json</code> -&gt; <code>nativescript</code> -&gt; <code>id</code></p>
+<p><strong>rename the app:</strong> updating the <code>Info.plist</code> file, specifically the <code>CFBundleDisplayName</code> value.</p>
+<p><strong>Version:</strong> CFBundleVersion, which corresponds to the version number, and CFBundleShortVersionString, which corresponds to the build number.</p>
+<p><strong>App Icon:</strong> All icons are stored in the <code>App_Resources/iOS/Assets.xcassets/AppIcon.appiconset</code> folder, named <code>icons-&#123;size&#125;.png</code>, remember to rename to match the convention.</p>
+<p><strong>Splash, LaunchScreen:</strong> replace the image in the <code>LaunchScreen.Center.imageset</code> and <code>LaunchScreen.AspectFill.imageset</code>, remember to rename to match the convention.</p>
+<p><strong>Device orientation:</strong></p>
+<p>All the supported orientaion is here, choose those you need.</p>
+<pre class="line-numbers language-none"><code class="language-none"># Info.plist
+&lt;key&gt;UISupportedInterfaceOrientations&lt;&#x2F;key&gt;
+&lt;array&gt;
+    &lt;string&gt;UIInterfaceOrientationPortrait&lt;&#x2F;string&gt;
+    &lt;string&gt;UIInterfaceOrientationLandscapeLeft&lt;&#x2F;string&gt;
+    &lt;string&gt;UIInterfaceOrientationLandscapeRight&lt;&#x2F;string&gt;
+&lt;&#x2F;array&gt;
+&lt;key&gt;UISupportedInterfaceOrientations~ipad&lt;&#x2F;key&gt;
+&lt;array&gt;
+    &lt;string&gt;UIInterfaceOrientationPortrait&lt;&#x2F;string&gt;
+    &lt;string&gt;UIInterfaceOrientationPortraitUpsideDown&lt;&#x2F;string&gt;
+    &lt;string&gt;UIInterfaceOrientationLandscapeLeft&lt;&#x2F;string&gt;
+    &lt;string&gt;UIInterfaceOrientationLandscapeRight&lt;&#x2F;string&gt;
+&lt;&#x2F;array&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>iOS APP security component:</strong> You need to become familiar with the following five iOS app security components:</p>
+<ol>
+<li><p>Apple Developer Account associated with an Apple ID</p>
+</li>
+<li><p>App identifiers</p>
+</li>
+<li><p>Certificates</p>
+</li>
+<li><p>Registered devices</p>
+</li>
+<li><p>Provisioning profiles</p>
+</li>
+</ol>
+<p><strong>Step by Step:</strong></p>
+<ol>
+<li><p>App IDs</p>
+</li>
+<li><p>Certificates, iOS Distribution recommended</p>
+</li>
+<li><p>Registered Devices</p>
+</li>
+<li><p>Provisioning Profiles</p>
+</li>
+</ol>
+<p><strong>Read the document please</strong></p>
+<p><a href="#best-practice">top</a></p>
+<h2 id="routing-in-ns-ng"><a href="#routing-in-ns-ng" class="headerlink" title="Routing in NS-Ng"></a>Routing in NS-Ng</h2><p>The complete document is <a target="_blank" rel="noopener" href="https://docs.nativescript.org/core-concepts/angular-navigation">here</a>.</p>
+<p>What I want to point out is that You can also use the stock <code>Angular Route</code> and <code>Location</code> classes to handle your navigation — <code>RouterExtensions</code> actually invokes those APIs internally. However, <code>RouterExtensions</code> provides access to some NativeScript-specific features like clearing navigation history or defining page transitions, and the <a target="_blank" rel="noopener" href="https://docs.nativescript.org/core-concepts/angular-navigation#navigation-options">detail</a>.</p>
+<p>Besides, it is ok to navigate back in <code>routerExtensions</code>.</p>
+<pre class="line-numbers language-ts" data-language="ts"><code class="language-ts">@Component(&#123;
+    &#x2F;&#x2F; ...
+&#125;)
+export class MainComponent &#123;
+    constructor(private routerExtensions: RouterExtensions) &#123;
+        &#x2F;&#x2F; ...
+    &#125;
+&#125;
+
+public goBack() &#123;
+    this.routerExtensions.back();
+&#125;
+
+public goBackPage() &#123;
+    this.routerExtensions.backToPreviousPage();
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Getting data passed in via the route parameters, importing <code>PageRoute</code> from <code>@nativescript-angular/router</code> and importing <code>rxjs/add/operator/switchMap</code>, the <a target="_blank" rel="noopener" href="https://docs.nativescript.org/core-concepts/angular-navigation#passing-parameter">doc</a>.</p>
+<pre class="line-numbers language-ts" data-language="ts"><code class="language-ts">this.pageRoute.activatedRoute
+  .switchMap(activatedRoute &#x3D;&gt; activatedRoute.params)
+  .forEach(params &#x3D;&gt; &#123;
+    id &#x3D; +params[&#39;id&#39;];
+  &#125;);<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>Note:</strong> It seems routing to the children component won’t change the router path. Redirect don’t change either.</p>
+<p><a href="#best-practice">top</a></p>
+<h2 id="forms-in-ng"><a href="#forms-in-ng" class="headerlink" title="Forms in Ng"></a>Forms in Ng</h2><p>The property in Native UI components when using <code>[(ngModle)]</code></p>
+<p><img data-src="/images/nativescript/ngmodel-ui-components.png"></p>
+<p><a href="#best-practice">top</a></p>
+<h2 id="amazing-plugins"><a href="#amazing-plugins" class="headerlink" title="Amazing Plugins"></a>Amazing Plugins</h2><ul>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/eddyverbruggen/nativescript-appversion">nativescript-appversion</a>: NativeScript doesn’t provide a built-in mechanism for getting an app’s version number, but the nativescript-appversion plugin does.</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/NathanWalker/nativescript-ng2-vscode-snippets">NativeScript + Angular Snippets for Visual Studio Code</a>: Snippets for NativeScript + Angular 2 Development, available in VS Code Extensions.</p>
+</li>
+</ul>
+<p><a href="#best-practice">top</a></p>
+<h2 id="tabview"><a href="#tabview" class="headerlink" title="Tabview"></a>Tabview</h2><p>Find two ways to create tabview in the app without writing too much code in the same file.</p>
+<p>Code examples:</p>
+<ul>
+<li>using child route, giving a <code>outlet</code> name to the child route, <a target="_blank" rel="noopener" href="https://discourse.nativescript.org/t/can-we-have-a-child-router-outlet-in-a-tabview/342/3">code from here</a></li>
+</ul>
+<pre class="line-numbers language-xml" data-language="xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>TabView</span> <span class="token attr-name">(selectedIndexChanged)</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>onHomeSelectedIndexChanged($event)<span class="token punctuation">"</span></span> <span class="token attr-name">[selectedIndex]</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>homeSelectedIndex<span class="token punctuation">"</span></span>
+         <span class="token attr-name">selectedColor</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>#1083BF<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>StackLayout</span> <span class="token attr-name">*tabItem</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>&#123;title: <span class="token punctuation">'</span>First<span class="token punctuation">'</span>&#125;<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>router-outlet</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>first<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>router-outlet</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>StackLayout</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>StackLayout</span> <span class="token attr-name">*tabItem</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>&#123;title: <span class="token punctuation">'</span>Second<span class="token punctuation">'</span>&#125;<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>router-outlet</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>second<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>router-outlet</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>StackLayout</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>TabView</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-ts" data-language="ts"><code class="language-ts">&#x2F;&#x2F; routing.ts
+&#123;
+    path: &#39;home&#39;, component: HomeComponent,
+    children: [
+        &#123;path: &#39;&#39;, redirectTo: &#39;social&#39;, pathMatch: &#39;full&#39;&#125;,
+        &#123;path: &#39;first&#39;, component: FirstComponent, outlet: &#39;first&#39;&#125;,
+        &#123;path: &#39;second&#39;, component: SecondComponent, outlet: &#39;second&#39;&#125;,
+    ]
+&#125;,<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<ul>
+<li>using selector, write every component, <a target="_blank" rel="noopener" href="https://github.com/jlooper/Yowwlr/blob/master/app/home/home.html">code from here</a>.</li>
+</ul>
+<pre class="line-numbers language-xml" data-language="xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>TabView</span> <span class="token attr-name">#tabview</span> <span class="token attr-name">[selectedIndex]</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>tabindex<span class="token punctuation">"</span></span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>tab-view<span class="token punctuation">"</span></span> <span class="token attr-name">selectedColor</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>#4099FF<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>StackLayout</span> <span class="token attr-name">align</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>top<span class="token punctuation">"</span></span> <span class="token attr-name">*tabItem</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>&#123;title: <span class="token punctuation">'</span>Home<span class="token punctuation">'</span>, iconSource:<span class="token punctuation">'</span>res://home<span class="token punctuation">'</span>&#125;<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>home-tab</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>home-tab</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>StackLayout</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>StackLayout</span> <span class="token attr-name">*tabItem</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>&#123;title: <span class="token punctuation">'</span>Explore<span class="token punctuation">'</span>, iconSource:<span class="token punctuation">'</span>res://explore<span class="token punctuation">'</span>&#125;<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Label</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>border<span class="token punctuation">"</span></span> <span class="token attr-name">borderWidth</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>5<span class="token punctuation">"</span></span> <span class="token attr-name">borderColor</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>black<span class="token punctuation">"</span></span> <span class="token attr-name">text</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>hey<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>Label</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>StackLayout</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>StackLayout</span> <span class="token attr-name">*tabItem</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>&#123;title: <span class="token punctuation">'</span>Notifications<span class="token punctuation">'</span>, iconSource:<span class="token punctuation">'</span>res://notifications<span class="token punctuation">'</span>&#125;<span class="token punctuation">"</span></span><span class="token punctuation">></span></span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>StackLayout</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>StackLayout</span> <span class="token attr-name">*tabItem</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>&#123;title: <span class="token punctuation">'</span>Messages<span class="token punctuation">'</span>, iconSource:<span class="token punctuation">'</span>res://messages<span class="token punctuation">'</span>&#125;<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>chat-tab</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>chat-tab</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>StackLayout</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>StackLayout</span> <span class="token attr-name">*tabItem</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>&#123;title: <span class="token punctuation">'</span>Me<span class="token punctuation">'</span>, iconSource:<span class="token punctuation">'</span>res://me<span class="token punctuation">'</span>&#125;<span class="token punctuation">"</span></span><span class="token punctuation">></span></span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>StackLayout</span><span class="token punctuation">></span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>TabView</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><a href="#best-practice">top</a></p>
+<h2 id="color-schemas"><a href="#color-schemas" class="headerlink" title="Color Schemas"></a>Color Schemas</h2><p><img data-src="/images/nativescript/color-schemas-all.png"></p>
+<p><a href="#best-practice">top</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/nativescript/" rel="tag"># nativescript</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/02/24/cocos-js-boilerplate.html" rel="prev" title="A Cocos-js boilerplate">
+                  <i class="fa fa-chevron-left"></i> A Cocos-js boilerplate
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2017/12/03/angular.html" rel="next" title="The ONLY Framework Angular">
+                  The ONLY Framework Angular <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

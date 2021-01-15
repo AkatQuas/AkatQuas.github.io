@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="For those JavaScript programmers, event loop is an important concept, inevitably. Literally, event loop is what JavaScritp uses to implement non-blocking execution. Understanding how the event loops w">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Depth in Event loop">
+<meta property="og:url" content="https://akatquas.github.io/2019/12/10/depth-in-event-loop.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="For those JavaScript programmers, event loop is an important concept, inevitably. Literally, event loop is what JavaScritp uses to implement non-blocking execution. Understanding how the event loops w">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://developer.ibm.com/developer/tutorials/learn-nodejs-the-event-loop/images/figure-1.png">
+<meta property="article:published_time" content="2019-12-10T19:51:05.000Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.366Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="nodejs">
+<meta property="article:tag" content="event loop">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://developer.ibm.com/developer/tutorials/learn-nodejs-the-event-loop/images/figure-1.png">
+
+
+<link rel="canonical" href="https://akatquas.github.io/2019/12/10/depth-in-event-loop.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>Depth in Event loop | 🔭</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#browser"><span class="nav-text">Browser</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#node-js"><span class="nav-text">Node.js</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#microtasks"><span class="nav-text">Microtasks</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#timers-phase"><span class="nav-text">Timers phase</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pending-phase"><span class="nav-text">Pending phase</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#idle-and-prepare-phase"><span class="nav-text">Idle and Prepare phase</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#poll-phase"><span class="nav-text">Poll phase</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#check-phase"><span class="nav-text">Check phase</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#close-phase"><span class="nav-text">Close phase</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#example"><span class="nav-text">Example</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#eventemitter"><span class="nav-text">EventEmitter</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#in-the-end"><span class="nav-text">In the end</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://akatquas.github.io/2019/12/10/depth-in-event-loop.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Akat">
+      <meta itemprop="description" content="Take notes aperiodically">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="🔭">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Depth in Event loop
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2019-12-11 03:51:05" itemprop="dateCreated datePublished" datetime="2019-12-11T03:51:05+08:00">2019-12-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/programming-language/" itemprop="url" rel="index"><span itemprop="name">programming language</span></a>
+        </span>
+          , 
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/programming-language/javascript/" itemprop="url" rel="index"><span itemprop="name">javascript</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>For those JavaScript programmers, event loop is an important concept, inevitably.</p>
+<p>Literally, event loop is what JavaScritp uses to implement non-blocking execution. Understanding how the event loops works internally would benefit you a lot when programming in JavaScript.</p>
+<p>There are two major environments JavaScript runs in: <a href="#browser">browser</a> and <a href="#node.js">Node.js</a>.</p>
+<a id="more"></a>
+
+<h2 id="browser"><a href="#browser" class="headerlink" title="Browser"></a>Browser</h2><p>As mentioned in the book <a target="_blank" rel="noopener" href="https://www.manning.com/books/secrets-of-the-javascript-ninja-second-edition">Secrets.of.the.JavaScript.Ninja.2nd.Edition</a>:</p>
+<blockquote>
+<p>Note the difference between handling the macrotask and microtask queues: In a single loop iteration, one macrotask at most is processed (others are left waiting in the queue), whereas all microtasks are processed.</p>
+</blockquote>
+<p>Here comes the first question: why only one marcotask is executed in each iteration?</p>
+<p>The <a target="_blank" rel="noopener" href="https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model">HTML standards</a> says the reason.</p>
+<p>According to the description, in each iteration, only one task, aka macrotask, is taken from task queue, is executed, while the microtask queue is flushed to empty. After flushing, there’s a phase that the browser would evalute the necessity to re-render the UI.</p>
+<p>Here is the how the flow works:</p>
+<pre class="line-numbers language-none"><code class="language-none">Engine starts:
+
+    Evaluate mainline JavaScript Code
+
+    Registering callbacks, timers, etc
+
+First loop:
+
+    take one MacroTask from task queue
+
+    flush MicroTasks
+
+    optional UI -rendering
+
+Next loop:
+
+    take one MacroTask from task queue
+
+    flush MicroTasks
+
+    optional UI-rendering
+
+Next loop:
+
+    take one MacroTask from task queue
+
+    flush MicroTasks
+
+    optional UI-rendering
+
+Next loop:
+   ...<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>This loop will continue to the end of the browser page lifetime.</p>
+<p>To verify the above loop execution, here are two example snippets;</p>
+<pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token comment">// you can just run these code in the console (press F12 please).</span>
+console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'MANILINE> START'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+  console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'MACRO> setTimeout.1'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  Promise<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+      console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'MICRO> setTimeout.1.promise.1'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+      Promise<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+        console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'MICRO> setTimeout.1.promise.inner.1'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        Promise<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span>
+          console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'MICRO> setTimeout.1.promise.inner.1.inner'</span><span class="token punctuation">)</span>
+        <span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      Promise<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span>
+        console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'MICRO> setTimeout.1.promise.inner.2'</span><span class="token punctuation">)</span>
+      <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+      console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'MICRO> setTimeout.1.promise.1.then'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+      console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'MICRO> setTimeout.1.promise.1.then.then'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+  console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'MACRO> setTimeout.2'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  Promise<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span>
+    console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'MICRO> setTimeout.2.promise.1'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  Promise<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span>
+    console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'MICRO> setTimeout.2.promise.2'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'MACRO> setTimeout.3'</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'MAINLINE> END'</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>If you open a new tab, press F12, copy and run the above code, here comes the output.</p>
+<pre class="line-numbers language-none"><code class="language-none">MANILINE&gt; START
+MAINLINE&gt; END
+        # this line is empty
+MACRO&gt; setTimeout.1
+MICRO&gt; setTimeout.1.promise.1
+MICRO&gt; setTimeout.1.promise.inner.1
+MICRO&gt; setTimeout.1.promise.inner.2
+MICRO&gt; setTimeout.1.promise.1.then
+MICRO&gt; setTimeout.1.promise.inner.1.inner
+MICRO&gt; setTimeout.1.promise.1.then.then
+MACRO&gt; setTimeout.2
+MICRO&gt; setTimeout.2.promise.1
+MICRO&gt; setTimeout.2.promise.2
+MACRO&gt; setTimeout.3<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>As we can clearly see the execution flow.</p>
+<details>
+<summary> And another example is actually an html file that you need to load from the browser at the very beginning. The code would run as expected also. </summary>
+
+<pre class="line-numbers language-html" data-language="html"><code class="language-html"><span class="token doctype"><span class="token punctuation">&lt;!</span><span class="token doctype-tag">DOCTYPE</span> <span class="token name">html</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>html</span> <span class="token attr-name">lang</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>en<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>head</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>meta</span> <span class="token attr-name">charset</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>UTF-8<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>meta</span>
+      <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>viewport<span class="token punctuation">"</span></span>
+      <span class="token attr-name">content</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>width=device-width, initial-scale=1.0<span class="token punctuation">"</span></span>
+    <span class="token punctuation">/></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>meta</span> <span class="token attr-name">http-equiv</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>X-UA-Compatible<span class="token punctuation">"</span></span> <span class="token attr-name">content</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ie=edge<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>title</span><span class="token punctuation">></span></span>Event loop<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>title</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>head</span><span class="token punctuation">></span></span>
+
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>body</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">></span></span>Division 1<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span><span class="token punctuation">></span></span><span class="token script"><span class="token language-javascript">
+      console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'MAINLINE> script.1 START'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+        Promise<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+          console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'MICRO> script.1.timeout.1.promise'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'MACRO> script.1.timeout.1'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+        console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'MACRO> script.1.timeout.2'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'MAINLINE> script.1 END'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    </span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">></span></span>Divison 2<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span><span class="token punctuation">></span></span><span class="token script"><span class="token language-javascript">
+      console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'MAINLINE> script.2 START'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+        Promise<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+          console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'MICRO> script.2.timeout.1.proimse'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'MACRO> script.2.timeout.1'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+        console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'MACRO> script.2.timeout.2'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      Promise<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+        console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'MAINLINE> promise'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'MAINLINE> script.2 END'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    </span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">></span></span>The correct logging order in console is<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ol</span><span class="token punctuation">></span></span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>li</span><span class="token punctuation">></span></span>MAINLINE> script.1 START<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>li</span><span class="token punctuation">></span></span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>li</span><span class="token punctuation">></span></span>MAINLINE> script.1 END<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>li</span><span class="token punctuation">></span></span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>li</span><span class="token punctuation">></span></span>MAINLINE> script.2 START<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>li</span><span class="token punctuation">></span></span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>li</span><span class="token punctuation">></span></span>MAINLINE> script.2 END<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>li</span><span class="token punctuation">></span></span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>li</span><span class="token punctuation">></span></span>MAINLINE> promise<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>li</span><span class="token punctuation">></span></span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>li</span><span class="token punctuation">></span></span>MACRO> script.1.timeout.1<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>li</span><span class="token punctuation">></span></span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>li</span><span class="token punctuation">></span></span>MICRO> script.1.timeout.1.promise<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>li</span><span class="token punctuation">></span></span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>li</span><span class="token punctuation">></span></span>MACRO> script.1.timeout.2<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>li</span><span class="token punctuation">></span></span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>li</span><span class="token punctuation">></span></span>MACRO> script.2.timeout.1<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>li</span><span class="token punctuation">></span></span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>li</span><span class="token punctuation">></span></span>MICRO> script.2.timeout.1.proimse<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>li</span><span class="token punctuation">></span></span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>li</span><span class="token punctuation">></span></span>MACRO> script.2.timeout.2<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>li</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>ol</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>html</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</details>
+
+<h2 id="node-js"><a href="#node-js" class="headerlink" title="Node.js"></a>Node.js</h2><p>Event loop is a bit different running in Node.js environment.</p>
+<p>Though the <a target="_blank" rel="noopener" href="https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/#event-loop-explained">official document</a> illustrates something on the event loop, I think the <a target="_blank" rel="noopener" href="https://developer.ibm.com/tutorials/learn-nodejs-the-event-loop/#why-you-need-to-understand-the-event-loop">tutorial from IBM</a> is better.</p>
+<p><a id="event-loop-node"></a></p>
+<p><img data-src="https://developer.ibm.com/developer/tutorials/learn-nodejs-the-event-loop/images/figure-1.png"></p>
+<p>Before dive into the execution flow, we have some basic glossaries to clarify.</p>
+<h3 id="microtasks"><a href="#microtasks" class="headerlink" title="Microtasks"></a>Microtasks</h3><p>Microtasks execute immediately <em>following mainline</em> and <em>after every phase</em> of the event loop.</p>
+<p>Microtasks are callbacks form <code>process.nextTick()</code> and <code>then()</code> handlers for Promises. (<code>process.nextTick()</code> has higher priority to <code>Promise</code>.)</p>
+<h3 id="timers-phase"><a href="#timers-phase" class="headerlink" title="Timers phase"></a>Timers phase</h3><p>Timers have two categories: <a target="_blank" rel="noopener" href="https://nodejs.org/dist/latest-v12.x/docs/api/timers.html#timers_class_immediate">Immediate</a> and <a target="_blank" rel="noopener" href="https://nodejs.org/dist/latest-v12.x/docs/api/timers.html#timers_class_timeout">Timeout</a>.</p>
+<p>An <em>immediate</em> timer is a Node object that runs immediately during the next Check phase.</p>
+<p>A <em>timeout timer</em> is a Node object that runs a callback as soon as possible after the timer expires.</p>
+<p>Once the timer expires, the callback is invoked during the next Timers phase of the event loop.</p>
+<p>There are two types of Timeout timers: <em>Interval</em> and <em>Timeout</em>.</p>
+<p>When there are no more expired timer callbacks to run, the event loop runs any microtasks.</p>
+<p>After running microtasks, the event loop moves to the Pending phase.</p>
+<h3 id="pending-phase"><a href="#pending-phase" class="headerlink" title="Pending phase"></a>Pending phase</h3><p>Certain system-level callback are executed during this phase. You don’t really need to worry about this phase.</p>
+<h3 id="idle-and-prepare-phase"><a href="#idle-and-prepare-phase" class="headerlink" title="Idle and Prepare phase"></a>Idle and Prepare phase</h3><p>Apparently, this phase is “only used internally”. You don’t really need to worry about this phase.</p>
+<h3 id="poll-phase"><a href="#poll-phase" class="headerlink" title="Poll phase"></a>Poll phase</h3><p>I/O callbacks are executed during this phase.</p>
+<p>Normally, if the poll queue is empty, it blocks and waits for any in-flight I/O operations to complete, then execute their callbacks right away.</p>
+<p>However, if timers are scheduled the poll phase will end.</p>
+<p>Any microtasks will be run as necessary, and the event loop proceeds to the check phase.</p>
+<h3 id="check-phase"><a href="#check-phase" class="headerlink" title="Check phase"></a>Check phase</h3><p>This phase is a sort of “post I/O” phase during which only <code>setImmediate()</code> callbacks are executed. This allows you to run code that executes as soon as the poll phase becomes idle.</p>
+<p>Once the check phase callback queue is empty, any microtasks run, and the event loop proceeds to the close phase.</p>
+<h3 id="close-phase"><a href="#close-phase" class="headerlink" title="Close phase"></a>Close phase</h3><p>This phase is executed if a socket or handle is closed suddenly.</p>
+<h2 id="example"><a href="#example" class="headerlink" title="Example"></a>Example</h2><p>The following code should be run like <code>node &lt;file&gt;.js</code>.</p>
+<pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">const</span> fs <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'fs'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> EventEmitter <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'events'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>EventEmitter<span class="token punctuation">;</span>
+<span class="token keyword">const</span> <span class="token constant">ITERATIONS_MAX</span> <span class="token operator">=</span> <span class="token number">3</span><span class="token punctuation">;</span>
+<span class="token keyword">let</span> iteration <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> event <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">EventEmitter</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'MAINLINE> START'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'MAINLINE> Registering Event'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+event<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'simple'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">eventName<span class="token punctuation">,</span> message<span class="token punctuation">,</span> source<span class="token punctuation">,</span> timestamp</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+  console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span>
+    <span class="token string">'EVENTS> Received event: name "%s", message "%s", source "%s", timestamp %s'</span><span class="token punctuation">,</span>
+    eventName<span class="token punctuation">,</span>
+    message<span class="token punctuation">,</span>
+    source<span class="token punctuation">,</span>
+    timestamp
+  <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> hrtime <span class="token operator">=</span> process<span class="token punctuation">.</span><span class="token function">hrtime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token string">'.'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+event<span class="token punctuation">.</span><span class="token function">emit</span><span class="token punctuation">(</span>
+  <span class="token string">'simple'</span><span class="token punctuation">,</span>
+  <span class="token string">'simpleEvent'</span><span class="token punctuation">,</span>
+  <span class="token string">'Custom message'</span><span class="token punctuation">,</span>
+  <span class="token string">'MAINLINE'</span><span class="token punctuation">,</span>
+  hrtime
+<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+Promise<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+  console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'MAINLINE> promise.1'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+process<span class="token punctuation">.</span><span class="token function">nextTick</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+  console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'MAINLINE> process.nextTick'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+Promise<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+  console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'MAINLINE> promise.2'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> interval <span class="token operator">=</span> <span class="token function">setInterval</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+  console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span>
+    <span class="token string">'TIMERS PHASE> START: iteration %d: setInterval'</span><span class="token punctuation">,</span>
+    iteration
+  <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>iteration <span class="token operator">>=</span> <span class="token constant">ITERATIONS_MAX</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span>
+      <span class="token string">'TIMERS PHASE> Max interval count exceeded. Goodbye.'</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">clearInterval</span><span class="token punctuation">(</span>interval<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+    <span class="token punctuation">&#123;</span>
+      <span class="token keyword">const</span> htime <span class="token operator">=</span> process<span class="token punctuation">.</span><span class="token function">hrtime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token string">'.'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      event<span class="token punctuation">.</span><span class="token function">emit</span><span class="token punctuation">(</span>
+        <span class="token string">'simple'</span><span class="token punctuation">,</span>
+        <span class="token string">'simpleEvent'</span><span class="token punctuation">,</span>
+        <span class="token string">'Custom message A from '</span> <span class="token operator">+</span> iteration<span class="token punctuation">,</span>
+        <span class="token string">'setInterval.EventEmitter'</span><span class="token punctuation">,</span>
+        htime
+      <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token function">setTimeout</span><span class="token punctuation">(</span>
+      <span class="token parameter">ite</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+        console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span>
+          <span class="token string">'TIMERS EXPIRED (from iteration %d)> setInterval.setTimeout'</span><span class="token punctuation">,</span>
+          ite
+        <span class="token punctuation">)</span><span class="token punctuation">;</span>
+        Promise<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+          console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span>
+            <span class="token string">'TIMERS PHASE MICROTASK> setInterval.setTimeout.promise 1'</span>
+          <span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        process<span class="token punctuation">.</span><span class="token function">nextTick</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+          console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span>
+            <span class="token string">'TIMERS PHASE MICROTASK> setInterval.setTimeout.process.nextTick'</span>
+          <span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        Promise<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+          console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span>
+            <span class="token string">'TIMERS PHASE MICROTASK> setInterval.setTimeout.promise 2'</span>
+          <span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+      <span class="token number">0</span><span class="token punctuation">,</span>
+      iteration
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    fs<span class="token punctuation">.</span><span class="token function">readdir</span><span class="token punctuation">(</span><span class="token string">'./'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">err<span class="token punctuation">,</span> files</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>err<span class="token punctuation">)</span> <span class="token keyword">throw</span> err<span class="token punctuation">;</span>
+      console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'POLL PHASE> fs.readdir() callback'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      process<span class="token punctuation">.</span><span class="token function">nextTick</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+        console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span>
+          <span class="token string">'POLL PHASE MICROTASK> setInterval.fs.readdir.process.nextTick'</span>
+        <span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">setImmediate</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+      console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'CHECK PHASE> setInterval.setImmediate'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      process<span class="token punctuation">.</span><span class="token function">nextTick</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+        console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span>
+          <span class="token string">'CHECK PHASE MICROTASK> setInterval.setImmediate.process.nextTick'</span>
+        <span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#123;</span>
+      <span class="token keyword">const</span> htime <span class="token operator">=</span> process<span class="token punctuation">.</span><span class="token function">hrtime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token string">'.'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      event<span class="token punctuation">.</span><span class="token function">emit</span><span class="token punctuation">(</span>
+        <span class="token string">'simple'</span><span class="token punctuation">,</span>
+        <span class="token string">'simpleEvent'</span><span class="token punctuation">,</span>
+        <span class="token string">'Custom message B from '</span> <span class="token operator">+</span> iteration<span class="token punctuation">,</span>
+        <span class="token string">'setInterval.EventEmitter'</span><span class="token punctuation">,</span>
+        htime
+      <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    process<span class="token punctuation">.</span><span class="token function">nextTick</span><span class="token punctuation">(</span><span class="token parameter">ite</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+      console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span>
+        <span class="token string">'TIMER PHASE MICROTASK> iteration %d, setInterval.process.nextTick'</span><span class="token punctuation">,</span>
+        ite
+      <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span> iteration<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span>
+    <span class="token string">'TIMERS PHASE> END: iteration %d: setInterval'</span><span class="token punctuation">,</span>
+    iteration
+  <span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  iteration<span class="token operator">++</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">'MAINLINE> END'</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<details>
+<summary>After running the above scripts, the terminal would print like (click to open the output result): </summary>
+
+<pre class="line-numbers language-txt" data-language="txt"><code class="language-txt">MAINLINE&gt; START
+MAINLINE&gt; Registering Event
+EVENTS&gt; Received event: name &quot;simpleEvent&quot;, message &quot;Custom message&quot;, source &quot;MAINLINE&quot;, timestamp 385796.462973198
+MAINLINE&gt; END
+MAINLINE&gt; process.nextTick
+MAINLINE&gt; promise.1
+MAINLINE&gt; promise.2
+TIMERS PHASE&gt; START: iteration 0: setInterval
+EVENTS&gt; Received event: name &quot;simpleEvent&quot;, message &quot;Custom message A from 0&quot;, source &quot;setInterval.EventEmitter&quot;, timestamp 385796.464664300
+EVENTS&gt; Received event: name &quot;simpleEvent&quot;, message &quot;Custom message B from 0&quot;, source &quot;setInterval.EventEmitter&quot;, timestamp 385796.465196848
+TIMERS PHASE&gt; END: iteration 0: setInterval
+TIMER PHASE MICROTASK&gt; iteration 0, setInterval.process.nextTick
+POLL PHASE&gt; fs.readdir() callback
+POLL PHASE MICROTASK&gt; setInterval.fs.readdir.process.nextTick
+CHECK PHASE&gt; setInterval.setImmediate
+CHECK PHASE MICROTASK&gt; setInterval.setImmediate.process.nextTick
+TIMERS EXPIRED (from iteration 0)&gt; setInterval.setTimeout
+TIMERS PHASE MICROTASK&gt; setInterval.setTimeout.process.nextTick
+TIMERS PHASE MICROTASK&gt; setInterval.setTimeout.promise 1
+TIMERS PHASE MICROTASK&gt; setInterval.setTimeout.promise 2
+TIMERS PHASE&gt; START: iteration 1: setInterval
+EVENTS&gt; Received event: name &quot;simpleEvent&quot;, message &quot;Custom message A from 1&quot;, source &quot;setInterval.EventEmitter&quot;, timestamp 385796.466206990
+EVENTS&gt; Received event: name &quot;simpleEvent&quot;, message &quot;Custom message B from 1&quot;, source &quot;setInterval.EventEmitter&quot;, timestamp 385796.466439664
+TIMERS PHASE&gt; END: iteration 1: setInterval
+TIMER PHASE MICROTASK&gt; iteration 1, setInterval.process.nextTick
+POLL PHASE&gt; fs.readdir() callback
+POLL PHASE MICROTASK&gt; setInterval.fs.readdir.process.nextTick
+CHECK PHASE&gt; setInterval.setImmediate
+CHECK PHASE MICROTASK&gt; setInterval.setImmediate.process.nextTick
+TIMERS EXPIRED (from iteration 1)&gt; setInterval.setTimeout
+TIMERS PHASE MICROTASK&gt; setInterval.setTimeout.process.nextTick
+TIMERS PHASE MICROTASK&gt; setInterval.setTimeout.promise 1
+TIMERS PHASE MICROTASK&gt; setInterval.setTimeout.promise 2
+TIMERS PHASE&gt; START: iteration 2: setInterval
+EVENTS&gt; Received event: name &quot;simpleEvent&quot;, message &quot;Custom message A from 2&quot;, source &quot;setInterval.EventEmitter&quot;, timestamp 385796.468226076
+EVENTS&gt; Received event: name &quot;simpleEvent&quot;, message &quot;Custom message B from 2&quot;, source &quot;setInterval.EventEmitter&quot;, timestamp 385796.468287021
+TIMERS PHASE&gt; END: iteration 2: setInterval
+TIMER PHASE MICROTASK&gt; iteration 2, setInterval.process.nextTick
+POLL PHASE&gt; fs.readdir() callback
+POLL PHASE MICROTASK&gt; setInterval.fs.readdir.process.nextTick
+CHECK PHASE&gt; setInterval.setImmediate
+CHECK PHASE MICROTASK&gt; setInterval.setImmediate.process.nextTick
+TIMERS EXPIRED (from iteration 2)&gt; setInterval.setTimeout
+TIMERS PHASE MICROTASK&gt; setInterval.setTimeout.process.nextTick
+TIMERS PHASE MICROTASK&gt; setInterval.setTimeout.promise 1
+TIMERS PHASE MICROTASK&gt; setInterval.setTimeout.promise 2
+TIMERS PHASE&gt; START: iteration 3: setInterval
+TIMERS PHASE&gt; Max interval count exceeded. Goodbye.
+TIMERS PHASE&gt; END: iteration 3: setInterval<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</details>
+
+<p>As we can see:</p>
+<ol>
+<li><p>First, mainline runs, followed by its microtask, (remeber, <code>process.nextTick</code> comes before <code>Promise</code>).</p>
+</li>
+<li><p>Then, Timers phase and its microtask, (again, <code>process.nextTick</code> comes before <code>Promise</code>).</p>
+</li>
+<li><p>Then, Poll phase and its microtask.</p>
+</li>
+<li><p>Then, Check phase and its microtask.</p>
+</li>
+<li><p>And loop to the next Timers phase, and so on.</p>
+</li>
+</ol>
+<p>You can check the <a href="#event-loop-node">illustration image</a> again.</p>
+<h2 id="eventemitter"><a href="#eventemitter" class="headerlink" title="EventEmitter"></a>EventEmitter</h2><p>And one more thing about the EventEmitter. We register a callback for some event, which would be called in the future, <em>asynchronously</em>.</p>
+<p>When we make the specific event emitted, it will execute <em>synchronously</em> at that emitting moment.</p>
+<h2 id="in-the-end"><a href="#in-the-end" class="headerlink" title="In the end"></a>In the end</h2><p>Much efforts has been made to figure out it thoroughly. It’s may be not easy to understand event loop in such a short article, you could read more if you do need a deeper understanding in event loop.</p>
+<p>Hope this would help you in your JavaScript programming!</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/nodejs/" rel="tag"># nodejs</a>
+              <a href="/tags/event-loop/" rel="tag"># event loop</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/02/09/redux-source-code-impression.html" rel="prev" title="Redux 源码读后感">
+                  <i class="fa fa-chevron-left"></i> Redux 源码读后感
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/11/29/promise-interception.html" rel="next" title="Is it possible to break a promise chain?">
+                  Is it possible to break a promise chain? <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

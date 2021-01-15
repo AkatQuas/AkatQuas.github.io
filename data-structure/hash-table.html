@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="Overview散列表，Hash Table，实现称为散列，hashing，一种用于常数平均时间执行插入、删除和查找的技术，但是元素间的排序信息的树操作将不会得到有效的支持。 Basic Context理想的散列表数据结构是一个包含一些项的具有固定大小的数组。表的大小记作TableSize，这将理解为散列数据结构的一部分，而不是仅仅是浮动于全局的某个变量。通常的习惯是让表从0到TableSize-">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Hash table 散列表">
+<meta property="og:url" content="https://akatquas.github.io/data-structure/hash-table.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="Overview散列表，Hash Table，实现称为散列，hashing，一种用于常数平均时间执行插入、删除和查找的技术，但是元素间的排序信息的树操作将不会得到有效的支持。 Basic Context理想的散列表数据结构是一个包含一些项的具有固定大小的数组。表的大小记作TableSize，这将理解为散列数据结构的一部分，而不是仅仅是浮动于全局的某个变量。通常的习惯是让表从0到TableSize-">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-01-15T10:21:08.374Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.374Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="akat,programmer,frontend,node,javascript,golang,python">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://akatquas.github.io/data-structure/hash-table.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>Hash table 散列表 | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#overview"><span class="nav-text">Overview</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#basic-context"><span class="nav-text">Basic Context</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hash-function"><span class="nav-text">Hash Function</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#load-factor"><span class="nav-text">Load factor</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#collision"><span class="nav-text">Collision</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E7%A6%BB%E9%93%BE%E6%8E%A5%E6%B3%95"><span class="nav-text">分离链接法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%80%E6%94%BE%E5%AE%9A%E5%9D%80%E6%B3%95"><span class="nav-text">开放定址法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8E%A2%E6%B5%8B%E6%95%A3%E5%88%97%E8%A1%A8"><span class="nav-text">探测散列表</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#rehash"><span class="nav-text">Rehash</span></a></li></ol></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">Hash table 散列表
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <h2 id="overview"><a href="#overview" class="headerlink" title="Overview"></a>Overview</h2><p>散列表，<code>Hash Table</code>，实现称为散列，<code>hashing</code>，一种用于常数平均时间执行插入、删除和查找的技术，但是元素间的排序信息的树操作将不会得到有效的支持。</p>
+<h2 id="basic-context"><a href="#basic-context" class="headerlink" title="Basic Context"></a>Basic Context</h2><p>理想的散列表数据结构是一个包含一些项的具有固定大小的数组。表的大小记作<code>TableSize</code>，这将理解为散列数据结构的一部分，而不是仅仅是浮动于全局的某个变量。通常的习惯是让表从<code>0</code>到<code>TableSize-1</code>变化。</p>
+<p>将表的每个键映射到<code>0 ~ TableSize - 1 </code>的某个数，并将其放到适当的单元中。称这个映射为<code>散列函数(hash function)</code>，理想情况下，该函数应该运算简单并且保证任意两个不同的键映射到不同的单元。</p>
+<p>要设计好的散列表，需要选择一个高效的函数，并且恰当处理当两个键散列到同一个值时的冲突，以及如何确定散列表的大小。</p>
+<h2 id="hash-function"><a href="#hash-function" class="headerlink" title="Hash Function"></a>Hash Function</h2><p>一种计算散列中键的数值可以累加键每个位置上的字符的 ASCII 码，然后对<code>TablSize</code>取模。</p>
+<pre class="line-numbers language-C#" data-language="C#"><code class="language-C#">&#x2F;*
+ 本例程对于表的分布而言未必是最好的，不过简单快捷，如果键过长时，可以选择只计算奇数位置上的字符，这个做法包含“用计算散列函数节省下的时间来补偿由此产生的对均匀分布函数的轻微干扰”的想法
+*&#x2F;
+int hash( const string &amp; key, int tableSize )
+&#123;
+    int hashVal &#x3D; 0;
+
+    for ( int i &#x3D; 0, l &#x3D; key.length() ; i &lt; l ; i++ )
+        hashVal &#x3D; 37 * hashVal + key[ i ];
+
+    hashVal %&#x3D; tableSize;
+    if (hashVal &lt; 0 )
+        hashVal +&#x3D; tableSize;
+
+    return hashVal;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="load-factor"><a href="#load-factor" class="headerlink" title="Load factor"></a>Load factor</h2><p>装填因子 λ，为散列表中的元素个数与散列表大小的比值。表的平均长度为 λ。</p>
+<h2 id="collision"><a href="#collision" class="headerlink" title="Collision"></a>Collision</h2><p>两个键经过<code>hash function</code>之后的指向为同一个值时，这种情况成为冲突，<code>Collision</code>。下面讨论处理冲突的最简单的两种方法，<a href="#%E5%88%86%E7%A6%BB%E9%93%BE%E6%8E%A5%E6%B3%95">分离链接法</a> 和 <a href="#%E5%BC%80%E6%94%BE%E5%AE%9A%E5%9D%80%E6%B3%95">开放定址法</a>。</p>
+<h3 id="分离链接法"><a href="#分离链接法" class="headerlink" title="分离链接法"></a>分离链接法</h3><p>分离链接法，<code>separate chaining</code>，做法是将散列到同一个值的元素保留到一个链表中。这个链表通常是双向链表（空间紧张时可以选择其他实现方式）。</p>
+<ul>
+<li>执行 search 的时候，使用 hash function 来确定需要被遍历的链表，然后再在该链表中进行查询。</li>
+<li>执行 insert 时，先检查相应的链表中是否有重复元（重复元的计数加 1 即可），新元素则插入到链表的前端。</li>
+</ul>
+<p>在分离链表法中，<code>λ = 1.0</code>。执行一次查找所需的工作是计算<code>hashValue</code>所需要的常数时间加上遍历表所用的时间。在一次不成功的查找中，要考察的结点数平均为<code>λ</code>。成功的查找则需要遍历大约<code>1 + (λ/2)</code>个链。从下面的分析可以看出，散列表的实际大小并不重要，装填因子才重要。分离链表法一般做法是将表的大小尽量与预料的元素个数差不多，即<code>λ ≈ 1</code>。如果<code>λ &gt; 1</code>，就进行<code>rehash</code>来扩充表的大小。另外，使得表的大小是素数来保证一个好的分布的想法是很不错的。</p>
+<pre class="line-numbers language-none"><code class="language-none">针对( 1 + λ&#x2F;2 )的分析如下：
+被搜索的表包含一个存储匹配的结点再加上0个或更多其他的结点。
+在N个元素的表以及M个链表中“其他结点”的期望个数为(N-1)&#x2F;M &#x3D; λ - 1&#x2F;M。
+一般认为M很大，所以平均来看，一半的“其他结点”被搜索到，再结合匹配结点，
+最终得到的平均查找开销为 ( 1 + λ&#x2F;2 )<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-C#" data-language="C#"><code class="language-C#"># 散列表结构存储一个链表数组，这个数组在构造函数中指定
+# 下面是实现分离链接法所需的类接口及例程
+# theLists声明中两个&gt;之间需要一个空格，原因是&gt;&gt;是C++的一个运算符，避免编译歧义，所以多加一个空格。
+class HashTable
+&#123;
+    public:
+        explicit HashTable( int size &#x3D; 101 );
+        bool contains( const HashedObj &amp; x ) const
+        &#123;
+            const list&lt;HashedObj&gt; &amp; whichList &#x3D; theLists[ myhash( x )];
+            return find( whichList.begin( ), whichList.end( ), x ) !&#x3D; whichList.end( );
+        &#125;
+
+        void makeEmpty( )
+        &#123;
+            for ( int i &#x3D; 0, l &#x3D; theLists.size() ; i &lt; l ; i++ )
+                thisLists[i].clear();
+        &#125;
+
+        void insert( const HashedObj &amp; x )
+        &#123;
+            list&lt;HashedObj&gt; &amp; whichList &#x3D; theLists[ myhash( x ) ];
+            if ( find( whichList.begin( ), whicList.end( ), x ) !&#x3D; whichList.end( ) )
+                return false;
+
+            whichList.push_back( x );
+
+                &#x2F;&#x2F; rehash;
+            if ( ++currentSize &gt; theLists.size( ) )
+                rehash( );
+
+            return true;
+        &#125;
+
+        void remove( const HashedObj &amp; x )
+        &#123;
+            list&lt;HashedObj&gt; &amp; whichList &#x3D; theLists[ myhash( x )];
+            list&lt;HashedObj&gt;::iterator itr &#x3D; find(whichList.begin( ), whichList.end( ), x );
+
+            if ( itr &#x3D;&#x3D; whichList.end( ) )
+                return false;
+
+            whichList.erase( itr );
+            --currentSize;
+            return true;
+        &#125;
+
+    private:
+        vector&lt;list&lt;HashedObj&gt; &gt; theLists; &#x2F;&#x2F; The array of Lists
+        int currentSize;
+
+        void rehash( );
+
+        # private function, 将结果分配到一个合适的数组索引中。
+        int myhash( const HashedObj &amp; x ) const
+        &#123;
+            int hashVal &#x3D; hash( x );
+
+            hashVal %&#x3D; theLists.size( );
+            if ( hashVal &lt; 0 )
+                hashVal +&#x3D; theLists.size( );
+
+            return hashVal;
+        &#125;
+&#125;;
+int hash( const string &amp; key );
+int hash( int key );<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>分离链接散列算法的缺点是使用了一些链表，给新单元分配地址需要时间，所以会减慢算法的速度，同时该算法还要求第二种数据结构的实现。</p>
+<p>所以另一种解决方法即在遇到冲突时，尝试选择另外一个单元，直到找到空的单元。</p>
+<h3 id="开放定址法"><a href="#开放定址法" class="headerlink" title="开放定址法"></a>开放定址法</h3><h4 id="探测散列表"><a href="#探测散列表" class="headerlink" title="探测散列表"></a>探测散列表</h4><p>单元 h<sub>0</sub>(x), h<sub>1</sub>(x), h<sub>2</sub>(x), …依次进行试选，其中 h<sub>i</sub>(x) = ( hash(x) + f(i) ) mod TableSize, 且 f(0) = 0, f 是冲突解决函数。</p>
+<p>这种策略需要将所有数据都置入表内，所以表的装填因子应低于 0.5，这样的表称为**探测散列表(probing hash tables)**。</p>
+<p><strong>线性探测</strong></p>
+<p>线性探测中，冲突解决函数 f 是 i 的线性函数，一般情况下<code>f(i) = i</code>。</p>
+<p>现行探测插入的过程中有**一次聚集(primary clustering)**的现象，即特定区块的数据集中分布。</p>
+<p>线性探测的预期探测次数对于插入和不成功的查找大约为 （ 1 + 1/(1-λ)<sup>2</sup>)/2，而对于成功的查找则是(1 + 1/(1-λ))/2。</p>
+<p>如果聚集不是问题，即 λ 比较小的时候，可以证明，一次不成功的查找中期望的探测次数，等于找到一个空单元所期望的探测此时，亦即，可以把<strong>插入一个新元素</strong>的结果看作<strong>一次不成功查找</strong>的结果。可以使用一次不成功查找的开销来计算一次成功查找的平均开销。</p>
+<p>数学表明，如果<code>λ=0.5</code>，插入的操作平均只需要 2.5 次探测，而成功的查找平均只要 1.5 次。</p>
+<p><strong>平方探测</strong></p>
+<p>平方探测中，冲突解决函数 f 是 i 的二次函数，一般情况下<code>f(i) = i^2</code>。</p>
+<p>平方探测能够消除线性探测中<strong>一次聚集</strong>的问题。在平方探测中，如果表有至少一半是空的且表大小为素数，可以保证总能够插入一个新的元素。这意味着，哪怕表有比一半多一个位置被填满，插入都有可能失败（可能性虽小但存在）。</p>
+<pre class="line-numbers language-C#" data-language="C#"><code class="language-C#">#平方探测的表的类接口以例程，包括嵌套的HashEntry类
+
+class HashTable
+&#123;
+    public:
+        explicit HashTable( int size &#x3D; 101 );
+
+        bool contains( const HashedObj &amp; x ) const
+            &#123; return isActive( findPos( x ) ); &#125;
+
+        void makeEmpty( )
+        &#123;
+            currentSize &#x3D; 0;
+            for ( int i &#x3D; 0; i &lt; array.size( ) ; i++ )
+            array[i].info &#x3D; EMPTY;
+        &#125;
+
+        bool insert( const HashedObj &amp; x )
+        &#123;
+            int currentPos &#x3D; findPos( x );
+            if ( isActive( currentPos ) )
+                return false;
+
+            array[ currentPos ] &#x3D; HashEntry( x, ACTIVE );
+
+            if ( ++currentSize &gt; array.size( ) &#x2F; 2 )
+                rehash( );
+
+            return true;
+        &#125;
+
+        bool remove( cosnt HashedObj &amp; x )
+        &#123;
+            int currentPos &#x3D; findPos( x );
+            if( !isActive( currentPos ) )
+                return false;
+
+            array[ currentPos ].info &#x3D; DELETED;
+            return true;
+        &#125;
+
+        enum EntryType &#123; ACTIVE, EMPTY, DELETED &#125;;
+
+    private:
+        struct HashEntry
+        &#123;
+            HashedObj element;
+            EntryType info;
+
+            HashEntry( const HashedObj &amp; e &#x3D; HashedObj( ), EntryType i &#x3D; EMPTY ): element( e ), info( i ) &#123; &#125;
+        &#125;;
+
+        vector&lt;HashEntry&gt; array;
+        int currentSize;
+
+        bool isActive( int currentPos ) const
+            &#123; return array[ currentPos ].info &#x3D;&#x3D; ACTIVE; &#125;
+
+        int findPos( const HashedObj &amp; x ) const
+        &#123;
+            int offset &#x3D; 1;
+            int currentPos &#x3D; myhash( x );
+
+            while( array[ currentPost ].info !&#x3D; EMPTY &amp;&amp; array[ currentPos ].element !&#x3D; x )
+            &#123;
+                currentPos +&#x3D; offset;
+                offset +&#x3D; 2;
+                if ( currentPos &gt;&#x3D; array.size( ) )
+                    currentPos -&#x3D; array.size( );
+            &#125;
+
+            return currentPos;
+        &#125;
+
+        void rehash( );
+        int myhash( const HashedObj &amp; x ) const;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>平方探测排除了<strong>一次聚集</strong>，但是散列到同一个位置上的元素将探测相同的备选单元，称为**二次聚集(secondary clustering)**。模拟结果指出，对每次查找，一般要引起另外的少于一半的探测。</p>
+<p>可以使用<strong>双散列</strong>来消除这个理论上的缺憾，代价则是计算额外的散列函数。</p>
+<p><strong>双散列</strong></p>
+<p>双散列，<code>double hashing</code>，一种流行的选择是 f(i) = i _ hash<sub>2</sub>(x)，意即将第二个散列函数应用到 x 并在距离 hash<sub>2</sub>(x), 2 _ hash<sub>2</sub>(x), … 进行等距探测。</p>
+<p>一个比较好的二次散列函数是 hash<sub>2</sub>(x) = R - ( x mod R )，R 为小于 TableSize 的素数。</p>
+<p><strong>summary on 探测散列表</strong></p>
+<ul>
+<li>表的大小为素数是重要的，如果不是素数，备选单元可能被提前用完。</li>
+<li>双散列能够正确实现的时候，预测的探测次数几乎和随机冲突解决方法的情形相同。</li>
+<li>平方探测不需要使用第二个散列函数，在实践中可以更快更简单。当键为字符串时，其散列函数的计算更加耗时。</li>
+</ul>
+<h3 id="rehash"><a href="#rehash" class="headerlink" title="Rehash"></a>Rehash</h3><p>如果表的元素填的太满，操作的运行时间将开始变长，且插入操作可能失败！一个解决办法就是建立另外一个大约两倍大的表（使用新的散列函数），扫描整个原始散列表，计算每个有效的元素的新散列值，进行插入。</p>
+<p>这样的操作称为再散列，<code>rehashing</code>，这种操作是非常昂贵的，运行时间为 O(N)，不过因为不是经常发生，所以实际效果还好，特别的，在 rehash 后的表中已经存在<code>N/2</code>次插入，添加到每个插入上的花费基本上是一个常数开销。</p>
+<p>如果这种数据结构是程序的一部分，那么其影视不明显的，如果 rehash 作为交互系统的一部分运行，那么其插入引起的 rehash 会让严重减慢速度。</p>
+<p>rehash 可以借助平方探测以多种策略实现。可以预见的是装填因子增加会导致表的性能下降，因此以好的截止点来实现第三种策略，收益相对最大。</p>
+<ul>
+<li>当表满到一半后，rehash</li>
+<li>当表出现过插入失败时，rehash</li>
+<li>途中策略： 如果表到达某一个装填因子时，rehash</li>
+</ul>
+<pre class="line-numbers language-C#" data-language="C#"><code class="language-C#"># Rehashing for quadratic probing hash table
+
+void rehash ( )
+&#123;
+    vector&lt;HashEntry&gt; oldArray &#x3D; array;
+
+    array.resize( nextPrim( 2 * oldArray.size( ) ) );
+    for ( int j &#x3D; 0; j &lt; array.size( ) ; j++ )
+        array[ j ].info &#x3D; EMPTY;
+
+    currentSize &#x3D; 0
+    for ( int i &#x3D; 0; i &lt; oldArray.size( ); i++ )
+        if ( oldArray[ i ].info &#x3D;&#x3D; ACTIVE )
+            insert( oldArray[ i ].element );
+&#125;
+
+# Rehashing for separate chaining hash table
+
+void rehash ( )
+&#123;
+    vector&lt;list&lt;HasheObj&gt; &gt; oldLists &#x3D; theLists;
+    theLists.resize( nextPrime( 2 * theLists.size( ) ) );
+    for ( int j &#x3D; 0; j &lt; theLists.size( ); j++ )
+        theLists[ j ].clear( );
+
+    currentSize &#x3D; 0;
+    for ( int i &#x3D; 0; i &lt; oldLists.size( ); i++ )
+    &#123;
+        list&lt;HashedObj&gt;::iterator itr &#x3D; oldLists[ i ].begin( );
+        while( itr !&#x3D; oldLists[ i ].end( ) )
+            insert( *itr++ );
+    &#125;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

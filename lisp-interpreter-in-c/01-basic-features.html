@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="document codes:  hello world  On ProgramA program in C consists of only function definitions and structure definitions. Therefore a source file is simply a list of function and types. These function c">
+<meta property="og:type" content="website">
+<meta property="og:title" content="01 Basic features of C">
+<meta property="og:url" content="https://akatquas.github.io/lisp-interpreter-in-c/01-basic-features.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="document codes:  hello world  On ProgramA program in C consists of only function definitions and structure definitions. Therefore a source file is simply a list of function and types. These function c">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-01-15T10:21:08.394Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.394Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="lisp">
+<meta property="article:tag" content="interpreter">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://akatquas.github.io/lisp-interpreter-in-c/01-basic-features.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>01 Basic features of C | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#on-program"><span class="nav-text">On Program</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#on-variable"><span class="nav-text">On variable</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#on-function"><span class="nav-text">On Function</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#on-structure"><span class="nav-text">On Structure</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#on-pointers"><span class="nav-text">On Pointers</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#on-strings"><span class="nav-text">On Strings</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#on-conditionals"><span class="nav-text">On Conditionals</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#on-loops"><span class="nav-text">On Loops</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">01 Basic features of C
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <p><a target="_blank" rel="noopener" href="http://www.buildyourownlisp.com/chapter3_basics">document</a></p>
+<p>codes:</p>
+<ul>
+<li><a href="./codes/hello-world.c">hello world</a></li>
+</ul>
+<h2 id="on-program"><a href="#on-program" class="headerlink" title="On Program"></a>On Program</h2><p>A program in C consists of only <strong>function definitions</strong> and <strong>structure definitions</strong>.</p>
+<p>Therefore a source file is simply a list of <strong>function</strong> and <strong>types</strong>. These function can call each other or themselves, and can use any data types that have benn declared or are built into the language.</p>
+<p>It it possible to call the functions in other libraries, or to use their data types. This is how layers of complexity are accumulated in C programming.</p>
+<p>The execution of a C program always starts in the function called <code>main</code>. From here it calls more and more functions, to perform all the actions it requires.</p>
+<h2 id="on-variable"><a href="#on-variable" class="headerlink" title="On variable"></a>On variable</h2><p>We declare a new variable by writing the name of its type, followed by its name, and optionally setting it to some value using <code>=</code>. Such declaration is a <strong>statement</strong>, and we terminate all <strong>statements</strong> in C with a semicolon <code>;</code>.</p>
+<h2 id="on-function"><a href="#on-function" class="headerlink" title="On Function"></a>On Function</h2><p>A function is a computation that manipulates variables, and optionally changes the state of the program. It takes as input some variables and returns some single variable as output.</p>
+<p>To declare a function we write the type of the variable it returns, the name of the function, and then in parenthesis a list of the variables it takes as input, separated by commas. The contents of the function are put inside curly brackets <code>&#123;&#125;</code>, and lists all of the statements the function executes, terminated by semicolons <code>;</code>. A <code>return</code> statement is used to let the function finish and output a variable.</p>
+<p>We call functions by writing their name and putting the arguments to the function in parentheses, separated by commas.</p>
+<h2 id="on-structure"><a href="#on-structure" class="headerlink" title="On Structure"></a>On Structure</h2><p>Structures are used to declare new <strong>types</strong>. Structures are several variables bundled together into a single package.</p>
+<p>To declare structures we can use the <code>struct</code> keyword in conjunction with the <code>typedef</code> keyword. For example:</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">typedef</span> <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">float</span> x<span class="token punctuation">;</span>
+    <span class="token keyword">float</span> y<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span> point<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>We should place this definition above any functions that wish to use it. This type is no different to the built-in types, and we can use it in all the same ways.</p>
+<h2 id="on-pointers"><a href="#on-pointers" class="headerlink" title="On Pointers"></a>On Pointers</h2><p>A pointer is a variation on a normal type where the type name is suffixed with an asterisk. Pointers are used for a whole number of different things such as for strings or lists.</p>
+<h2 id="on-strings"><a href="#on-strings" class="headerlink" title="On Strings"></a>On Strings</h2><p>In C strings are represented by the pointer type <code>char*</code>. Under the hood they are stored as a list of characters, where the final character is a special character called the <strong>null terminator</strong>. Strings can also be declared literally by putting text between quotation marks.</p>
+<h2 id="on-conditionals"><a href="#on-conditionals" class="headerlink" title="On Conditionals"></a>On Conditionals</h2><p>Conditional statements let the program perform some code only if certain conditions are met.</p>
+<p>To perform code under some condition we use the <code>if</code> statement. This is written as <code>if</code> followed by some condition in parentheses, followed by the code to execute in curly brackets. An <code>if</code> statement can be followed by an optional <code>else</code> statement, followed by other statements in curly brackets. The code in these brackets will be performed in the case the conditional is false.</p>
+<p>We can test for multiple conditions using the logical operator <code>||</code> for <strong>or</strong>, and <code>&amp;&amp;</code> for <strong>and</strong>. Inside a conditional statement’s parentheses any value that is not <code>0</code> will evaluate to <code>true</code>. This is important to remember as many conditions use this to check things implicitly.</p>
+<h2 id="on-loops"><a href="#on-loops" class="headerlink" title="On Loops"></a>On Loops</h2><p>Loops allow for some code to be repeated until some condition becomes false, or some counter elapses.</p>
+<p>There are two main loops in C. The first is a <code>while</code> loop. This loop repeatedly executes as a block of code until some condition becomes false. It is written as <code>while</code> followed by some condition in parentheses, followed by the code to execute in curly brackets.</p>
+<p>The second kind of loop is a <code>for</code> loop. Rather than a condition, this loop requires three expressions separated by semicolons. These are an <strong>initializer</strong>, a <strong>condition</strong> and an <strong>increment</strong>. The <strong>initializer</strong> is performed before the loop starts. The <strong>condition</strong> is checked before each iteration of the loop. If it is false, the loop is exited. The <strong>increment</strong> is performed at the end of each iteration of the loop. These loops are often used for counting as they are more compact than the <code>while</code> loop.</p>
+<p><a href="02-interactive-prompt.html">Next on prompt</a></p>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

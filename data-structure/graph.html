@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="从某种意义上看，图就是二元关系。利用一系列由线（边）或箭头（弧）连接的点（节点）提供了强大的视觉效果。 图就是树魔性的泛化。 图具有多种形式：有向图&#x2F;无向图，标号图&#x2F;无标号图。 基本概念有向图_有向图_：由节点集合 N 以及 N 上的二元关系 A 组成。将 A 称为有向图弧的集合。因此弧时节点的有序对。 _弧_：(u, v)都是从节点u指向v的箭头表示的，也可以记作u → v。此时，u称为v的前导">
+<meta property="og:type" content="website">
+<meta property="og:title" content="图 Graph">
+<meta property="og:url" content="https://akatquas.github.io/data-structure/graph.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="从某种意义上看，图就是二元关系。利用一系列由线（边）或箭头（弧）连接的点（节点）提供了强大的视觉效果。 图就是树魔性的泛化。 图具有多种形式：有向图&#x2F;无向图，标号图&#x2F;无标号图。 基本概念有向图_有向图_：由节点集合 N 以及 N 上的二元关系 A 组成。将 A 称为有向图弧的集合。因此弧时节点的有序对。 _弧_：(u, v)都是从节点u指向v的箭头表示的，也可以记作u → v。此时，u称为v的前导">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://akatquas.github.io/data-structure/img/oriented-graph.png">
+<meta property="og:image" content="https://akatquas.github.io/data-structure/img/function-calls.png">
+<meta property="og:image" content="https://akatquas.github.io/data-structure/img/adjacency-list-og.png">
+<meta property="og:image" content="https://akatquas.github.io/data-structure/img/adjacency-matrix-og.png">
+<meta property="og:image" content="https://akatquas.github.io/data-structure/img/non-oriented-graph.png">
+<meta property="article:published_time" content="2021-01-15T10:21:08.374Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.374Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="akat,programmer,frontend,node,javascript,golang,python">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://akatquas.github.io/data-structure/img/oriented-graph.png">
+
+
+<link rel="canonical" href="https://akatquas.github.io/data-structure/graph.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>图 Graph | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-text">基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%89%E5%90%91%E5%9B%BE"><span class="nav-text">有向图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%A0%E5%90%91%E5%9B%BE"><span class="nav-text">无向图</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%BE%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="nav-text">图的实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E6%9C%89%E5%90%91%E5%9B%BE%E7%9A%84%E8%80%83%E8%99%91"><span class="nav-text">对有向图的考虑</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%82%BB%E6%8E%A5%E8%A1%A8"><span class="nav-text">邻接表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%82%BB%E6%8E%A5%E7%9F%A9%E9%98%B5"><span class="nav-text">邻接矩阵</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E6%97%A0%E5%90%91%E5%9B%BE%E7%9A%84%E8%80%83%E8%99%91"><span class="nav-text">对无向图的考虑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%87%E5%8F%B7%E5%9B%BE%E7%9A%84%E8%80%83%E8%99%91"><span class="nav-text">标号图的考虑</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#skiped%EF%BC%8C%E8%BF%9E%E9%80%9A%E5%9B%BE%EF%BC%8C%E6%9C%80%E5%B0%8F%E7%94%9F%E6%88%90%E6%A0%91"><span class="nav-text">skiped，连通图，最小生成树</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E6%90%9C%E7%B4%A2"><span class="nav-text">深度优先搜索</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E5%BB%BA%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E6%90%9C%E7%B4%A2%E6%A0%91"><span class="nav-text">构建深度优先搜索树</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%90%9C%E7%B4%A2%E6%A3%AE%E6%9E%97"><span class="nav-text">搜索森林</span></a></li></ol></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">图 Graph
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <p>从某种意义上看，图就是二元关系。利用一系列由线（边）或箭头（弧）连接的点（节点）提供了强大的视觉效果。</p>
+<p>图就是树魔性的泛化。</p>
+<p>图具有多种形式：有向图/无向图，标号图/无标号图。</p>
+<h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><h2 id="有向图"><a href="#有向图" class="headerlink" title="有向图"></a>有向图</h2><p>_有向图_：由节点集合 N 以及 N 上的二元关系 A 组成。将 A 称为有向图<em>弧</em>的集合。因此弧时节点的有序对。</p>
+<p>_弧_：<code>(u, v)</code>都是从节点<code>u</code>指向<code>v</code>的箭头表示的，也可以记作<code>u → v</code>。此时，<code>u</code>称为<code>v</code>的前导(predecessor)，<code>v</code>称为<code>u</code>的后继(successor)。</p>
+<p>_标号_：可以为图中各个节点、弧添加标号。但是节点名称和标号是不同的概念，节点名称应该唯一，而标号可以相同。</p>
+<p>_路径_：有向图中的路径是一列节点（v<sub>1</sub>, v<sub>2</sub>, … , v<sub>k</sub>），每个节点到下一个节点都存在弧，因此路径长度为<code>k-1</code>。根据条件，允许存在路径的长度为 0 的情况，任何节点本身都是一条从自身到自身的长度为 0 的路径，该路径上没有弧。</p>
+<blockquote>
+<div style="text-align: center">
+<img data-src="./img/oriented-graph.png"/>
+</div>
+节点集合 `N = {0, 1, 2, 3, 4}`。
+因此弧的集合是 `A = {(0,0), (0,1), (0,2), (1,3), (2,0), (2,1), (2,4), (3,2), (3,4), (4,1)}`
+</blockquote>
+<p>_有环图和无环图_：有向图中的环路(cycle)是指起点与终点为同一节点的长度不为 0 的路径。环路的长度就是这条路径的长度。但是路径长度为 0 时，不是环路。然而，由一条弧<code>v → v</code>构成的路径时一条长度为 1 的环路。简单环路的唯一重复节点是最终节点，其他节点并不重复出现。</p>
+<p>可以证明如果途中有一条环路，那么一定至少含有一条简单环路。</p>
+<p>如果图中含有一条或者多条环路，就说该图时<em>有环的</em>，否则就是<em>无环的</em>。</p>
+<blockquote>
+<div style="text-align: center">
+<img data-src="./img/function-calls.png"/>
+</div>
+函数自我调用，直接递归，在图中表现为*自环*。
+</blockquote>
+<p>_无环路径_：如果路径中没有节点出现一次以上，就说明该路径是<em>无环的</em>。如果存在从<code>u</code>到<code>v</code>的路径，就存在从<code>u</code>到<code>v</code>的无环路径。</p>
+<h2 id="无向图"><a href="#无向图" class="headerlink" title="无向图"></a>无向图</h2><p>_无向图_：用没有方向的线条（边）连接节点的图。记作<code>&#123;u, v&#125;</code>，表示节点<code>u</code>和<code>v</code>是邻接的。</p>
+<p>_路径_：无向图的路径是各节点与下一节点都由边连通的节点列（v<sub>1</sub>, v<sub>2</sub>, … , v<sub>n</sub>）。某个特定的边中元素是没有特定次序的。路径的长度为<code>k-1</code>，节点本身是一条长度为 0 的路径。</p>
+<p>_环路_：无向图中定义的<em>简单环路</em>最简单的方式可能是指长度不小于 3 而且起点和终点为同一节点，而且预期最后的节点不会与任何节点重复的路径。</p>
+<h1 id="图的实现"><a href="#图的实现" class="headerlink" title="图的实现"></a>图的实现</h1><p>标准方式有两种，<em>邻接表</em>与<em>邻接矩阵</em>。</p>
+<h2 id="对有向图的考虑"><a href="#对有向图的考虑" class="headerlink" title="对有向图的考虑"></a>对有向图的考虑</h2><h3 id="邻接表"><a href="#邻接表" class="headerlink" title="邻接表"></a>邻接表</h3><pre class="line-numbers language-C" data-language="C"><code class="language-C">typedef struct CELL *LIST;
+struct CELL &#123;
+    NODE nodeName;
+    LIST next;
+&#125;;
+
+LIST successors[MAX];
+# successors[u] 包含了一个指针，指向由节点u的所有后继组成的链表。<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<blockquote>
+<div style="text-align: center">
+<img data-src="./img/adjacency-list-og.png"/>
+</div>
+</blockquote>
+<h3 id="邻接矩阵"><a href="#邻接矩阵" class="headerlink" title="邻接矩阵"></a>邻接矩阵</h3><p>创建二维数组，如果存在弧<code>u → v</code>，则<code>arc[u][v]</code>的值为 TRUE，否则为 FALSE。</p>
+<blockquote>
+<div style="text-align: center">
+<img data-src="./img/adjacency-matrix-og.png"/>
+</div>
+</blockquote>
+<pre class="line-numbers language-none"><code class="language-none">BOOLEAN arcs[MAX][MAX]<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<blockquote>
+<p>邻接表与邻接矩阵的对比</p>
+</blockquote>
+<blockquote>
+<p>当图很稠密，弧的数量接近最大可能数字(n 个节点的图就是 n<sup>2</sup>)，倾向于用<em>邻接矩阵</em>来表示。</p>
+</blockquote>
+<blockquote>
+<p>图稀疏的时候，用<em>邻接表</em>可能节省空间。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th align="center">操作</th>
+<th align="center">稠密图</th>
+<th align="center">稀疏图</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">查找弧</td>
+<td align="center">邻接矩阵</td>
+<td align="center">皆可</td>
+</tr>
+<tr>
+<td align="center">找后继</td>
+<td align="center">皆可</td>
+<td align="center">邻接表</td>
+</tr>
+<tr>
+<td align="center">找前导</td>
+<td align="center">邻接矩阵</td>
+<td align="center">皆可</td>
+</tr>
+</tbody></table>
+<p>当图中有 n 个点，a 条弧：</p>
+<ol>
+<li><p>在查找某给定的弧时，图越稠密，就越愿意选择邻接矩阵（只有 O(1)）而不是邻接表（先找点<code>u</code>再遍历后续表，平均 O(1+a/n)）。</p>
+</li>
+<li><p>在查找某给定节点的后继时，使用邻接表（先找表头在遍历该表，平均 O(a/n))要比使用邻接矩阵（遍历某一行，O（n)且与 a 无关)快得多。</p>
+</li>
+<li><p>在查找某给定节点的全部前导节点，邻接矩阵只需要 O(n)即可，而邻接表完全帮不上忙，需要遍历每条弧，用时 O(a)。</p>
+</li>
+</ol>
+<blockquote>
+<p>度的问题</p>
+</blockquote>
+<blockquote>
+<p>从节点<code>v</code>出发的弧的数量叫做<code>v</code>的出度，等于其邻接表的长度，也等于相应的邻接矩阵中对应行 1 的数量。</p>
+</blockquote>
+<blockquote>
+<p>进入节点<code>v</code>的弧的数量叫做<code>v</code>的入度。入度衡量的是节点 v 在某节点的邻接表中出现的次数，而且是相应的邻接矩阵中对应列中 1 的数量。</p>
+</blockquote>
+<blockquote>
+<p>无向图中则不区分出度、入度。节点<code>v</code>的度就是<code>v</code>的邻居的数量。</p>
+</blockquote>
+<h2 id="对无向图的考虑"><a href="#对无向图的考虑" class="headerlink" title="对无向图的考虑"></a>对无向图的考虑</h2><p>可以假装每条边都被替代为两个方向上的弧，并将得到有向图用邻接表或邻接矩阵表示出来。如果使用邻接矩阵，那么该矩阵是对称点，<code>edges[v][u]=edges[u][v]</code>。</p>
+<blockquote>
+<div style="text-align: center">
+<img data-src="./img/non-oriented-graph.png"/>
+</div>
+</blockquote>
+<h2 id="标号图的考虑"><a href="#标号图的考虑" class="headerlink" title="标号图的考虑"></a>标号图的考虑</h2><p>假设图的弧（无向图的边）带有标号。</p>
+<p>在使用邻接矩阵时，就可以将表示弧<code>u → v</code>在图中出现的值来替换为该弧的标号。而且必须要有一些可作为矩阵的项但又不会与标号混淆的值用来作为表示节点直接没有弧的情况。</p>
+<p>用邻接表来表示图时，就要为构成各链表的单元添加一个<code>nodeLabel</code>字段。如果存在标号为<code>L</code>的弧<code>u → v</code>，那么在对应节点<code>u</code>的邻接表中就会找到<code>nodeName</code>字段为<code>v</code>且<code>nodeLable</code>字段为<code>L</code>的单元。<code>nodeLale</code>字段表示该弧的标号。</p>
+<p>此外，要用另一种方式表示节点的标号。对邻接矩阵来说，只要创建另一个名为<code>NodeLabels</code>的数组，并设<code>NodeLabels[u]</code>是节点<code>u</code>的标号。在使用邻接表时，已经有了以节点为索引的表头数组，需要把该数组的元素改为结构体，一个字段为节点标号，另一个字段为指向邻接表开头的指针。</p>
+<h1 id="skiped，连通图，最小生成树"><a href="#skiped，连通图，最小生成树" class="headerlink" title="skiped，连通图，最小生成树"></a>skiped，连通图，最小生成树</h1><h1 id="深度优先搜索"><a href="#深度优先搜索" class="headerlink" title="深度优先搜索"></a>深度优先搜索</h1><p>必须要小心图中环的存在，环会导致无限递归。因此简单的解决方案：在访问节点的过程中为其做上标记，并永不再次访问标记过的节点。</p>
+<blockquote>
+<p>如果将树中多弧看作存在从父节点到子节点的方向，树就可以看作有向图的一个特例，而且，树总是无环图。</p>
+</blockquote>
+<pre class="line-numbers language-C" data-language="C"><code class="language-C">enum MARKTYPE &#123; VISITED, UNVISITED &#125;;
+typedef struct &#123;
+    enum MARKTYPE mark;
+    LIST successors;
+&#125; GRAPH[MAX];
+
+typedef struct CELL *LIST;
+struct CELL &#123;
+    NODE nodeName;
+    LIST next;
+&#125;
+
+void dfs(NODE u, GRAPH G)
+&#123;
+    LIST p;
+    NODE v;
+
+    G[u].mark &#x3D; VISITED;
+    p &#x3D; G[u].successors;
+    while (p !&#x3D; NULL) &#123;
+        v &#x3D; p-&gt;nodeName;
+        if (G[v].mark &#x3D;&#x3D; UNVISITED)
+            dfs(v,G)
+        p &#x3D; p-&gt;next;
+    &#125;
+&#125;
+
+void dfsForest(GRAPH G
+&#123;
+    NODE u;
+
+    for (u &#x3D; 0; u &lt; MAX; u++)
+        G[u].mark &#x3D; UNVISITED;
+    for (u &#x3D; 0; u &lt; MAX; u++)
+        if (G[u].mark &#x3D;&#x3D; UNVISITED)
+            dfs(u,G);
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="构建深度优先搜索树"><a href="#构建深度优先搜索树" class="headerlink" title="构建深度优先搜索树"></a>构建深度优先搜索树</h2><p>对<code>dfs(u)</code>的调用，带来对<code>dfs(v)</code>的调用，那么就让<code>v</code>成为<code>u</code>在搜索树的子节点。<code>u</code>的子节点是按照对这些子节点调用<code>dfs</code>的次序从左向右出现的。第一次<code>dfs</code>调用的节点成为该树的根节点，root。可以称形成的树为某给定图的<em>深度优先搜索树</em>。</p>
+<p>弧的分类，树向弧，前向弧，后向弧，横向弧。</p>
+<h2 id="搜索森林"><a href="#搜索森林" class="headerlink" title="搜索森林"></a>搜索森林</h2><p>当从某些节点开始，无法达到所有节点，则可能需要构建一系列的搜索树。</p>
+<p>从某个节点<code>u</code>开始调用<code>dfs(u)</code>。完成之后如果还有节点未被访问国，就再选择一个节点进行树的构建。</p>
+<p>当所有节点都被分配到至少一棵树之后，就按照构建树的先后次序，列出这一系列树，并称为<em>深度优先搜索森林</em>。</p>
+<p>TBC section 7,chapter 9. It’s too complicated.</p>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

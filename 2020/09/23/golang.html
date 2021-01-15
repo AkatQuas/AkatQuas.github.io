@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="I start from this online tutorial, which is a good and comprehensive tutorial. Most content is excerpt from Mastering Go. You’d better buy one if you like the book. You’d really check it out, Concurre">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Learn some Golang">
+<meta property="og:url" content="https://akatquas.github.io/2020/09/23/golang.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="I start from this online tutorial, which is a good and comprehensive tutorial. Most content is excerpt from Mastering Go. You’d better buy one if you like the book. You’d really check it out, Concurre">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://akatquas.github.io/images/golang/go-scheduler.png">
+<meta property="article:published_time" content="2020-09-23T18:48:16.000Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.366Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="golang">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://akatquas.github.io/images/golang/go-scheduler.png">
+
+
+<link rel="canonical" href="https://akatquas.github.io/2020/09/23/golang.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>Learn some Golang | 🔭</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#useful-tips"><span class="nav-text">Useful tips</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#some-example-files"><span class="nav-text">some example files</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#basic-syntax-and-grammar-in-go"><span class="nav-text">Basic Syntax and Grammar in GO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reflection"><span class="nav-text">Reflection</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#go-concurrency"><span class="nav-text">Go Concurrency</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#scheduler-in-go"><span class="nav-text">scheduler in go</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#select"><span class="nav-text">select</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#buffered-channels"><span class="nav-text">buffered channels</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#nil-channel"><span class="nav-text">nil channel</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#shared-memory-and-shared-variables"><span class="nav-text">Shared Memory and Shared Variables</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sharing-memory-using-goroutines"><span class="nav-text">Sharing memory using goroutines</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#catching-race-conditions"><span class="nav-text">Catching race conditions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#the-context-package"><span class="nav-text">The context package</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#worker-pool"><span class="nav-text">Worker pool</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#code-testing-optimazition-profiling"><span class="nav-text">Code Testing, Optimazition, Profiling</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#network-programming"><span class="nav-text">Network Programming</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#tcp-client"><span class="nav-text">TCP client</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#udp-client"><span class="nav-text">UDP client</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#remote-procedure-call-rpc"><span class="nav-text">Remote Procedure Call (RPC)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#examples-for-closures-and-anonymous-goroutines"><span class="nav-text">Examples for Closures and Anonymous Goroutines</span></a></li></ol></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://akatquas.github.io/2020/09/23/golang.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Akat">
+      <meta itemprop="description" content="Take notes aperiodically">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="🔭">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Learn some Golang
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-09-24 02:48:16" itemprop="dateCreated datePublished" datetime="2020-09-24T02:48:16+08:00">2020-09-24</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/programming-language/" itemprop="url" rel="index"><span itemprop="name">programming language</span></a>
+        </span>
+          , 
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/programming-language/golang/" itemprop="url" rel="index"><span itemprop="name">golang</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>I start from <a target="_blank" rel="noopener" href="https://www.digitalocean.com/community/tutorial_series/how-to-code-in-go">this online tutorial</a>, which is a good and comprehensive tutorial.</p>
+<p>Most content is excerpt from <a target="_blank" rel="noopener" href="https://www.packtpub.com/product/mastering-go-second-edition/9781838559335">Mastering Go</a>. You’d better buy one if you like the book.</p>
+<p>You’d really check it out, <a href="/concurrency-in-go/index.html">Concurrency In Depth</a>.</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/AkatQuas/kiddo-plays/tree/master/golanger">Project on GitHub</a>.</p>
+<h1 id="useful-tips"><a href="#useful-tips" class="headerlink" title="Useful tips"></a>Useful tips</h1><p>go version go1.14.4 darwin/amd64</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">go doc --help
+
+<span class="token comment"># go doc fmt</span>
+
+<span class="token comment"># go doc fmt.Printf</span>
+
+go tool compile <span class="token operator">&lt;</span>source.go<span class="token operator">></span>
+
+go tool compile -pack <span class="token operator">&lt;</span>source.go<span class="token operator">></span>
+
+<span class="token comment"># allow to detect race conditions, concurrency</span>
+go tool compile -race <span class="token operator">&lt;</span>source.go<span class="token operator">></span>
+
+<span class="token comment"># go tool compile hello.go</span>
+
+<span class="token comment"># go tool compile -pack hello.go</span>
+
+<span class="token comment"># go tool compile -race hello.go</span>
+
+<span class="token comment"># The -W parameter tells the go tool compile command to</span>
+<span class="token comment"># print the `debug parse tree` after the type checking</span>
+go tool compile -W <span class="token operator">&lt;</span>source.go<span class="token operator">></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<a id="more"></a>
+
+<hr>
+<h3 id="some-example-files"><a href="#some-example-files" class="headerlink" title="some example files"></a>some example files</h3><p>Detailed on Garbage Collector in GO : <a href="/downloads/code/golang/single-file-execute/garbageCollector.go">garbageCollector.go</a>.</p>
+<p>Glance at the package <code>unsafe</code>: <a href="/downloads/code/golang/single-file-execute/unsafe.go">unsafe.go</a>.</p>
+<p>Glance at the keyword <code>defer</code>: <a href="/downloads/code/golang/single-file-execute/simple-defer.go">simple-defer.go</a>, <a href="/downloads/code/golang/single-file-execute/flow-control.go">flow-control</a>.</p>
+<p>Glance at the built-in functions <code>panic</code> and <code>recover</code>: <a href="/downloads/code/golang/single-file-execute/panicRecover.go">panicRecover</a>, <a href="/downloads/code/golang/single-file-execute/flow-control.go">flow-control</a>, <a href="/downloads/code/golang/single-file-execute/error-handling.go">error-handling</a>.</p>
+<p>Glance at the package <code>time</code>: <a href="/downloads/code/golang/single-file-execute/dateAndTime.go">dateAndTime.go</a>.</p>
+<p>Glance at the package <code>strings</code>: <a href="/downloads/code/golang/single-file-execute/useStrings.go">useStrings.go</a>.</p>
+<p>Find out more information about the functions of the <code>runtime</code> package by visiting <a target="_blank" rel="noopener" href="https://golang.org/pkg/runtime/">https://golang.org/pkg/runtime/</a>.</p>
+<h2 id="basic-syntax-and-grammar-in-go"><a href="#basic-syntax-and-grammar-in-go" class="headerlink" title="Basic Syntax and Grammar in GO"></a>Basic Syntax and Grammar in GO</h2><pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// using for loop to simulate while lopp</span>
+<span class="token keyword">for</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>condition<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">break</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">// using for loop to simulate do...while loop</span>
+<span class="token keyword">for</span> ok <span class="token operator">:=</span> <span class="token boolean">true</span><span class="token punctuation">;</span> ok<span class="token punctuation">;</span> ok <span class="token operator">=</span> anExpression <span class="token punctuation">&#123;</span>
+
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token function">differentS1AndS2</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  s1 <span class="token operator">:=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">int</span><span class="token punctuation">&#123;</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">&#125;</span>
+  s2 <span class="token operator">:=</span> s1<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">]</span>
+  s1<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">4</span>
+  <span class="token comment">// at this time, s1 and s2 both point to the same internal array</span>
+  fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"%v %[1]T\n"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>s2<span class="token punctuation">)</span>
+  fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"%v\n"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>s1<span class="token punctuation">)</span>
+  s1 <span class="token operator">=</span> <span class="token function">append</span><span class="token punctuation">(</span>s1<span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">,</span> <span class="token number">7</span><span class="token punctuation">,</span><span class="token number">9</span><span class="token punctuation">,</span><span class="token number">10</span><span class="token punctuation">)</span>
+  <span class="token comment">// at this time, s1 is different from s2</span>
+  fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"%v %[1]T\n"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>s2<span class="token punctuation">)</span>
+  fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"%v\n"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>s1<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Go has its own way of supporting <code>tuples</code>, which mainly allows functions to return <em>multiple values</em> without needing to <em>group</em> them in structures as is the case in C.</p>
+<p><code>new</code> returns the memory address of the allocated object. Put simply, <code>new</code> returns a pointer!</p>
+<p>The main difference between <code>new</code> and <code>make</code> is that variables created with <code>make</code> are properly initialized without just zeroing the allocated memory space. Additionally, <code>make</code> can only be applied to maps, channels, and slices, and it does not return a memory address, which means that <code>make</code> does not return a <em>pointer</em>.</p>
+<p>A Go <code>string</code> is a read-only <code>byte</code> <code>slice</code> that can hold any type of bytes, and it can have an arbitrary length.</p>
+<p>A <code>rune</code> is an <code>int32</code> value, and therefore it is a Go type that is used for representing a Unicode code point. A Unicode code point or code position is a numerical value that is usually used for representing single Unicode characters; however, it can also have alternative meanings, such as providing formatting information.</p>
+<p>A Go <em>package</em> is a Go source file that begins with the <code>package</code> keyword followed by the name of the package.</p>
+<p>A Go <em>type method</em> is a function with a special <em>receiver</em> argument. We declare methods as ordinary functions with an additional parameter that appears in front of the function name. This particular parameter <strong>connects</strong> the function to the type of that extra parameter. As a result, that parameter is called the <em>receiver</em> of the method.</p>
+<p>A type assertion is the <code>x.(T)</code> notation where <code>x</code> is of interface type and <code>T</code> is a type. Additionally, the actual value stored in <code>x</code> is of type <code>T</code>, and <code>T</code> must satisfy the interface type of <code>x</code>!</p>
+<p>Type assertions help you do two things. The first thing is to check whether an interface value keeps a particular type. When used this way, a type assertion returns two values: the underlying value and a bool value. Although the underlying value is what you might want to use, the Boolean value tells you whether the type assertion was successful or not! The second thing a type assertion does is to allow you to use the concrete value stored in an interface or assign it to a new variable. This means that if there is an int variable in an interface, you can get that value using type assertion.</p>
+<p>Glance at the usage of <code>interfaces</code>: <a href="/downloads/code/golang/single-file-execute/interfacesAssertion.go">interfacesAssertion.go</a>.</p>
+<h2 id="reflection"><a href="#reflection" class="headerlink" title="Reflection"></a>Reflection</h2><p><strong>Reflection</strong> is an advanced Go feature that allows you to dynamically learn the type of an arbitrary object as well as information about its structure. Go offers the <code>reflect</code> package for working with reflection.</p>
+<p>Reflection is necessary for the implementation of packages such as <code>fmt</code>, <code>text/template</code>, and <code>html/template</code>. In the <code>fmt</code> package, reflection saves you from having to deal explicitly with every data type that exists.</p>
+<p>Consequently, you might need to use reflection when you want to be as <em>generic</em> as possible, or when you want to make sure that you will be able to deal with data types that do not exist at the time that you are writing your code. Additionally, reflection is handy when working with values of types that do not implement a common interface.</p>
+<p>The stars of the reflect package are two types named reflect.Value and reflect.Type. The former type is used for storing values of any type, whereas the latter type is used for representing Go types.</p>
+<p>Reflection should be used sparingly for three main reasons.</p>
+<ol>
+<li> The first reason is that extensive use of reflection will make your programs hard to read and maintain. A potential solution to this problem is good documentation; however, developers are famous for not having the time to write the required documentation.</li>
+<li> The second reason is that the Go code which uses reflection will make your programs slower. Generally speaking, Go code that is made to work with a particular data type will always be faster than Go code that uses reflection to work dynamically with any Go data type. Additionally, such dynamic code will make it difficult for tools to refactor or analyze your code.</li>
+<li> The last reason is that reflection errors cannot be caught at build time and are reported at runtime as a panic. This means that reflection errors can potentially crash your programs!</li>
+</ol>
+<p>Glance at the package <code>reflection</code>: <a href="/downloads/code/golang/single-file-execute/reflection.go">reflection.go</a>.</p>
+<hr>
+<h2 id="go-concurrency"><a href="#go-concurrency" class="headerlink" title="Go Concurrency"></a>Go Concurrency</h2><p>Go offers its own unique and innovative way of achieving concurrency, which comes in the form of <strong>goroutines</strong> and <strong>channels</strong>.</p>
+<p>Goroutines are the smallest Go entities that can be executed on their own in a Go program, which implyies that goroutines are not autonomous entities like Unix processes—goroutines live in threads that live in Unix processes.</p>
+<p>Whilst channels can get data from goroutines in a concurrent and efficient way and thus allow goroutines to have a point of reference and communicate with each other.</p>
+<p>Everything in Go is executed using goroutines; this makes perfect sense since Go is a concurrent programming language by design. Therefore, when a Go program starts its execution, its single goroutine calls the <code>main()</code> function, which starts the actual program execution.</p>
+<blockquote>
+<p>You should never make any assumptions about the order in which your goroutines will be executed.</p>
+</blockquote>
+<p>The Unix kernel scheduler is responsible for the execution of the threads of a program.</p>
+<p>On the other hand, the Go runtime has its own scheduler, which is responsible for the execution of the goroutines using a technique known as <em>m:n scheduling</em>, where <em>m</em> goroutines are executed using <em>n</em> operating system threads using multiplexing. The Go scheduler is the Go component responsible for <em>the way and the order</em> in which the goroutines of a Go program get executed. This makes the Go scheduler a really important part of the Go programming language, as everything in a Go program is executed as a goroutine.</p>
+<p>It is a very common misconception that <em>concurrency</em> is the same thing as <em>parallelism_—this is just not true! _Parallelism</em> is the <em>simultaneous execution of multiple entities of some kind</em>, whereas <em>concurrency</em> is a way of structuring your components so that they <em>can be executed independently when possible</em>.</p>
+<p>It is only when you build software components concurrently that you can safely execute them in parallel, when and if your operating system and your hardware permit it. In a valid concurrent design, adding concurrent entities makes the whole system run faster because more things can run in parallel. So, the desired parallelism comes from a better concurrent expression and implementation of the problem. So, the developer should not think about parallelism, but about breaking things into independent components that solve the initial problem when combined.</p>
+<p>You can define a new goroutine using the <code>go</code> keyword followed by <em>a function name</em> or the full definition of <em>an anonymous function</em>. The <code>go</code> keyword <strong>makes the function call to return immediately, while the function starts running in the background as a goroutine and the rest of the program continues its execution</strong>.</p>
+<p>However, you cannot control or make any assumptions about the order in which your goroutines are going to be executed because this depends on the <em>scheduler of the operating system</em>, <em>the Go scheduler</em>, and <em>the load of the operating system</em>.</p>
+<p>Glance at the package <code>sync</code> in goroutine: <a href="/downloads/code/golang/single-file-execute/goroutinesSync.go">goroutinesSync.go</a>.</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// Although both functions implement the same functionality,</span>
+<span class="token comment">// their definitions are slightly different.</span>
+<span class="token comment">// The difference is created by the `&lt;-` symbol found on</span>
+<span class="token comment">// the right of the `chan` keyword in the definition of the `f2()` function.</span>
+<span class="token comment">// This denotes that the `c` channel can be used for writing only.</span>
+<span class="token keyword">func</span> <span class="token function">f1</span><span class="token punctuation">(</span>c <span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">,</span> x <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>x<span class="token punctuation">)</span>
+  c <span class="token operator">&lt;-</span> x
+<span class="token punctuation">&#125;</span>
+<span class="token comment">// `c` is send-only</span>
+<span class="token keyword">func</span> <span class="token function">f2</span><span class="token punctuation">(</span>c <span class="token keyword">chan</span><span class="token operator">&lt;-</span> <span class="token builtin">int</span><span class="token punctuation">,</span> x <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>x<span class="token punctuation">)</span>
+  c <span class="token operator">&lt;-</span> x
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">// `out` is send-only, `in` is receive-only</span>
+<span class="token keyword">func</span> <span class="token function">f1</span><span class="token punctuation">(</span>out <span class="token keyword">chan</span><span class="token operator">&lt;-</span> <span class="token builtin">int64</span><span class="token punctuation">,</span> in <span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token builtin">int64</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>x<span class="token punctuation">)</span>
+  fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token operator">&lt;-</span>out<span class="token punctuation">)</span> <span class="token comment">// invalid</span>
+  out <span class="token operator">&lt;-</span> x
+  in <span class="token operator">&lt;-</span> x <span class="token comment">// invalid</span>
+<span class="token punctuation">&#125;</span>
+<span class="token comment">// `out`, `in` are bidirectional</span>
+<span class="token keyword">func</span> <span class="token function">f2</span><span class="token punctuation">(</span>out <span class="token keyword">chan</span> <span class="token builtin">int64</span><span class="token punctuation">,</span> in <span class="token keyword">chan</span> <span class="token builtin">int64</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>x<span class="token punctuation">)</span>
+  c <span class="token operator">&lt;-</span> x
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="scheduler-in-go"><a href="#scheduler-in-go" class="headerlink" title="scheduler in go"></a>scheduler in go</h3><p>Go works using the <em>m:n scheduler</em> (or <em>M:N scheduler</em>) that schedules goroutines using OS threads.</p>
+<p>Go uses the <em>fork-join concurrency model</em>. The fork part of the model states that a child branch can be created at any point of a program. Analogously, the join part of the Go concurrency model is where the child branch will end and join with its parent. Among other things, both <code>sync.Wait()</code> statements and channels that collect the results of goroutines are join points, whereas any new goroutine creates a child branch.</p>
+<p>The <em>fair scheduling strategy</em> shares evenly all the load between the available processors.</p>
+<p>A goroutine in Go is a <em>task</em>, whereas everything after the calling statement of a goroutine is a <em>continuation</em>. In the <em>work stealing strategy</em> used by Go scheduler, a (logical) processor that is underutilized looks for additional work from other processors. When it finds such jobs, it steals them from the other processor(s), hence the name, <em>work stealing strategy</em>. Additionally, the work-stealing algorithm of Go queues and steals continuations. A <em>stalling join</em> is a point where a thread of execution stalls at a join and starts looking for other work to do. Although both task stealing and continuation stealing have stalling joins, continuations happen more often than tasks; therefore, the Go algorithm works with continuations rather than tasks.</p>
+<p>The main disadvantage of continuation stealing is that it requires extra work from the compiler of the programming language. Fortunately, Go provides that extra help and therefore uses <em>continuation stealing</em> in its work-stealing algorithm. One of the benefits of continuation stealing is that you get the same results when using just functions or a single thread with multiple goroutines. This makes perfect sense as only one thing is executed at any given time in both cases.</p>
+<p>Now, let’s return back to the m:n scheduling algorithm used in Go.</p>
+<p>The Go scheduler works using three main kinds of entities: OS threads (M) that are related to the operating system in use, goroutines (G), and logical processors (P). The number of processors that can be used by a Go program is specified by the <code>GOMAXPROCS</code> environment variable—at any given time there are most <code>GOMAXPROCS</code> processors.</p>
+<p>The following figure illustrates this point:</p>
+<img data-src="/images/golang/go-scheduler.png" alt="go scheduler" />
+
+<p>There are two different kinds of queues: a global queue and a local queue attached to each logical processor.</p>
+<p>Goroutines from the global queue are assigned to the queue of a logical processor in order to be executed. As a result, the Go scheduler needs to check the global queue in order to avoid executing goroutines that are only located at the local queue of each logical processor. However, the global queue is not checked all of the time, which means that it does not have an advantage over the local queues.</p>
+<p>Additionally, each logical processor can have multiple threads, and <em>the stealing occurs between the local queues of the available logical processors</em>. Finally, keep in mind that the Go scheduler is allowed to create more OS threads when needed. OS threads are pretty expensive, however, which means that dealing with OS threads too much might slow down your Go applications.</p>
+<h3 id="select"><a href="#select" class="headerlink" title="select"></a>select</h3><p>In practice, this means that <code>select</code> allows a goroutine to <em>wait</em> on multiple communications operations. Therefore, the main benefit is that <code>select</code> gives you the power to work with multiple channels using a single <code>select</code> block. As a consequence, you can have nonblocking operations on channels.</p>
+<blockquote>
+<p>The biggest problem when using multiple channels and the <code>select</code> keyword is <strong>deadlocks</strong>, which needs extra care during the design and the development process.</p>
+</blockquote>
+<p>You should checkout the file <a href="/downloads/code/golang/single-file-execute/selectSimple.go">selectSimple.go</a>.</p>
+<p>The biggest advantage of <code>select</code> is that it can connect and manage multiple channels. As channels connect goroutines, <code>select</code> connects channels that connect goroutines. Therefore, the <code>select</code> statement is one of the most important part of the Go concurrency model.</p>
+<p>You should checkout the file <a href="/downloads/code/golang/single-file-execute/selectTimeout.go">selectTimeout.go</a>, which use <code>timeout</code> and <code>select</code> to stop or return from goroutine earlier.</p>
+<p>If you send a message to a closed channel, the program will <em>panic</em>. However, if you try to read from a closed channel, you will get the <em>zero value</em> of the <em>type</em> of that channel. So, after closing a channel, you can no longer write to it, but you can still read from it. Finally, if you try to close a nil channel, your program will panic.</p>
+<p>In order to be able to close a channel, the channel must not be receive-only. Additionally, a <code>nil</code> channel always blocks, which means that trying to read or write from a <code>nil</code> channel will block. This property of channels can be very useful when you want to disable a branch of a select statement by assigning the <code>nil</code> value to a channel variable.</p>
+<h2 id="buffered-channels"><a href="#buffered-channels" class="headerlink" title="buffered channels"></a>buffered channels</h2><p>Buffered channels are channels that allow the Go scheduler to put jobs in the queue quickly in order to be able to deal with more requests.</p>
+<p>The technique presented here works as follows: All incoming requests are forwarded to a channel, which processes them one by one. When the channel is done processing a request, it sends a message to the original caller saying that it is ready to process a new one. So, the capacity of the buffer of the channel restricts the number of simultaneous requests that it can keep.</p>
+<h2 id="nil-channel"><a href="#nil-channel" class="headerlink" title="nil channel"></a>nil channel</h2><p>The nil channels are a special kind of channel because they will always block.</p>
+<p>You can read the usages of <em>buffered channels</em> and <em>nil channel</em> in this list <a href="/downloads/code/golang/single-file-execute/channelUsages.go">channelUsages</a>.</p>
+<p>An <a href="/downloads/code/golang/single-file-execute/channelInOrder.go">example</a> to use channel to ordering some goroutine execution.</p>
+<h2 id="shared-memory-and-shared-variables"><a href="#shared-memory-and-shared-variables" class="headerlink" title="Shared Memory and Shared Variables"></a>Shared Memory and Shared Variables</h2><p>Shared memory and shared variables are the most common ways for Unix threads to communicate with each other.</p>
+<p>A <strong>Mutex</strong> variable, which is an abbreviation for <em>mutual exclusion</em> variable, is mainly used for thread synchronization and for protecting shared data when multiple writes can occur at the same time. A mutex works like a buffered channel of capacity one, which allows at most one goroutine to access a shared variable at any given time. This means that there is no way for two or more goroutines to try to update that variable simultaneously.</p>
+<p>A <strong>critical section</strong> of a concurrent program is the code that cannot be executed simultaneously by all processes, threads, or, in this case, by all goroutines. It is the code that needs to be protected by mutexes. Therefore, identifying the critical sections of your code will make the whole programming process so much simpler that you should pay attention to this task.</p>
+<blockquote>
+<p>A critical section cannot be embedded in another critical section when both critical sections use the same sync.Mutex or sync.RWMutex variable. Put simply avoid, at almost any cost, spreading mutexes across functions because that makes it really hard to see whether you are embedding or not!</p>
+</blockquote>
+<p>A simple <a href="/downloads/code/golang/single-file-execute/mutexSimple.go">example</a>, with a lot of comments, to illustrate the <code>sync.Mutex</code> usage.</p>
+<p>However, the programme would fall into deadlock if you forget to unlock <code>sync.Mutex</code>, as the <a href="/downloads/code/golang/single-file-execute/mutexDeadlocked.go">list</a> shows.</p>
+<p>The <code>sync.RWMutex</code> type is another kind of mutex, to be honest, it is an improved version of <code>sync.Mutex</code>. In other words, <code>sync.RWMutex</code> is based on <code>sync.Mutex</code> with the necessary additions and improvements.</p>
+<p>Although only <em>one writer</em> is allowed to perform write operations using a <code>sync.RWMutex</code> mutex, you can have <em>multiple readers</em> owning a <code>sync.RWMutex</code> mutex. However, there is one thing of which you should be aware: until <em>all of the readers</em> of a <code>sync.RWMutex</code> mutex unlock that mutex, you cannot lock it for writing.</p>
+<p>The functions that can help you work with a <code>sync.RWMutex</code> mutex are <strong><code>RLock()</code></strong> and <strong><code>RUnlock()</code></strong>, which are used for locking and unlocking the mutex, respectively, for <em>reading purposes</em>.</p>
+<p>The <code>Lock()</code> and <code>Unlock()</code> functions used in a <code>sync.Mutex</code> mutex should still be used when you want to lock and unlock a <code>sync.RWMutex</code> mutex for <em>writing purposes</em>.</p>
+<p>A simple <a href="/downloads/code/golang/single-file-execute/rwMutexSimple.go">example</a>, with a lot of comments, to illustrate the <code>sync.RWMutex</code> usage.</p>
+<h2 id="sharing-memory-using-goroutines"><a href="#sharing-memory-using-goroutines" class="headerlink" title="Sharing memory using goroutines"></a>Sharing memory using goroutines</h2><p>Although shared memory is the traditional way that threads use to communicate with each other, Go comes with built-in synchronization features that allow a single goroutine to own a shared piece of data. This means that other goroutines must send messages to this single goroutine that owns the shared data, which prevents the corruption of the data.</p>
+<p>Such a goroutine is called a <strong>monitor goroutine</strong>. In Go terminology, this is <em>sharing memory by communicating</em> instead of <em>communicating by sharing memory</em>.</p>
+<blockquote>
+<p>Simply <em>sharing memory</em> brings us the problems such as race condition, read-write competition. While using <em>communicating</em>, using <code>channel</code> for example, we are sharing the data / message between gorountines.</p>
+</blockquote>
+<blockquote>
+<p>That said, Go does provide traditional locking mechanisms in the sync package. Most locking issues can be solved using either channels or traditional locks.</p>
+<p>So which should you use? Use whichever is most expressive and/or most simple.</p>
+</blockquote>
+<p>A simple <a href="/downloads/code/golang/single-file-execute/goroutinesSharedMemory.go">example</a>, with a lot of comments, to illustrate how we can implement shared memory among goroutines using goroutine and channels.</p>
+<h2 id="catching-race-conditions"><a href="#catching-race-conditions" class="headerlink" title="Catching race conditions"></a>Catching race conditions</h2><p>Using the <code>-race</code> flag when running or building a Go source file will turn on the Go <strong>race detector</strong>, which will make the compiler create a modified version of a typical executable file. This modified version can record all accesses to shared variables as well as all synchronization events that take place, including calls to <code>sync.Mutex</code> and <code>sync.WaitGroup</code>. After analyzing the relevant events, the race detector prints a report that can help you identify potential problems so that you can correct them.</p>
+<p>A simple <a href="/downloads/code/golang/single-file-execute/raceCatch.go">example</a>, with a lot of comments, to illustrate how we can detect the race condition. Using <code>sync.Mutex</code>, we can get rid of the race condition since we locked it.</p>
+<h2 id="the-context-package"><a href="#the-context-package" class="headerlink" title="The context package"></a>The context package</h2><p>The main purpose of the <code>context</code> package is to define the <code>Context</code> type and support <em>cancellation</em>! Yes, you heard that right; the main purpose of the context package is supporting cancellation because there are times that, for some reason, you want to abandon what you are doing. Also, it would be very helpful to be able to include some extra information about your cancelling decisions.</p>
+<p>The <code>Context</code> type is an interface with four methods, named <code>Deadline()</code>, <code>Done()</code>, <code>Err()</code>, and <code>Value()</code>. The good news is that you do not need to implement all of these functions of the <code>Context</code> interface—you just need to modify a <code>Context</code> variable using functions such as <code>context.WithCancel()</code> and <code>context.WithTimeout()</code>.</p>
+<p>A simple <a href="/downloads/code/golang/single-file-execute/contextSimple.go">example</a>, with a lot of comments, to illustrate how we can create a context with <code>context.Background()</code>, how the <code>cancel()</code> function is called to <em>cancel</em> the context.</p>
+<p>An advanced <a href="/downloads/code/golang/single-file-execute/contextWithHttp.go">example</a>, with a lot of comments, to illustrate how we can create a context with <code>context.Background()</code>, how the <code>cancel()</code> function is called to <em>cancel</em> the <code>http.Request</code>.</p>
+<h2 id="worker-pool"><a href="#worker-pool" class="headerlink" title="Worker pool"></a>Worker pool</h2><p>Generally speaking, a <em>Worker pool</em> is a set of threads that are about to process jobs assigned to them. We replace the threads with goroutines to implement the worker pool. However, threads do not usually die after serving a request because the cost of ending a thread and creating a new one is too high, whereas goroutines do <em>die</em> after finishing their job.</p>
+<p>As you will see in the <a href="/downloads/code/golang/single-file-execute/workGerPool.go">example</a>, worker pools are implemented with the help of buffered channels, because they allow you to limit the number of goroutines running at the same time.</p>
+<p>The <a href="/downloads/code/golang/single-file-execute/workerPool.go">example</a> will implement a simple task: it will process integer numbers and print their square values using a single goroutine for serving each request.</p>
+<h2 id="code-testing-optimazition-profiling"><a href="#code-testing-optimazition-profiling" class="headerlink" title="Code Testing, Optimazition, Profiling"></a>Code Testing, Optimazition, Profiling</h2><p><strong>Code optimization</strong> is the process where you try to discover the parts of your code that have a big influence on the performance of the entire program in order to make them <em>run faster</em> or <em>use fewer resources</em>.</p>
+<blockquote>
+<p>The general advice for optimization is that you must <em>optimize bug-free code only</em>.</p>
+</blockquote>
+<p><strong>Profiling</strong> is a process of dynamic program analysis that measures various values related to program execution in order to give you a better understanding on the behavior of your program.</p>
+<blockquote>
+<p>The single most important thing to remember is that if you want to profile Go code, you will need to import the <code>runtime/pprof</code> standard Go package, either directly or indirectly. You can find the help page of the pprof tool by executing the <code>go tool pprof -help</code> command.</p>
+</blockquote>
+<p>Go supports two kinds of profiling: <strong>CPU profiling</strong> and <strong>memory profiling</strong>.</p>
+<p>Two examples: <a href="/downloads/code/golang/single-file-execute/profileMe.go">using native package to profile</a>, <a href="/downloads/code/golang/single-file-execute/profileMeBetter.go">using third-party package to profile</a>.</p>
+<p>Go allows you to write tests for your Go code in order to detect bugs. Strictly speaking, this section is about <strong>automated testing</strong>, which involves writing extra code to verify whether the real code; that is, the production code, works as expected or not. Thus, the result of a test function is either <em>PASS</em> or <em>FAIL</em>.</p>
+<blockquote>
+<p>Always put the testing code in a different source file. There is no need to create a huge source file that is hard to read and maintain.</p>
+</blockquote>
+<p>An <a href="/downloads/code/golang/single-file-execute/testMe.go">example</a> with its <a href="/downloads/code/golang/single-file-execute/testMe_test.go">test file</a> show how to do some test in Go.</p>
+<h2 id="network-programming"><a href="#network-programming" class="headerlink" title="Network Programming"></a>Network Programming</h2><p>Some useful snippets on network programming in go could be found <a target="_blank" rel="noopener" href="https://github.com/AkatQuas/kiddo-plays/tree/master/golanger/mastering-go-archive/network">here</a>.</p>
+<p>You cannot create a TCP or UDP client or server in Go without using the functionality offered by the <code>net</code> package.</p>
+<p>The <code>net.Dial()</code> function is used for connecting to a network as a client, whereas the <code>net.Listen()</code> function is used for telling a Go program to accept network connections and thus act as a server. The first parameter of both functions is the network type, but this is where their similarities end. The return value of both the <code>net.Dial()</code> and <code>net.Listen()</code> functions is of the <code>net.Conn</code> type, which implements the <code>io.Reader</code> and <code>io.Writer</code> interfaces.</p>
+<h3 id="tcp-client"><a href="#tcp-client" class="headerlink" title="TCP client"></a>TCP client</h3><p>TCP stands for Transmission Control Protocol, and its principal characteristic is that it is a reliable protocol.</p>
+<p>The TCP header of each packet includes <em>source port</em> and <em>destination port</em> fields. These two fields, plus the source and destination IP addresses, are combined to identify uniquely a single TCP connection.</p>
+<p>Examples: <a href="/downloads/code/golang/single-file-execute/TCPclient.go">TCP client 1</a>, <a href="/downloads/code/golang/single-file-execute/TCPclient_other.go">TCP client 2</a>, <a href="/downloads/code/golang/single-file-execute/TCPserver.go">TCP server 1</a>, <a href="/downloads/code/golang/single-file-execute/TCPserver_other.go">TCP server 2</a>, <a href="/downloads/code/golang/single-file-execute/TCPserver_goroutine.go">TCP server with goroutines</a>, <a href="/downloads/code/golang/single-file-execute/TCPserver_go_example.go">TCP server 2 with goroutines</a>.</p>
+<h3 id="udp-client"><a href="#udp-client" class="headerlink" title="UDP client"></a>UDP client</h3><p>The biggest difference between UDP and TCP is that UDP is not reliable by design. This also means that in general, UDP is simpler than TCP because UDP does not need to keep the state of a UDP connection.</p>
+<p>Examples: <a href="/downloads/code/golang/single-file-execute/UDPclient.go">UDP client</a>, <a href="/downloads/code/golang/single-file-execute/UDPserver.go">UDP server</a>.</p>
+<h3 id="remote-procedure-call-rpc"><a href="#remote-procedure-call-rpc" class="headerlink" title="Remote Procedure Call (RPC)"></a>Remote Procedure Call (RPC)</h3><p>Remote Procedure Call (RPC) is a client-server mechanism for Interprocess communication that uses TCP/IP.</p>
+<h2 id="examples-for-closures-and-anonymous-goroutines"><a href="#examples-for-closures-and-anonymous-goroutines" class="headerlink" title="Examples for Closures and Anonymous Goroutines"></a>Examples for Closures and Anonymous Goroutines</h2><pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">var</span> wg sync<span class="token punctuation">.</span>WaitGroup
+salutation <span class="token operator">:=</span> <span class="token string">"hello"</span>
+wg<span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+<span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">defer</span> wg<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  salutation <span class="token operator">=</span> <span class="token string">"welcome"</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+wg<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>salutation<span class="token punctuation">)</span> <span class="token comment">// salutation is modified to "welcome"</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// Compile warning: loop variable salutation captured by func literal</span>
+<span class="token comment">//</span>
+<span class="token comment">// output: the order is non-deterministic, but the salutation is "good day"</span>
+<span class="token comment">// 2 good day</span>
+<span class="token comment">// 0 good day</span>
+<span class="token comment">// 1 good day</span>
+<span class="token keyword">var</span> wg sync<span class="token punctuation">.</span>WaitGroup
+<span class="token keyword">for</span> i<span class="token punctuation">,</span> salutation <span class="token operator">:=</span> <span class="token keyword">range</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">&#123;</span><span class="token string">"hello"</span><span class="token punctuation">,</span> <span class="token string">"greetings"</span><span class="token punctuation">,</span> <span class="token string">"good day"</span><span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span>
+  wg<span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+  <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span>index <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">defer</span> wg<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>i<span class="token punctuation">,</span> salutation<span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+wg<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>In the above example, the goroutine is running a closure that has closed over the iteration variable <code>salutation</code>, which has a type of <code>string</code>. As our loop iterates, <code>salutation</code> is being assigned to the next string value in the slice literal. Because the goroutines being scheduled may run at any point in time in the future, it is undetermined what values will be printed from within the goroutine. This means the <code>salutation</code> variable falls out of scope. This is an interesting side note about how Go manages memory. The Go runtime is observant enough to know that a reference to the salutation variable is still being held, and therefore will transfer the memory to the heap so that the goroutines can continue to access it.</p>
+<p>Usually, the <em>loop</em> exits before any <em>goroutines</em> begin running, so salutation is transferred to the heap holding a reference to the last value in the slice, <code>&quot;good day&quot;</code>.</p>
+<p>The proper way to write this loop is to pass a copy of <code>salutation</code> into the closure so that by the time the goroutine is run, it will be operating on the data from its iteration of the loop.</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// output: order is non-deterministic</span>
+<span class="token comment">// hello</span>
+<span class="token comment">// good day</span>
+<span class="token comment">// greetings</span>
+<span class="token keyword">var</span> wg sync<span class="token punctuation">.</span>WaitGroup
+<span class="token keyword">for</span> <span class="token boolean">_</span><span class="token punctuation">,</span> salutation <span class="token operator">:=</span> <span class="token keyword">range</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">&#123;</span><span class="token string">"hello"</span><span class="token punctuation">,</span> <span class="token string">"greetings"</span><span class="token punctuation">,</span> <span class="token string">"good day"</span><span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span>
+  wg<span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+  <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span>salutation <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token comment">// declare a parameter, which shadow the original salutation variable</span>
+    <span class="token keyword">defer</span> wg<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>salutation<span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">(</span>salutation<span class="token punctuation">)</span> <span class="token comment">// pass in the current iteration’s variable to the closure</span>
+<span class="token punctuation">&#125;</span>
+wg<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/golang/" rel="tag"># golang</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/11/28/docker-n-kubernetes.html" rel="prev" title="Learn some Docker and Kubernetes">
+                  <i class="fa fa-chevron-left"></i> Learn some Docker and Kubernetes
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/09/10/sicp.html" rel="next" title="Structure and Interpretation of Computer Programs">
+                  Structure and Interpretation of Computer Programs <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

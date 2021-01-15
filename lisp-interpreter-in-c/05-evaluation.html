@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="document codes:  parsing evaluation.md  TreeUsing mpc, we can read input, and we have it structured internally, but we are still unable to evaluate it. We are going to add some code to evaluate its st">
+<meta property="og:type" content="website">
+<meta property="og:title" content="05 Evaluation">
+<meta property="og:url" content="https://akatquas.github.io/lisp-interpreter-in-c/05-evaluation.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="document codes:  parsing evaluation.md  TreeUsing mpc, we can read input, and we have it structured internally, but we are still unable to evaluate it. We are going to add some code to evaluate its st">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-01-15T10:21:08.394Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.394Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="lisp">
+<meta property="article:tag" content="interpreter">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://akatquas.github.io/lisp-interpreter-in-c/05-evaluation.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>05 Evaluation | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#tree"><span class="nav-text">Tree</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#recursion"><span class="nav-text">Recursion</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#evaluation"><span class="nav-text">Evaluation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#printing"><span class="nav-text">Printing</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">05 Evaluation
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <p><a target="_blank" rel="noopener" href="http://www.buildyourownlisp.com/chapter7_evaluation">document</a></p>
+<p>codes:</p>
+<ul>
+<li><a href="./codes/parsing-evaluation.c">parsing evaluation.md</a></li>
+</ul>
+<h2 id="tree"><a href="#tree" class="headerlink" title="Tree"></a>Tree</h2><p>Using <code>mpc</code>, we can read input, and we have it structured internally, but we are still unable to evaluate it. We are going to add some code to evaluate its structure and actually performs the computations encoded within.</p>
+<p>This internal structure is what we saw printed out by the programme in the previous chapter. It is called an <strong>Abstract Syntax Tree</strong>, and it represents the structure of the program based on the input entered by the user. At the leaves of this tree are numbers and operators - the actual data to be processed. At the branches are the rules used to produce this part of the tree - the information on how to traverse and evaluate it.</p>
+<p>Before working out exactly how we are going to do this traversal, let’s see exactly how this structure is defined internally. If we peek inside <code>mpc.h</code> we can have a look at the definition of <code>mpc_ast_t</code>, which is the data structure we got from the parse.</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">typedef</span> <span class="token keyword">struct</span> <span class="token class-name">mpc_ast_t</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">char</span><span class="token operator">*</span> tag<span class="token punctuation">;</span>
+    <span class="token keyword">char</span><span class="token operator">*</span> contents<span class="token punctuation">;</span>
+    mpc_state_t state<span class="token punctuation">;</span>
+    <span class="token keyword">int</span> children_num<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> <span class="token class-name">mpc_ast_t</span><span class="token operator">*</span><span class="token operator">*</span> children<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span> mpc_ast_t<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>This <code>struct</code> has a number of fields we can access. Let’s take a look at them one by one.</p>
+<p>The first field is <code>tag</code>. When we printed out the tree this was the information that preceded the contents of the node. It was a string containing a list of all the rules used to parse that particular item. For example <code>expr|number|regex</code>.</p>
+<p>This <code>tag</code> field is going to be important as it lets us see what parse rules have been used to create the node.</p>
+<p>The second field is <code>contents</code>. This will contain the actual contents of the node such as <code>&#39;*&#39;</code>, <code>&#39;(&#39;</code> or <code>&#39;5&#39;</code>. You’ll notice for branches this is empty, but for leaves we can use it to find the operator or number to use.</p>
+<p>The next field is <code>state</code>. This contains information about what state the parser was in when it found this node, such as the line and column number. We won’t make use of this in our program.</p>
+<p>Finally we see two fields that are going to help us traverse the tree. These are <code>children_num</code> and <code>children</code>. The first field tells us how many children a node has, and the second is an array of these children.</p>
+<p>The type of the <code>children</code> field is <code>mpc_ast_t**</code>. This is a double pointer type. It isn’t as scary as it looks and will be explained in greater detail in later chapters. For now you can think of it as a list of the child nodes of this tree.</p>
+<p>We can access a child node by accessing this field using array notation. This is done by writing the field name <code>children</code> and suffixing it with square brackets containing the index of the child to access. For example to access the first child of the node we can use <code>children[0]</code>.</p>
+<p>Because the type <code>mpc_ast_t*</code> is a <strong>pointer</strong> to a struct, there is a slightly different syntax to access its fields. We need to use an arrow <code>-&gt;</code> instead of a dot <code>.</code>. There is no fundamental reason for this switch in operators, so for now just remember that field access of pointer types uses an arrow.</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">/* Load AST from output */</span>
+mpc_ast_t<span class="token operator">*</span> a <span class="token operator">=</span> r<span class="token punctuation">.</span>output<span class="token punctuation">;</span>
+<span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"Tag: %s\n"</span><span class="token punctuation">,</span> a<span class="token operator">-></span>tag<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"Contents: %s\n"</span><span class="token punctuation">,</span> a<span class="token operator">-></span>contents<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"Number of children: %i\n"</span><span class="token punctuation">,</span> a<span class="token operator">-></span>children_num<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">/* Get first Child */</span>
+mpc_ast_t<span class="token operator">*</span> c0 <span class="token operator">=</span> a<span class="token operator">-></span>children<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"First child tag: %s\n"</span><span class="token punctuation">,</span> c0<span class="token operator">-></span>tag<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"First child contents: %s\n"</span><span class="token punctuation">,</span> c0<span class="token operator">-></span>contents<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"First child number of children: %i\n"</span><span class="token punctuation">,</span> c0<span class="token operator">-></span>children_num<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="recursion"><a href="#recursion" class="headerlink" title="Recursion"></a>Recursion</h2><p>There is a odd thing about this tree structure. It refers to itself. Each of its children are themselves trees again, and the children of those children are trees yet again. Just like our languages and re-write rules, data in this structure contains repeated substructures that resemble their parents.</p>
+<p>This pattern of repeated substructures could go on and on. Clearly if we want a function which can work on all possible trees we can’t look just a couple of nodes down, we have to define it to work on trees of any depth.</p>
+<p>Luckily we can do this, by exploiting the nature of how these substructures repeat and using a technique called <strong>recursion</strong>.</p>
+<p>Put simply a <strong>recursive function</strong> is one that calls itself as some part of its calculation.</p>
+<p>It sounds weird for a function to be defined in terms of itself. But consider that functions can give different outputs when supplied with different inputs. If we give changed, or different inputs to a recursive call to the same function, and provide a way for this function to not call itself again under certain conditions, we can be more confident this <strong>recursive function</strong> is doing something useful.</p>
+<p>As an example we can write a recursive function which will count the number of nodes in our tree structure.</p>
+<p>To begin we work out how it will act in the most simple case - if the input tree has no children. In this case we know the result is simply one. Now we can go on to define the more complex case - if the tree has one or more children. In this case the result will be one (for the node itself), plus the number of nodes in all of those children.</p>
+<p>ut how do we find the number of nodes in all of the children? Well we can use the function we are in the process of defining! Yeah, <strong>Recursion</strong>.</p>
+<p>In C we might write it something like this:</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> <span class="token function">number_of_nodes</span><span class="token punctuation">(</span>mpc_ast_t<span class="token operator">*</span> t<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span> t<span class="token operator">-></span>children_num <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token keyword">return</span> <span class="token number">1</span><span class="token punctuation">;</span> <span class="token punctuation">&#125;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span> t<span class="token operator">-></span>children_num <span class="token operator">></span> <span class="token number">1</span> <span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">int</span> total <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> t<span class="token operator">-></span>children_num<span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            total <span class="token operator">=</span> total <span class="token operator">+</span> <span class="token function">number_of_nodes</span><span class="token punctuation">(</span>t<span class="token operator">-></span>children<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token keyword">return</span> total<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Recursive functions are weird because they require an odd leap of faith. First we have to assume we have a function which does something correctly already, and then we have to go about using this function, to write the initial function we assumed we had!</p>
+<p>Like most things, recursive functions almost always end up following a similar pattern. First a base case is defined. This is the case that ends the recursion, such as <code>t-&gt;children_num == 0</code> in our previous example. After this the recursive case is defined, such as <code>t-&gt;children_num &gt;= 1</code> in our previous example, which breaks down a computation into smaller parts, and calls itself recursively to compute those parts, before combining them together.</p>
+<h2 id="evaluation"><a href="#evaluation" class="headerlink" title="Evaluation"></a>Evaluation</h2><p>To evaluate the parse tree we are going to write a recursive function. But before we get started, let us try and see what observations we can make about the structure of the tree we get as input. Try printing out some expressions using your program from the previous chapter. What do you notice?</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">lispy<span class="token operator">></span> <span class="token operator">*</span> <span class="token number">10</span> <span class="token punctuation">(</span><span class="token operator">+</span> <span class="token number">1</span> <span class="token number">51</span><span class="token punctuation">)</span>
+<span class="token operator">></span>
+  regex
+  operator<span class="token operator">|</span><span class="token keyword">char</span><span class="token operator">:</span><span class="token number">1</span><span class="token operator">:</span><span class="token number">1</span> <span class="token string">'*'</span>
+  expr<span class="token operator">|</span>number<span class="token operator">|</span>regex<span class="token operator">:</span><span class="token number">1</span><span class="token operator">:</span><span class="token number">3</span> <span class="token string">'10'</span>
+  expr<span class="token operator">|</span><span class="token operator">></span>
+    <span class="token keyword">char</span><span class="token operator">:</span><span class="token number">1</span><span class="token operator">:</span><span class="token number">6</span> <span class="token string">'('</span>
+    operator<span class="token operator">|</span><span class="token keyword">char</span><span class="token operator">:</span><span class="token number">1</span><span class="token operator">:</span><span class="token number">7</span> <span class="token string">'+'</span>
+    expr<span class="token operator">|</span>number<span class="token operator">|</span>regex<span class="token operator">:</span><span class="token number">1</span><span class="token operator">:</span><span class="token number">9</span> <span class="token string">'1'</span>
+    expr<span class="token operator">|</span>number<span class="token operator">|</span>regex<span class="token operator">:</span><span class="token number">1</span><span class="token operator">:</span><span class="token number">11</span> <span class="token string">'51'</span>
+    <span class="token keyword">char</span><span class="token operator">:</span><span class="token number">1</span><span class="token operator">:</span><span class="token number">13</span> <span class="token string">')'</span>
+  regex<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>One observation is that if a node is tagged with <code>number</code> it is always a number, has no children, and we can just convert the contents to an integer. This will act as the <strong>base case</strong> in our recursion.</p>
+<p>If a node is tagged with <code>expr</code>, and is not a <code>number</code>, we need to look at its second child (the first child is always <code>&#39;(&#39;</code>) and see which operator it is. Then we need to apply this operator to the evaluation of the remaining children, excluding the final child which is always <code>&#39;)&#39;</code>. This is our <strong>recursive case</strong>. This also needs to be done for the root node.</p>
+<p>When we evaluate our tree, just like when counting the nodes, we’ll need to accumulate the result. To represent this result we’ll use the C type <code>long</code> which means a <strong>long integer</strong>.</p>
+<p>To detect the tag of a node, or to get a number from a node, we will need to make use of the <code>tag</code> and <code>contents</code> fields. These are <strong>string</strong> fields, so we are going to have to learn a couple of string functions first.</p>
+<table>
+<thead>
+<tr>
+<th align="center">-</th>
+<th align="left">-</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>atoi</code></td>
+<td align="left">Converts a <code>char*</code> to an <code>int</code></td>
+</tr>
+<tr>
+<td align="center"><code>strcmp</code></td>
+<td align="left">Takes as input two <code>char*</code> and if they are equal it returns <code>0</code></td>
+</tr>
+<tr>
+<td align="center"><code>strstr</code></td>
+<td align="left">Takes as input tow <code>char*</code> and returns a pointer to the location of the second in the first, or <code>0</code> if the second is not a sub-string of the first</td>
+</tr>
+</tbody></table>
+<p>We can use <code>strcmp</code> to check which operator to use, and <code>strstr</code> to check if a tag contains some substring. Altogether our recursive evaluation function looks like this. And we can define the <code>eval_op</code> function as follows. It takes in a number, an operator string, and another number. It tests for which operator is passed in, and performs the corresponding C operation on the inputs.</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">long</span> <span class="token function">eval_op</span><span class="token punctuation">(</span><span class="token keyword">long</span> x<span class="token punctuation">,</span> <span class="token keyword">char</span><span class="token operator">*</span> op<span class="token punctuation">,</span> <span class="token keyword">long</span> y<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">strcmp</span><span class="token punctuation">(</span>op<span class="token punctuation">,</span> <span class="token string">"+"</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token keyword">return</span> x <span class="token operator">+</span> y<span class="token punctuation">;</span> <span class="token punctuation">&#125;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">strcmp</span><span class="token punctuation">(</span>op<span class="token punctuation">,</span> <span class="token string">"-"</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token keyword">return</span> x <span class="token operator">-</span> y<span class="token punctuation">;</span> <span class="token punctuation">&#125;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">strcmp</span><span class="token punctuation">(</span>op<span class="token punctuation">,</span> <span class="token string">"*"</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token keyword">return</span> x <span class="token operator">*</span> y<span class="token punctuation">;</span> <span class="token punctuation">&#125;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">strcmp</span><span class="token punctuation">(</span>op<span class="token punctuation">,</span> <span class="token string">"/"</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token keyword">return</span> x <span class="token operator">/</span> y<span class="token punctuation">;</span> <span class="token punctuation">&#125;</span>
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+
+<span class="token keyword">long</span> <span class="token function">eval</span><span class="token punctuation">(</span>mpc_ast_t<span class="token operator">*</span> t<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">/* If tagged as number return it directly */</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">strstr</span><span class="token punctuation">(</span>t<span class="token operator">-></span>tag<span class="token punctuation">,</span> <span class="token string">"number"</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> <span class="token function">atoi</span><span class="token punctuation">(</span>t<span class="token operator">-></span>contents<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token comment">/* The operator is always second child */</span>
+    <span class="token keyword">char</span><span class="token operator">*</span> op <span class="token operator">=</span> t<span class="token operator">-></span>children<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token operator">-></span>contents<span class="token punctuation">;</span>
+
+    <span class="token comment">/* we store the third child in `x` */</span>
+    <span class="token keyword">long</span> x <span class="token operator">=</span> <span class="token function">eval</span><span class="token punctuation">(</span>t<span class="token operator">-></span>children<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">/* Iterate the remaining children and combining */</span>
+    <span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">3</span><span class="token punctuation">;</span>
+    <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token function">strstr</span><span class="token punctuation">(</span>t<span class="token operator">-></span>children<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token operator">-</span>tag<span class="token punctuation">,</span> <span class="token string">"expr"</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        x <span class="token operator">=</span> <span class="token function">eval_op</span><span class="token punctuation">(</span>x<span class="token punctuation">,</span> op<span class="token punctuation">,</span> <span class="token function">eval</span><span class="token punctuation">(</span>t<span class="token operator">-></span>children<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token number">0</span><span class="token punctuation">;</span>
+        i<span class="token operator">++</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">return</span> x<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="printing"><a href="#printing" class="headerlink" title="Printing"></a>Printing</h2><p>Instead of printing the tree, we now want to print the result of the evaluation. Therefore we need to pass the tree into our <code>eval</code> function, and print the result we get using <code>printf</code> and the specifier <code>%li</code>, which is used for <code>long</code> type.</p>
+<p>We also need to remember to delete the output tree after we are done evaluating it.</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">long</span> result <span class="token operator">=</span> <span class="token function">eval</span><span class="token punctuation">(</span>r<span class="token punctuation">.</span>output<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%li\n"</span><span class="token punctuation">,</span> result<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">mpc_ast_delete</span><span class="token punctuation">(</span>r<span class="token punctuation">.</span>output<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p><a href="06-error-handling.html">Next on Error Handling</a></p>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

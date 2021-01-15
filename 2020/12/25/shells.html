@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="Project on GitHub Shell scripts examples select job from Procfile: Using scripts to select some job listed in Procfile.  parsing arguments from command line.  secure shell template: Using this templat">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Quick learning on Shells">
+<meta property="og:url" content="https://akatquas.github.io/2020/12/25/shells.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="Project on GitHub Shell scripts examples select job from Procfile: Using scripts to select some job listed in Procfile.  parsing arguments from command line.  secure shell template: Using this templat">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-12-25T01:45:15.000Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.366Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="shell">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://akatquas.github.io/2020/12/25/shells.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>Quick learning on Shells | 🔭</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#shell-scripts-examples"><span class="nav-text">Shell scripts examples</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#learning-materials"><span class="nav-text">Learning materials</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://akatquas.github.io/2020/12/25/shells.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Akat">
+      <meta itemprop="description" content="Take notes aperiodically">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="🔭">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Quick learning on Shells
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-12-25 09:45:15" itemprop="dateCreated datePublished" datetime="2020-12-25T09:45:15+08:00">2020-12-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/command-line/" itemprop="url" rel="index"><span itemprop="name">command line</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p><a target="_blank" rel="noopener" href="https://github.com/AkatQuas/kiddo-plays/tree/master/shells">Project on GitHub</a></p>
+<h2 id="shell-scripts-examples"><a href="#shell-scripts-examples" class="headerlink" title="Shell scripts examples"></a>Shell scripts examples</h2><ul>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/AkatQuas/kiddo-plays/tree/master/shells/select-job-from-procfile">select job from Procfile</a>: Using scripts to select some job listed in Procfile.</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/AkatQuas/kiddo-plays/blob/master/shells/parsing-arguments.sh">parsing arguments from command line</a>.</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/AkatQuas/kiddo-plays/blob/master/shells/secure-shell-template.sh">secure shell template</a>: Using this template to write your shell scripts.</p>
+</li>
+</ul>
+<a id="more"></a>
+
+<h2 id="learning-materials"><a href="#learning-materials" class="headerlink" title="Learning materials"></a>Learning materials</h2><ul>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/koalaman/shellcheck">Shell checks</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://wangdoc.com/bash/intro.html">Shell quick tutorials (Simplified Chinese)</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/huyubing/books-pdf/blob/master/Shell%E8%84%9A%E6%9C%AC%E5%AD%A6%E4%B9%A0%E6%8C%87%E5%8D%97.pdf">Shell 脚本学习指南.pdf (Simplified Chinese)</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://www.explainshell.com/">Explain shell</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/tldr-pages/tldr">tldr manpage for command</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://missing.csail.mit.edu/2020/shell-tools/">Shell basic 101</a></p>
+<p><code>sed</code>, <code>awk</code>, <code>grep</code>, <code>printf</code>, <code>head</code>, <code>tail</code>, <code>sort</code>, <code>cut</code>, <code>tr</code>, <code>wc</code>.</p>
+<p><code>bg</code>, <code>fg</code>, <code>jobs</code>, <code>kill</code>, <code>command</code>, <code>read</code>, <code>times</code>, <code>sleep</code>.</p>
+<p><code>gzip</code>, <code>tar</code>.</p>
+<p><code>mktemp</code>, <code>find</code>, <code>locate</code>.</p>
+<p><code>ps</code>, <code>top</code>, <code>crontab</code>.</p>
+<p><code>kill</code> ( <code>ABRT</code>, <code>HUP</code>, <code>KILL</code>, <code>TERM</code> ), <code>trap</code>.</p>
+<p><code>set</code>, <code>shopt</code>, <code>getopts</code>.</p>
+<details>
+<summary>Expansion</summary>
+
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># $varname exist and not null, using $varname</span>
+<span class="token comment"># #varname undefined, using `word`</span>
+<span class="token variable">$&#123;varname<span class="token operator">:-</span>word&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># $varname exist and not null, using $varname</span>
+<span class="token comment"># #varname undefined, using `word`</span>
+<span class="token variable">$&#123;varname<span class="token operator">:=</span>word&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># $varname exist and not null, using $varname</span>
+<span class="token comment"># #varname undefined, script exit with error message `message`</span>
+<span class="token variable">$&#123;varname<span class="token operator">:?</span>message&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+</details>
+
+<blockquote>
+<p><em>How should you organize your dotfiles?</em> They should be in their own folder, under version control, and symlinked into place using a script.</p>
+</blockquote>
+<details>
+<summary>Some special variables to refer to arguments, error codes, and other releavant variables</summary>
+
+<ul>
+<li><code>$0</code> - Name of the script</li>
+<li><code>$1</code> to <code>$9</code> - Arguments to the script. <code>$1</code> is the first argument and so on.</li>
+<li><code>$@</code> - All the arguments</li>
+<li><code>$#</code> - Number of arguments</li>
+<li><code>$?</code> - Return code of the previous command</li>
+<li><code>$$</code> - Process identification number (PID) for the current script</li>
+<li><code>!!</code> - Entire last command, including arguments. A common pattern is to execute a command only for it to fail due to missing permissions; you can quickly re-execute the command with sudo by doing <code>sudo !!</code></li>
+<li><code>$_</code> - Last argument from the last command. If you are in an interactive shell, you can also quickly get this value by typing <code>Esc</code> followed by .</li>
+</ul>
+</details>
+
+<details>
+<summary>Expanding expressions techniques </summary>
+
+<ul>
+<li>Wildcards - Whenever you want to perform some sort of wildcard matching, you can use <code>?</code> and <code>*</code> to match one or any amount of characters respectively. For instance, given files <code>foo</code>, <code>foo1</code>, <code>foo2</code>, <code>foo10</code> and <code>bar</code>, the command rm <code>foo?</code> will delete <code>foo1</code> and <code>foo2</code> whereas rm <code>foo*</code> will delete all but <code>bar</code>.</li>
+<li>Curly braces <code>&#123;&#125;</code> - Whenever you have a common substring in a series of commands, you can use curly braces for bash to expand this automatically. This comes in very handy when moving or converting files.</li>
+</ul>
+</details>
+
+<details>
+<summary>Batch manipulation on files using globbing</summary>
+
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># Find all python files that have a folder named test in their path</span>
+<span class="token function">find</span> <span class="token builtin class-name">.</span> -path <span class="token string">'*/test/*.py'</span> -type f
+
+<span class="token comment"># Delete all files with .tmp extension</span>
+<span class="token function">find</span> <span class="token builtin class-name">.</span> -name <span class="token string">'*.tmp'</span> -exec <span class="token function">rm</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span> <span class="token punctuation">\</span><span class="token punctuation">;</span>
+
+<span class="token comment"># Find all conf files and back up them</span>
+<span class="token function">find</span> <span class="token builtin class-name">.</span> -name <span class="token string">'*.conf'</span> -exec convert <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>.bak <span class="token punctuation">\</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</details>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/AkatQuas/kiddo-plays/tree/master/shells/makefiles">Makefiles</a>: Several Makefile templates.</p>
+<ul>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/huyubing/books-pdf/blob/master/%E8%B7%9F%E6%88%91%E4%B8%80%E8%B5%B7%E5%86%99makefile.pdf">跟我一起写 makefile.pdf</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/huyubing/books-pdf/blob/master/automake.pdf">GNU Automake</a></p>
+</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/shell/" rel="tag"># shell</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/12/06/wander-in-webpack.html" rel="next" title="Wander in webpack">
+                  Wander in webpack <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

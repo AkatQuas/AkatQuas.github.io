@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="Optimizing the imageTL;DR  Choose the right base image, ideally curate your own set of golden images. Use multi-stage Dockerfiles for all but the simplest apps. Don’t add any unnecessary packages o">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Production Practices">
+<meta property="og:url" content="https://akatquas.github.io/docker/production-practices.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="Optimizing the imageTL;DR  Choose the right base image, ideally curate your own set of golden images. Use multi-stage Dockerfiles for all but the simplest apps. Don’t add any unnecessary packages o">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-01-15T10:21:08.374Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.374Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="akat,programmer,frontend,node,javascript,golang,python">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://akatquas.github.io/docker/production-practices.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>Production Practices | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#optimizing-the-image"><span class="nav-text">Optimizing the image</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#application-configuration-management-in-containers"><span class="nav-text">Application configuration management in containers</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#a-multi-tiered-approach-to-app-configuration"><span class="nav-text">A multi-tiered approach to app configuration</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#packaging-config-for-every-environment"><span class="nav-text">Packaging config for every environment</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#loading-configuration-from-the-runtime"><span class="nav-text">Loading configuration from the runtime</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#configuring-legacy-apps-in-the-same-way-as-new-apps"><span class="nav-text">Configuring legacy apps in the same way as new apps</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#writing-and-managing-application-logs"><span class="nav-text">Writing and managing application logs</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#stderr-and-stdout"><span class="nav-text">stderr and stdout</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#replaying-logs-from-other-sinks-to-stdout"><span class="nav-text">Replaying logs from other sinks to stdout</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#collecting-and-forwarding-container-logs"><span class="nav-text">Collecting and forwarding container logs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#managing-the-log-output-and-collection"><span class="nav-text">Managing the log output and collection</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#the-container-logging-model"><span class="nav-text">The Container logging model</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#controlling-http-traffic-with-a-reverse-proxy"><span class="nav-text">Controlling HTTP traffic with a reverse proxy</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#reverse-proxy"><span class="nav-text">Reverse proxy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cloud-native-reverse-proxy"><span class="nav-text">cloud-native reverse proxy</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#asynchronous-communication-with-message-queue"><span class="nav-text">Asynchronous communication with message queue</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">Production Practices
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <details>
+<summary>
+
+<h2 id="optimizing-the-image"><a href="#optimizing-the-image" class="headerlink" title="Optimizing the image"></a>Optimizing the image</h2><p>TL;DR</p>
+<ul>
+<li>Choose the right base image, ideally curate your own set of golden images.</li>
+<li>Use multi-stage Dockerfiles for all but the simplest apps.</li>
+<li>Don’t add any unnecessary packages or files, focus on layer size.</li>
+<li>Sort your Dockerfile instructions by change frequency, maximize the cache.</li>
+</ul>
+</summary>
+
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># show used disk space</span>
+docker system <span class="token function">df</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<blockquote>
+<p>It’s a good habit to run <code>docker system prune</code> regularly – it clears out image layers and the build cache without removing full images.</p>
+</blockquote>
+<p><strong>Do not include/copy files in the image unless they are required</strong>.</p>
+<p>You could using the <code>.dockerignore</code> file to exclude them from the build context.</p>
+<pre class="line-numbers language-Dockerfile" data-language="Dockerfile"><code class="language-Dockerfile">FROM diamol&#x2F;base
+CMD echo app- &amp;&amp; ls app &amp;&amp; echo docs- &amp;&amp; ls docs
+COPY . .
+# this &#96;rm -rf&#96; doesn&#39;t remove the files in &#96;COPY&#96; layer
+# the file still exist in &#96;COPY&#96; layer
+RUN rm -rf docs<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<blockquote>
+<p>Each instruction in a Dockerfile produces an image layer, and layers are merged together to form the whole image. If you write files in a layer, those files are permanently there; if you delete them in a subsequent layer, all Docker does is hide them in the filesystem.</p>
+</blockquote>
+<p><strong>Choose the right base images.</strong></p>
+<p>Base image size choice is as much about security as it is about disk space and network transfer time.</p>
+<blockquote>
+<p>If your OS base image has curl installed, an attacker could use that to download malware or upload your data to their servers, if they manage to break out of your app into the container.</p>
+</blockquote>
+<p>Size isn’t just about disk space – it’s also about what’s using the space.</p>
+<blockquote>
+<p>The largest OpenJDK images include the whole Java SDK, so there’s a nice attack vector there if someone manages to compromise your container. They could write some Java source code files into the container’s disk, compile them with the SDK, and run an app that does anything they want in the security context of your application container.</p>
+</blockquote>
+<p>You have a team that chooses the right base images and builds their own versions for your organization, which is called the <em>Golden images</em>.</p>
+<p>Another advantage of building your own golden image is that you can integrate additional security checks on the base layer in the build process, using a third-party tool like Anchore.</p>
+<p><strong>Minimizing image layer count and layer size</strong></p>
+<p>Many processes for installing software leave residues behind because they cache package lists or deploy extra recommend packages. You can remove some cache files after installation.</p>
+<pre class="line-numbers language-Dockerfile" data-language="Dockerfile"><code class="language-Dockerfile">FROM debian:stretch-slim
+RUN apt-get update
+RUN apt-get install -y curl&#x3D;7.52.1-5+deb9u9
+RUN apt-get install -y socat&#x3D;1.7.3.1-2+deb9u1
+# Dockerfile.v2 - optimizing the install steps:
+FROM debian:stretch-slim
+RUN apt-get update \
+  &amp;&amp; apt-get install -y --no-install-recommends \ curl&#x3D;7.52.1-5+deb9u9 \ socat&#x3D;1.7.3.1-2+deb9u1 \
+  &amp;&amp; rm -rf &#x2F;var&#x2F;lib&#x2F;apt&#x2F;lists&#x2F;*<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Another advantage of combining multiple steps in a single <code>RUN</code> instruction is that it produces a single image layer.</p>
+<p>Having fewer layers does make it much easier to keep track of your filesystem.</p>
+<p>Multi-stage Dockerfiles should be a best practice for all but the simplest images, because they make it far easier to optimize the final image.</p>
+<pre class="line-numbers language-Dockerfile" data-language="Dockerfile"><code class="language-Dockerfile">FROM diamol&#x2F;base AS download
+ARG DATASET_URL&#x3D;https:&#x2F;&#x2F;archive.ics.uci.edu&#x2F;ml&#x2F;machine-learning-databases&#x2F;url&#x2F;url_svmlight.tar.gz
+RUN wget -O dataset.tar.gz $&#123;DATASET_URL&#125;
+
+FROM diamol&#x2F;base AS expand
+COPY --from&#x3D;download dataset.tar.gz .
+RUN tar xvzf dataset.tar.gz
+
+FROM diamol&#x2F;base
+WORKDIR &#x2F;dataset&#x2F;url_svmlight
+COPY --from&#x3D;expand url_svmlight&#x2F;Day1.svm .<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>It’s clear in each stage what you’re doing, and you don’t need to dive into unusual command optimizations to save disk space, because the final image will only have the files explicitly copied in from earlier stages.</p>
+<p>One final advantage of multi-stage builds really brings it home: every stage has its own build cache. If you need to tweak the expand stage, when you run the build, the download stage will still come from the cache. Maximizing the build cache is the final part of optimization, and this is all about the speed of building the image.</p>
+<p>The basic way to make the most of the build cache is to order the instructions in your Dockerfile so the things that change least frequently are at the start, and the things that change most frequently are toward the end.</p>
+</details>
+
+<details>
+<summary>
+
+<h2 id="application-configuration-management-in-containers"><a href="#application-configuration-management-in-containers" class="headerlink" title="Application configuration management in containers"></a>Application configuration management in containers</h2><p>Applications need to load their configuration from the environment they’re running in, which is usually a combination of environment variables and files read from disk.</p>
+<p>Docker creates that environment for apps running in containers, and it can set environment variables and construct a filesystem from many different sources.</p>
+</summary>
+
+<h3 id="a-multi-tiered-approach-to-app-configuration"><a href="#a-multi-tiered-approach-to-app-configuration" class="headerlink" title="A multi-tiered approach to app configuration"></a>A multi-tiered approach to app configuration</h3><p>The configuration model should reflect the structure of the data, which is typically one of three types:</p>
+<ul>
+<li>Release-level settings, which are the same for every environment for a given release</li>
+<li>Environment-level settings, which are different for every environment</li>
+<li>Feature-level settings, which can be used to change behavior between releases</li>
+</ul>
+<p>Loading config overrides from a known path in your app code lets you provide them from any source into the container.</p>
+<p>Mount different config directory to provide environment-based configuration.</p>
+<p>There’s one nuance to this pattern – your config target can either be a specific file path or a directory. A directory target is more flexible, but the source file names need to match the config file names the app expects.</p>
+<p>The configuration can also load settings from environment variables, and they override any settings loaded from the file herarchy.</p>
+<blockquote>
+<p>This is the configuration approach recommended in <a target="_blank" rel="noopener" href="https://12factor.net/">The Twelve-Factor App</a> – a modern style of application architecture, where <em>environment variables always take precedence over other config sources</em>.</p>
+</blockquote>
+<h3 id="packaging-config-for-every-environment"><a href="#packaging-config-for-every-environment" class="headerlink" title="Packaging config for every environment"></a>Packaging config for every environment</h3><p>Many application frameworks support a config management system where you bundle all the config files for every environment in your deployment, and at runtime you set a single value to specify the name of the environment you’re running in. The app platform loads the config file with the matching environment name, and your app is fully configured.</p>
+<ul>
+<li>config.json</li>
+<li>config.{ENV}.json</li>
+<li><em>Environment variables</em></li>
+</ul>
+<p>This is kind of dangerous because all the config settings are included in the image. Be careful when using this approach.</p>
+<h3 id="loading-configuration-from-the-runtime"><a href="#loading-configuration-from-the-runtime" class="headerlink" title="Loading configuration from the runtime"></a>Loading configuration from the runtime</h3><p>You add the module to your package list, and in your application code you specify the paths to the config directories and whether you want environment variables brought in to override the config files.</p>
+<ul>
+<li><p>Files are loaded from the config directory first which is populated in the Docker image.</p>
+</li>
+<li><p>Environment-specific files are loaded from the config-override directory, which is empty in the image and can be the target for a container filesystem mount.</p>
+</li>
+<li><p>Environment variables override the file settings.</p>
+</li>
+</ul>
+<p>A config API is a very useful feature in your app when you have multiple layers of config sources; it makes debugging configuration issues much easier, but you need to secure that data:</p>
+<ul>
+<li>Don’t just publish the whole config; be selective and never include secrets;</li>
+<li>Secure the endpoint so only authorized users can access it;</li>
+<li>Make the config API a feature that can be enabled through config;</li>
+</ul>
+<h3 id="configuring-legacy-apps-in-the-same-way-as-new-apps"><a href="#configuring-legacy-apps-in-the-same-way-as-new-apps" class="headerlink" title="Configuring legacy apps in the same way as new apps"></a>Configuring legacy apps in the same way as new apps</h3><p>Legacy apps have their own ideas about configuration, which don’t usually involve environment variables or file merges.</p>
+<p>The approach here is to package a utility app or set of scripts that transform the configuration settings in the container environment into the configuration model the application expects. The exact implementation will depend on your app framework and how it uses config files, but the logic will be something like this:</p>
+<ol>
+<li>Read in the config override settings from a specified source file in the container.</li>
+<li>Read in the overrides from environment variables.</li>
+<li>Merge the two sets of overrides, so environment variables take precedence.</li>
+<li>Write the merged overrides to the specified target file in the container.</li>
+</ol>
+<p>In practice you’ll use the release-level settings built into the container image, with the environment-level override file provided by the container platform in almost all cases, but the ability to set feature-level config with environment variables is a useful addition. It means you can react quickly to production issues—tuning down the level of logging if that’s a performance issue, or turning off a feature that has a security hole. It also means you can create a production-like environment on a dev machine to replicate a bug, using the production config override with secrets removed, and using environment variables instead.</p>
+</details>
+
+<details>
+<summary>
+
+<h2 id="writing-and-managing-application-logs"><a href="#writing-and-managing-application-logs" class="headerlink" title="Writing and managing application logs"></a>Writing and managing application logs</h2><p>The basic principle is simple: you need to make sure your application logs are being written to the standard output stream, because that’s where Docker looks for them.</p>
+<p>Docker has a pluggable logging framework: you need to make sure your application logs are coming out from the container, and then Docker can send them to different places. That lets you build a powerful logging model, where the application logs from all your containers are sent to a central log store with a searchable UI on top of it – all using open source components, all running in containers.</p>
+</summary>
+
+<h3 id="stderr-and-stdout"><a href="#stderr-and-stdout" class="headerlink" title="stderr and stdout"></a>stderr and stdout</h3><p>In a container, Docker watches stdout and stderr and collects the output from the streams, which is the source of the container logs.</p>
+<p>Docker starts a process inside the container and collects the output streams from that process as logs. Docker treats both stdout and stderr in the same way.</p>
+<p>Container logs are stored as <em>JSON files</em>, so the log entries remain available for detached containers which don’t have a terminal session, and for containers that have exited so there is no application process. Docker manages the JSON files for you and they have the same life cycle as the container, which means when the container is removed, the log files are removed too.</p>
+<p>The format is very simple; it contains a JSON object for each log entry with the string containing the log, the name of the stream where the log came from (stdout or stderr), and a timestamp.</p>
+<p>Docker creates a single JSON log file for each container by default, and will let it grow to any size (until it fills up your disk). You can configure Docker to use rolling files instead, with a maximum size limit, so that when the log file fills up, Docker starts writing to a new file. You also configure how many log files to use, and when they’re all full, Docker starts overwriting the first file.</p>
+<p>You can set those options at the Docker Engine level so the changes apply to every container, or you can set them for individual containers.</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">docker container run -d --name timecheck2 --log-opt max-size<span class="token operator">=</span>5k --log-opt max-file<span class="token operator">=</span><span class="token number">3</span> IMAGE<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="replaying-logs-from-other-sinks-to-stdout"><a href="#replaying-logs-from-other-sinks-to-stdout" class="headerlink" title="Replaying logs from other sinks to stdout"></a>Replaying logs from other sinks to stdout</h3><p>Some applications run in the background, so the container startup process isn’t actually the application process. Other apps might use an existing logging framework that writes to log files or other locations (called <em>sinks</em> in the logging world).</p>
+<p>Either way, there are no application logs coming from the container start process, so Docker doesn’t see any logs.</p>
+<p>The pattern for dealing with apps like this is to run a second process in the container startup command, which reads the log entries from the sink that the application uses and writes them to stdout.</p>
+<blockquote>
+<p>This is not a perfect solution. Your utility process is running in the foreground, so it needs to be robust because if it fails, your container exits, even if the actual application is still working in the background. And the reverse is true: if the application fails but the log relay keeps running, your container stays up even though the app is no longer working. You need health checks in your image to prevent that from happening. And lastly, this is not an efficient use of disk, especially if your app writes a lot of logs—they’ll be filling up a file in the container filesystem and filling up a JSON file on the Docker host machine.</p>
+</blockquote>
+<h3 id="collecting-and-forwarding-container-logs"><a href="#collecting-and-forwarding-container-logs" class="headerlink" title="Collecting and forwarding container logs"></a>Collecting and forwarding container logs</h3><p>Docker adds a consistent management layer over all your apps, which is especially useful with logs when you bring a consolidated logging system into your architecture.</p>
+<p>Fluented is a unified logging layer. It can ingest logs from lots of different sources, filter or enrich the log entries, and then forward them on to lots of different targets.</p>
+<p>Fluentd uses a config file to process logs. Run a container with a simple configuration that will have Fluentd collect logs and echo them to stdout in the container.</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># run Fluentd publishing the standard port and using a config file:</span>
+docker container run -d -p <span class="token number">24224</span>:24224 --name fluentd -v <span class="token string">"<span class="token variable"><span class="token variable">$(</span><span class="token builtin class-name">pwd</span><span class="token variable">)</span></span>/conf:/fluentd/etc"</span> -e <span class="token assign-left variable">FLUENTD_CONF</span><span class="token operator">=</span>stdout.conf fluentd
+
+<span class="token comment"># now run some container set to use Docker's Fluentd log driver:</span>
+docker container run -d --log-driver<span class="token operator">=</span>fluentd IMAGE<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Fluentd adds its own metadata to each record when it stores logs, including the container ID and name.</p>
+<details>
+<summary>
+
+<p>You can run Fluentd to collect all the logs, Elasticsearch in a container for log storage and the companion app Kibana, which is a search UI, in another container.</p>
+</summary>
+
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment"># docker-compose</span>
+<span class="token key atrule">version</span><span class="token punctuation">:</span> <span class="token string">'3.7'</span>
+
+<span class="token key atrule">services</span><span class="token punctuation">:</span>
+  <span class="token comment"># log collector, forwarder</span>
+  <span class="token key atrule">fluentd</span><span class="token punctuation">:</span>
+    <span class="token key atrule">image</span><span class="token punctuation">:</span> fluentd
+    <span class="token key atrule">environment</span><span class="token punctuation">:</span>
+      <span class="token key atrule">FLUENTD_CONF</span><span class="token punctuation">:</span> elasticsearch.conf
+    <span class="token key atrule">volumes</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> ./conf<span class="token punctuation">:</span>/fluentd/etc
+    <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token string">'24224:24224'</span>
+      <span class="token punctuation">-</span> <span class="token string">'24224:24224/udp'</span>
+
+  <span class="token comment"># log saver</span>
+  <span class="token key atrule">elasticsearch</span><span class="token punctuation">:</span>
+    <span class="token key atrule">image</span><span class="token punctuation">:</span> elasticsearch
+    <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token string">'9200:9200'</span>
+
+  <span class="token comment"># GUI for log search</span>
+  <span class="token key atrule">kibana</span><span class="token punctuation">:</span>
+    <span class="token key atrule">image</span><span class="token punctuation">:</span> kibana
+    <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token string">'5601:5601'</span>
+
+  <span class="token comment"># this container produce logs</span>
+  <span class="token key atrule">accesslog</span><span class="token punctuation">:</span>
+    <span class="token key atrule">image</span><span class="token punctuation">:</span> access<span class="token punctuation">-</span>log
+    <span class="token key atrule">logging</span><span class="token punctuation">:</span>
+      <span class="token key atrule">driver</span><span class="token punctuation">:</span> <span class="token string">'fluentd'</span>
+      <span class="token key atrule">options</span><span class="token punctuation">:</span>
+        <span class="token key atrule">tag</span><span class="token punctuation">:</span> <span class="token string">'app.access-log.&#123;&#123;.ImageName&#125;&#125;'</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-conf" data-language="conf"><code class="language-conf"># elasticsearch.conf
+# fluentd&#x2F;conf&#x2F;fluent.conf
+&lt;source&gt;
+  @type forward
+  port 24224
+  bind 0.0.0.0
+&lt;&#x2F;source&gt;
+&lt;match *.**&gt;
+  @type copy
+  &lt;store&gt;
+    @type elasticsearch
+    host elasticsearch
+    port 9200
+    logstash_format true
+    logstash_prefix fluentd
+    logstash_dateformat %Y%m%d
+    include_tag_key true
+    type_name access_log
+    tag_key @log_name
+    flush_interval 1s
+  &lt;&#x2F;store&gt;
+  &lt;store&gt;
+    @type stdout
+  &lt;&#x2F;store&gt;
+&lt;&#x2F;match&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</details>
+
+<h3 id="managing-the-log-output-and-collection"><a href="#managing-the-log-output-and-collection" class="headerlink" title="Managing the log output and collection"></a>Managing the log output and collection</h3><p>Logging is a delicate balance between capturing enough information to be useful in diagnosing problems and not storing huge quantities of data.</p>
+<p>Docker’s logging model gives you some additional flexibility to help with the balance, because you can produce container logs at a more verbose level than you expect to use, but filter them out before you store them.</p>
+<p>Then if you need to see more verbose logs, you can alter the filter configuration rather than your app configuration so the Fluentd containers get replaced rather than your app containers.</p>
+<h3 id="the-container-logging-model"><a href="#the-container-logging-model" class="headerlink" title="The Container logging model"></a>The Container logging model</h3><p><strong>EFK</strong>: Elasticsearch, Fluentd, Kibana</p>
+<ul>
+<li><p>A Fluentd container runs on every node in the cluster. Application containers always send logs to the local Fluentd instance on the same node.</p>
+</li>
+<li><p>Elasticsearch is clustered, and the containers/replicas could run any node. The Fluentd containers send log records to the cluster.</p>
+</li>
+<li><p>Kibana reads from the Elasticsearch cluster, give us GUI display.</p>
+</li>
+</ul>
+</details>
+
+<details>
+<summary>
+
+<h2 id="controlling-http-traffic-with-a-reverse-proxy"><a href="#controlling-http-traffic-with-a-reverse-proxy" class="headerlink" title="Controlling HTTP traffic with a reverse proxy"></a>Controlling HTTP traffic with a reverse proxy</h2><p>Docker takes care of routing external traffic into your containers, but you can only have one container listening on a network port.</p>
+<p>That’s where a <em>reverse proxy</em> comes in.</p>
+</summary>
+
+<h3 id="reverse-proxy"><a href="#reverse-proxy" class="headerlink" title="Reverse proxy"></a>Reverse proxy</h3><p>A proxy is a network component that handles network traffic on behalf of some other component. You might have a proxy in your corporate network that:</p>
+<ul>
+<li>intercepts your browser requests and decides whether you’re allowed to access certain sites,</li>
+<li>logs all your activity,</li>
+<li>and caches the responses so other users of the same site get a faster experience.</li>
+</ul>
+<p>You run a reverse proxy as the gateway to several web applications; all traffic goes to the reverse proxy, and it decides which app to get the content from.</p>
+<p>A reverse proxy is the only container with published ports – it receives all incoming request and fetches the responses from other containers. That means all your application containers become internal components, which can make it easier to scale, update, and secure them.</p>
+<p>You can routing to services using Nginx without Docker Swarm or Kubernetes.</p>
+<p>Nginx can work as a caching proxy, so when it fetches content from your application (called the <em>upstream</em>), it stores a copy in its local disk or memory store.</p>
+<h3 id="cloud-native-reverse-proxy"><a href="#cloud-native-reverse-proxy" class="headerlink" title="cloud-native reverse proxy"></a>cloud-native reverse proxy</h3><p>Traefik.</p>
+<p>There’s no static configuration file for each app you want to make available in the proxy; instead, you add labels to your containers, and Traefik uses those labels to build its own configuration and routing maps.</p>
+<p>Dynamic configuration is one of the major benefits of a container-aware proxy like Traefik. You don’t need to start your upstream apps before you run Traefik because it watches for new containers while it’s running. You don’t have to restart Traefik or reload configuration to make a change to your application setup—that’s all part of your application deployment.</p>
+<p>Traefik has its own API and web UI that shows the rules, so you can run Traefik without any other containers and then deploy an application and see how the config gets built.</p>
+<p>How Traefik works:</p>
+<ul>
+<li><p><strong>Entrypoints</strong>: These are the ports Traefik listens on for external traffic, so these map to the published ports for the container.</p>
+</li>
+<li><p><strong>Routers</strong>: These are the rules for matching an incoming request to a target container. HTTP routers have rules like host name and path to identify client requests.</p>
+</li>
+<li><p><strong>Services</strong>: These are the upstream components – the application containers that actually serve the content to Traefik so it can pass the response back to the client.</p>
+</li>
+<li><p><strong>Middlewares</strong>: These are components that can modify requests from a router before they get sent to the service. You can use middleware components to change the request path or headers, or even to enforce authentication.</p>
+</li>
+</ul>
+<p>Applying some labels on the container to enable Traefik.</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">services</span><span class="token punctuation">:</span>
+  <span class="token key atrule">upservice</span><span class="token punctuation">:</span>
+    <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token string">'traefik.enable=true'</span>
+      <span class="token punctuation">-</span> <span class="token string">'traefik.http.routers.upservice.rule=Host(`upservice.ip`)'</span>
+
+  <span class="token key atrule">iotd</span><span class="token punctuation">:</span>
+    <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token string">'traefik.enable=true'</span>
+      <span class="token punctuation">-</span> <span class="token string">'traefik.http.routers.image-gallery-api.rule=(Host(`iotd.local`) &amp;&amp; PathPrefix(`/api`))'</span>
+      <span class="token punctuation">-</span> <span class="token string">'traefik.http.middlewares.image-gallery-api-stripprefix.stripprefix.prefixes=/api,/api/'</span>
+      <span class="token punctuation">-</span> <span class="token string">'traefik.http.routers.image-gallery-api.middlewares=image-gallery-api-stripprefix@docker'</span>
+
+  <span class="token key atrule">image-gallery</span><span class="token punctuation">:</span>
+    <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token string">'traefik.enable=true'</span>
+      <span class="token punctuation">-</span> <span class="token string">'traefik.http.routers.image-gallery.rule=Host(`image-gallery.local`)'</span>
+      <span class="token punctuation">-</span> <span class="token string">'traefik.http.services.image-gallery.loadbalancer.server.port=80'</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Traefik supports some very sophisticated routing options. You can match by host name and path, or a path prefix, and then use a middleware component to strip prefixes</p>
+<p>Routing, load-balancing, and SSL termination are the main features of a reverse proxy, and Traefik supports them all with dynamic configuration through container labels.</p>
+<p>There’s a sticky session, which you can enable in Traefik with a setting for the service. With sticky sessions enabled, your requests get served by the same container each time because Traefik sets a cookie identifying which container it should use for that client.</p>
+</details>
+
+<details>
+<summary>
+
+<h2 id="asynchronous-communication-with-message-queue"><a href="#asynchronous-communication-with-message-queue" class="headerlink" title="Asynchronous communication with message queue"></a>Asynchronous communication with message queue</h2><p>Asynchronous communication adds a layer between the client and the server.</p>
+<p>If the client needs a server to do something, it sends a message to the queue. The server is listening on the queue, picks up the message, and processes it. The server can send a response message to the queue, and if the client wants a response, it will be listening on the queue and will pick it up.</p>
+<p>Running queues in lightweight containers means you can run a dedicated queue for each application, and free open source software means you can use the same technology in every environment.</p>
+<p>Redis is a popular message queue option and you can easily try it out to get a feel for asynchronous message.</p>
+<p>Queues usually have their own custom communication protocol, which is highly optimized, so when the client sends a message, it just transmits the bytes of the request and waits for an acknowledgement that it has been received. Queues don’t do any complex processing on the message, so they should easily handle thousands of messages per second.</p>
+<p>The component sending messages is the <em>publisher</em>, and the component receiving messages is the <em>subscriber</em>.</p>
+<p>There could be lots of different systems using the queue, so Redis uses <em>channels</em> to keep messages separate.</p>
+<p>NATS is an alternative message queue; it’s very lightweight and has an admin API.</p>
+<p>Every message in NATS has a subject, which is a string used to identify the type of the message.</p>
+<p>Subscribers will be able to for messages with that subject if they’re interested in new-item events, but even if there are no subscribers, the app will still publish messages.</p>
+</summary>
+
+</details>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

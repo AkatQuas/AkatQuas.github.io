@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="Kubernetes supports various types of workloads:  Deployments: regularly updated and long running applications Jobs: short-running tasks DaemonSets: programs to be run every node  DeploymentsPods and R">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Deployments, Jobs, and DaemonSets">
+<meta property="og:url" content="https://akatquas.github.io/kubernetes/workloads.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="Kubernetes supports various types of workloads:  Deployments: regularly updated and long running applications Jobs: short-running tasks DaemonSets: programs to be run every node  DeploymentsPods and R">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-01-15T10:21:08.390Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.390Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="akat,programmer,frontend,node,javascript,golang,python">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://akatquas.github.io/kubernetes/workloads.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>Deployments, Jobs, and DaemonSets | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#deployments"><span class="nav-text">Deployments</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#jobs"><span class="nav-text">Jobs</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#job-patterns"><span class="nav-text">Job Patterns</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cronjob"><span class="nav-text">CronJob</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#daemonsets"><span class="nav-text">DaemonSets</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#updating-daemonset"><span class="nav-text">Updating DaemonSet</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#node-selection"><span class="nav-text">Node Selection</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">Deployments, Jobs, and DaemonSets
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <p>Kubernetes supports various types of workloads:</p>
+<ul>
+<li>Deployments: regularly updated and long running applications</li>
+<li>Jobs: short-running tasks</li>
+<li>DaemonSets: programs to be run every node</li>
+</ul>
+<h2 id="deployments"><a href="#deployments" class="headerlink" title="Deployments"></a>Deployments</h2><p>Pods and ReplicaSets are expected to be tied to specific container images that don’t change.</p>
+<p>The <code>Deployment</code> object was added to the Kubernetes API to represent this sort of <em>safe rollout</em> from one version to another. A Deployment can hold pointers to multiple ReplicaSets, (e.g. v1 and v2), and it can control the slow and safe migration from one ReplicaSet to another.</p>
+<p>Deployments allow us to pause and resume application rollouts. Additionally, it keeps a history of past deployments and allows the user to easily rollback to previous versions.</p>
+<blockquote>
+<p>Just as that ReplicaSets manage Pods, deployments manage ReplicaSets. <a target="_blank" rel="noopener" href="https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/#when-to-use-a-replicaset">And It’s not recommendded to use Deployments instead of directly using ReplicaSets.</a></p>
+</blockquote>
+<p>Deployments feature a large number of different knobs that can be tuned to provide a safe rollout for the specific details of an application. Indeed, in most modern clusters, users exclusively use Deployment objects and don’t manage ReplicaSets directly.</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Deployment
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">annotations</span><span class="token punctuation">:</span>
+    <span class="token key atrule">deployment.kubernetes.io/revision</span><span class="token punctuation">:</span> <span class="token string">'1'</span>
+  <span class="token key atrule">creationTimestamp</span><span class="token punctuation">:</span> <span class="token null important">null</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>deploy
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>deploy
+  <span class="token key atrule">selfLink</span><span class="token punctuation">:</span> /apis/extensions/v1beta1/namespaces/default/deployments/node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>deploy
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token comment"># the deployment must wait for 60 seconds after</span>
+  <span class="token comment"># seeing a Pod become healthy before moving on to updating the next Pod.</span>
+  <span class="token key atrule">minReadySeconds</span><span class="token punctuation">:</span> <span class="token number">60</span>
+  <span class="token comment"># progress deadline</span>
+  <span class="token comment"># if any particular stage in the rollout fails (such as deadlocks immediately) to progress,</span>
+  <span class="token comment"># wait at most 2147483647 seconds, then the deployment is marked as failed,</span>
+  <span class="token comment"># all attempts to move the deployment forward are halted</span>
+  <span class="token key atrule">progressDeadlineSeconds</span><span class="token punctuation">:</span> <span class="token number">2147483647</span>
+  <span class="token key atrule">replicas</span><span class="token punctuation">:</span> <span class="token number">2</span>
+  <span class="token comment"># We do daily rollouts, limit the revision history</span>
+  <span class="token comment"># to 10 releases as we don't expect to roll back beyond that.</span>
+  <span class="token key atrule">revisionHistoryLimit</span><span class="token punctuation">:</span> <span class="token number">10</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">matchLabels</span><span class="token punctuation">:</span>
+      <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>deploy
+  <span class="token comment"># rollout strategy, Recreate or RollingUpdate</span>
+  <span class="token key atrule">strategy</span><span class="token punctuation">:</span>
+    <span class="token key atrule">rollingUpdate</span><span class="token punctuation">:</span>
+      <span class="token comment"># how many extra resources can be created to achieve a rollout</span>
+      <span class="token comment"># absolute number (1,3,5) or percentage (20%)</span>
+      <span class="token key atrule">maxSurge</span><span class="token punctuation">:</span> <span class="token number">1</span>
+
+      <span class="token comment"># set the maximum number of Pods that can be unavailable,</span>
+      <span class="token comment"># absolute number (1,3,5) or percentage (20%)</span>
+      <span class="token key atrule">maxUnavailable</span><span class="token punctuation">:</span> <span class="token number">1</span>
+    <span class="token key atrule">type</span><span class="token punctuation">:</span> RollingUpdate
+  <span class="token key atrule">template</span><span class="token punctuation">:</span>
+    <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token comment"># useful for updating annotation</span>
+      <span class="token key atrule">annotations</span><span class="token punctuation">:</span>
+        <span class="token key atrule">kubernetes.io/change-cause</span><span class="token punctuation">:</span> <span class="token string">"Update to green kuard"</span>
+      <span class="token key atrule">creationTimestamp</span><span class="token punctuation">:</span> <span class="token null important">null</span>
+      <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+        <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>deploy
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>deploy
+          <span class="token key atrule">image</span><span class="token punctuation">:</span> pod<span class="token punctuation">-</span>scaling
+          <span class="token key atrule">imagePullPolicy</span><span class="token punctuation">:</span> IfNotPresent
+          <span class="token key atrule">resources</span><span class="token punctuation">:</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+          <span class="token key atrule">terminationMessagePath</span><span class="token punctuation">:</span> <span class="token key atrule">/dev/termination-log terminationMessagePolicy</span><span class="token punctuation">:</span> File
+          <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+            <span class="token punctuation">-</span> <span class="token key atrule">containerPort</span><span class="token punctuation">:</span> <span class="token number">80</span>
+      <span class="token key atrule">dnsPolicy</span><span class="token punctuation">:</span> ClusterFirst
+      <span class="token key atrule">restartPolicy</span><span class="token punctuation">:</span> Always
+      <span class="token key atrule">schedulerName</span><span class="token punctuation">:</span> default<span class="token punctuation">-</span>scheduler
+      <span class="token key atrule">securityContext</span><span class="token punctuation">:</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+      <span class="token key atrule">terminationGracePeriodSeconds</span><span class="token punctuation">:</span> <span class="token number">30</span>
+<span class="token key atrule">status</span><span class="token punctuation">:</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+
+<span class="token comment"># Service</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Service
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>deploy
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>deploy
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">type</span><span class="token punctuation">:</span> LoadBalancer
+  <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">80</span>
+  <span class="token key atrule">sessionAffinity</span><span class="token punctuation">:</span> ClientIP
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>deploy<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Two of the most important pieces of information in the output from command <code>kubectl describe deployment &lt;deployment-name&gt;</code> are <code>OldReplicaSets</code> and <code>NewReplicaSet</code>. These fields point to the ReplicaSet objects this deployment is currently managing. If a deployment is in the middle of a rollout, both fields will be set to a value. If a rollout is complete, <code>OldReplicaSets</code> will be set to <none>.</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># flag --record</span>
+<span class="token comment"># the creation of the deployment is recorded in the rollout history</span>
+kubectl apply -f /path/to/node-js-deploy.yaml --record
+
+<span class="token comment"># manual scaling</span>
+kubectl scale deployment node-js-deploy --replicas <span class="token number">3</span>
+
+<span class="token comment"># manual update and rollout</span>
+kubectl <span class="token builtin class-name">set</span> image deployment/node-js-deploy node-js-deploy<span class="token operator">=</span>pod-scaling:0.2
+kubectl rollout status deployment/node-js-deploy<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Kubernetes has <em>rolled out</em> a new version for us:</p>
+<pre><code>It basically creates a new replica set with the new version. Once this pod is online and healthy it kills one of the older versions. It continues this behavior, scaling out the new version and scaling down the old versions, until only the new pods are left.</code></pre>
+<p>We could set the <code>strategy.type</code> field, which is default to <code>RollingUpdate</code>, to other values, such as <code>Recreate</code>.</p>
+<p><strong>Recreate</strong></p>
+<blockquote>
+<p><code>Recreate</code> will kill the old pods first before creating the new versions.</p>
+</blockquote>
+<p>It simply <em>updates the ReplicaSet it manages to use the new image</em> and <em>terminates all of the Pods associated with the deployment</em>. The ReplicaSet notices that it no longer has any replicas, and re-creates all Pods using the new image. Once the Pods are re-created, they are running the new version.</p>
+<p><strong>RollingUpdate</strong></p>
+<blockquote>
+<p><code>RollingUpdate</code> will create new pods to replace the old pods.</p>
+</blockquote>
+<p>The RollingUpdate strategy works by <em>updating a few Pods</em> at a time, <em>moving incrementally</em> until all of the Pods are running the new version of your software.</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># rollback</span>
+kubectl <span class="token builtin class-name">set</span> image deployment/node-js-deploy node-js-deploy<span class="token operator">=</span>pod-scaling:0.2
+kubectl rollout <span class="token function">history</span> deployment/node-js-deploy
+
+<span class="token comment"># something goes wrong, we need to rollback</span>
+kubectl rollout undo deployment/node-js-deploy
+
+<span class="token comment"># chec kout the rollout status</span>
+kubectl rollout status deployment/node-js-deploy<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment"># autoscaling yaml configuration</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> extensions/v1beta1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> HorizontalPodAutoscaler
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>deploy
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">minReplicas</span><span class="token punctuation">:</span> <span class="token number">3</span>
+  <span class="token key atrule">maxReplicas</span><span class="token punctuation">:</span> <span class="token number">6</span>
+  <span class="token key atrule">scaleTargetRef</span><span class="token punctuation">:</span>
+    <span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+    <span class="token key atrule">kind</span><span class="token punctuation">:</span> Deployment
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>deploy
+  <span class="token key atrule">targetCPUUtilizationPercentage</span><span class="token punctuation">:</span> <span class="token number">10</span>
+<span class="token comment"># kubectl apply -f /path/to/deploy-hpa.yaml</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Deployments and Replication Controllers are a great way to ensure long running applications are always up and able to tolerate a wide array of infrastructure failures.</p>
+<p><strong>Rollout History</strong></p>
+<p>Kubernetes deployments maintain a history of rollouts, which can be useful both for understanding the previous state of the deployment and to roll back to a specific version.</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kubectl rollout <span class="token function">history</span> deployment <span class="token operator">&lt;</span>deployment-name<span class="token operator">></span>
+
+kubectl rollout <span class="token function">history</span> deployment <span class="token operator">&lt;</span>deployment-name<span class="token operator">></span> --revision<span class="token operator">=</span><span class="token number">2</span>
+
+kubectl rollout undo deployment <span class="token operator">&lt;</span>deployment-name<span class="token operator">></span>
+
+kubectl rollout undo deployment <span class="token operator">&lt;</span>deployment-name<span class="token operator">></span> --to-revision<span class="token operator">=</span><span class="token number">3</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<blockquote>
+<p>When you roll back to a previous revision, the deployment simply reuses the template and renumbers it so that it is the latest revision.</p>
+</blockquote>
+<h2 id="jobs"><a href="#jobs" class="headerlink" title="Jobs"></a>Jobs</h2><p>Sometimes, we need the tasks to run until completion, but then terminate and start again at the next scheduled interval.</p>
+<p>Kubernetes has added a <em>Batch API</em>, which includes the <strong>Job</strong> type. This type will create 1 to n pods and ensure that they all run to completion with a successful exit.</p>
+<p>A Job contains the definition of the Pods it creates, the number of times the Job should be run, and the maximum number of Pods to create in parallel.</p>
+<blockquote>
+<p>A job creates Pods that run until successful termination (i.e., exit with 0). In contrast, a regular Pod will continually restart regardless of its exit code.</p>
+</blockquote>
+<p>Based on <code>restartPolicy</code>, we can either allow pods to simply fail without retry (<code>restartPolicy: Never</code>) or retry when a pods exits without successful completion (<code>restartPolicy: OnFailure</code>).</p>
+<p>If the Pod fails before a successful termination, the job controller will create a new Pod based on the Pod template in the job specification. Given that Pods have to be scheduled, there is a chance that your job will not execute if the required resources are not found by the scheduler.</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment"># longtask Job</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> batch/v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Job
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> long<span class="token punctuation">-</span>task
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">template</span><span class="token punctuation">:</span>
+    <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">name</span><span class="token punctuation">:</span> long<span class="token punctuation">-</span>task
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> long<span class="token punctuation">-</span>task
+          <span class="token key atrule">image</span><span class="token punctuation">:</span> docker/whalesay
+          <span class="token key atrule">command</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">'cowsay'</span><span class="token punctuation">,</span> <span class="token string">'Finishing that task in a jiffy'</span><span class="token punctuation">]</span>
+      <span class="token key atrule">restartPolicy</span><span class="token punctuation">:</span> OnFailure
+<span class="token comment"># kubectl apply -f /path/to/longtask.yaml</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<blockquote>
+<p>After the job has completed, the Job object and related Pod are still around. You may need to delete them manually?</p>
+</blockquote>
+<h3 id="job-patterns"><a href="#job-patterns" class="headerlink" title="Job Patterns"></a>Job Patterns</h3><p>By default, each job runs a single Pod once until successful termination.</p>
+<table>
+<thead>
+<tr>
+<th align="left">Type</th>
+<th align="left">Use case</th>
+<th align="left">Behavior</th>
+<th align="left">completions</th>
+<th align="left">parallelism</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">One shot</td>
+<td align="left">Database migrations</td>
+<td align="left">A singlel Pod running once until successful termination</td>
+<td align="left">1</td>
+<td align="left">1</td>
+</tr>
+<tr>
+<td align="left">Parallel fixed completions</td>
+<td align="left">Multiple Pods processing a set of work in parallel</td>
+<td align="left">One or more Pods running one or more times until reaching a fixed completion count</td>
+<td align="left">1+</td>
+<td align="left">1+</td>
+</tr>
+<tr>
+<td align="left">Work queue: parallel jobs</td>
+<td align="left">Multiple Pods processing from a centralized work queue</td>
+<td align="left">Oneor more Pods running once until successful termination</td>
+<td align="left">1</td>
+<td align="left">2+</td>
+</tr>
+</tbody></table>
+<p><strong>One Shot</strong></p>
+<p>One-shot jobs provide a way to run a single Pod once until successful termination.</p>
+<ol>
+<li><p>A Pod must be created and submitted to the Kubernetes API. This is done using a Pod template defined in the job configuration.</p>
+</li>
+<li><p>Once a job is up and running, the Pod backing the job must be monitored for successful termination. The job controller is responsible for recreating the Pod until a successful termination occurs.</p>
+</li>
+</ol>
+<blockquote>
+<p>A job can fail for any number of reasons, including an application error, an uncaught exception during runtime, or a node failure before the job has a chance to complete.</p>
+</blockquote>
+<details>
+<summary>A one-shot Job example</summary>
+
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> batch/v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Job
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> oneshot
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">template</span><span class="token punctuation">:</span>
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> oneshot
+          <span class="token key atrule">image</span><span class="token punctuation">:</span> docker/whalesay
+          <span class="token key atrule">imagePullPolicy</span><span class="token punctuation">:</span> Always
+          <span class="token key atrule">args</span><span class="token punctuation">:</span>
+            <span class="token punctuation">-</span> <span class="token string">'--keygen-eanble'</span>
+            <span class="token punctuation">-</span> <span class="token string">'--keygen-exit-on-complete'</span>
+            <span class="token punctuation">-</span> <span class="token string">'--keygen-num-to-gen=10'</span>
+      <span class="token key atrule">restartPolicy</span><span class="token punctuation">:</span> OnFailure<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</details>
+
+<p>In reality, batch work is often done in <strong>Parallel</strong> or as part of a regularly occurring task.</p>
+<p><strong>Parallel jobs</strong></p>
+<p>Using Parallel jobs, we may be grabbing tasks from an ongoing queue or simply running a set number of tasks that are not dependent on each other. <em>In the case of jobs pulling from a queue</em>, our application must be aware of the dependencies and have the logic to decide how tasks are processed and what to work on next. Kubernetes is simply scheduling the jobs.</p>
+<details>
+<summary>A one-shot Job example</summary>
+
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> batch/v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Job
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> parallel
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">chapter</span><span class="token punctuation">:</span> jobs
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">parallelism</span><span class="token punctuation">:</span> <span class="token number">5</span>
+  <span class="token key atrule">completions</span><span class="token punctuation">:</span> <span class="token number">10</span>
+  <span class="token key atrule">template</span><span class="token punctuation">:</span>
+    <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+        <span class="token key atrule">chapter</span><span class="token punctuation">:</span> jobs
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> oneshot
+          <span class="token key atrule">image</span><span class="token punctuation">:</span> docker/whalesay
+          <span class="token key atrule">imagePullPolicy</span><span class="token punctuation">:</span> Always
+          <span class="token key atrule">args</span><span class="token punctuation">:</span>
+            <span class="token punctuation">-</span> <span class="token string">'--keygen-eanble'</span>
+            <span class="token punctuation">-</span> <span class="token string">'--keygen-exit-on-complete'</span>
+            <span class="token punctuation">-</span> <span class="token string">'--keygen-num-to-gen=10'</span>
+      <span class="token key atrule">restartPolicy</span><span class="token punctuation">:</span> OnFailure<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</details>
+
+<h3 id="cronjob"><a href="#cronjob" class="headerlink" title="CronJob"></a>CronJob</h3><p><strong>Scheduled jobs</strong></p>
+<p>Kubernetes has also released a <strong>CronJob</strong> type for tasks that need to run periodically.</p>
+<p>ScheduledJobs build on top of the Job object by adding a schedule to a Job. A Sched uledJob contains the definition of the Job object that you want to create, as well as the schedule on which that Job should be created.</p>
+<p>As we might expect, this type of job uses the underlying <em>cron formatting</em> to specify a schedule for the task we wish to run</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment"># longtask in cron</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> batch/v2alpha1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> CronJob
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> long<span class="token punctuation">-</span>task<span class="token punctuation">-</span>cron
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">schedule</span><span class="token punctuation">:</span> <span class="token string">'15 10 * * 5'</span>
+  <span class="token key atrule">jobTemplate</span><span class="token punctuation">:</span>
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">template</span><span class="token punctuation">:</span>
+        <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+          <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+            <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> long<span class="token punctuation">-</span>task
+              <span class="token key atrule">image</span><span class="token punctuation">:</span> docker/whalesay
+              <span class="token key atrule">command</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">'cowsay'</span><span class="token punctuation">,</span> <span class="token string">'Developers Task complete!'</span><span class="token punctuation">]</span>
+          <span class="token key atrule">restartPolicy</span><span class="token punctuation">:</span> OnFailure
+<span class="token comment"># kubectl apply -f /path/to/longtask-cron.yaml</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="daemonsets"><a href="#daemonsets" class="headerlink" title="DaemonSets"></a>DaemonSets</h2><p>While ReplicaSets and Deployments are great at making sure that a specific number of application instances are running, they do so in the context of the best fit. <em>This means that the <strong>scheduler looks for nodes that meet resource requirements</strong> (available CPU, particular storage volumes, and so on) and tries to spread across the nodes and zones</em>.</p>
+<p><strong>DaemonSet</strong> simply defines a pod to run on <strong>every single node</strong> in the cluster or a defined subset of those nodes. This can be very useful for a number of production-related activities, such as monitoring and logging agents, security agents, and file system daemons.</p>
+<blockquote>
+<p>DaemonSets share similar functionality with ReplicaSets; both create Pods that are expected to be <em>long-running services</em> and ensure that the desired state and the observed state of the cluster match.</p>
+</blockquote>
+<p>ReplicaSets should be used when your application is completely decoupled from the node and you can run multiple copies on a given node without special consideration.</p>
+<p>DaemonSets should be used when a single copy of your application must run on all or a subset of the nodes in the cluster.</p>
+<details>
+<summary>Simple DaemonSet yaml listing.</summary>
+
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment"># DaemonSet, node problem detector</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> extensions/v1beta1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> DaemonSet
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>problem<span class="token punctuation">-</span>detector<span class="token punctuation">-</span>v1
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> kube<span class="token punctuation">-</span>system
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">k8s-app</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>problem<span class="token punctuation">-</span>detector
+    <span class="token key atrule">version</span><span class="token punctuation">:</span> v1
+    <span class="token key atrule">kubernetes.io/cluster-service</span><span class="token punctuation">:</span> <span class="token string">'true'</span>
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">template</span><span class="token punctuation">:</span>
+    <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+        <span class="token key atrule">k8s-app</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>problem<span class="token punctuation">-</span>detector
+        <span class="token key atrule">version</span><span class="token punctuation">:</span> v1
+        <span class="token key atrule">kubernetes.io/cluster-service</span><span class="token punctuation">:</span> <span class="token string">'true'</span>
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">hostNetwork</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>problem<span class="token punctuation">-</span>detector
+          <span class="token key atrule">image</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>problem<span class="token punctuation">-</span>detector<span class="token punctuation">:</span>v1
+          <span class="token key atrule">securityContext</span><span class="token punctuation">:</span>
+            <span class="token key atrule">privileged</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+          <span class="token key atrule">resources</span><span class="token punctuation">:</span>
+            <span class="token key atrule">limits</span><span class="token punctuation">:</span>
+              <span class="token key atrule">cpu</span><span class="token punctuation">:</span> <span class="token string">'200m'</span>
+              <span class="token key atrule">memory</span><span class="token punctuation">:</span> <span class="token string">'100Mi'</span>
+            <span class="token key atrule">requests</span><span class="token punctuation">:</span>
+              <span class="token key atrule">cpu</span><span class="token punctuation">:</span> <span class="token string">'20m'</span>
+              <span class="token key atrule">memory</span><span class="token punctuation">:</span> <span class="token string">'20Mi'</span>
+          <span class="token key atrule">volumeMounts</span><span class="token punctuation">:</span>
+            <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> log
+              <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /log
+              <span class="token key atrule">readOnly</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+      <span class="token key atrule">volumes</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> log
+          <span class="token key atrule">hostPath</span><span class="token punctuation">:</span>
+            <span class="token key atrule">path</span><span class="token punctuation">:</span> /var/log/<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> extensions/v1beta1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> DaemonSet
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token comment"># unique name across DaemonSets</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> fluentd
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> fluentd
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">template</span><span class="token punctuation">:</span>
+    <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+        <span class="token key atrule">app</span><span class="token punctuation">:</span> fluentd
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> fluentd
+          <span class="token key atrule">image</span><span class="token punctuation">:</span> fluent/fluentd<span class="token punctuation">:</span>v0.14.10
+          <span class="token key atrule">resources</span><span class="token punctuation">:</span>
+            <span class="token key atrule">limits</span><span class="token punctuation">:</span>
+              <span class="token key atrule">memory</span><span class="token punctuation">:</span> <span class="token string">'200Mi'</span>
+            <span class="token key atrule">requests</span><span class="token punctuation">:</span>
+              <span class="token key atrule">cpu</span><span class="token punctuation">:</span> <span class="token string">'100m'</span>
+              <span class="token key atrule">memory</span><span class="token punctuation">:</span> <span class="token string">'200Mi'</span>
+          <span class="token key atrule">volumeMounts</span><span class="token punctuation">:</span>
+            <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> varlog
+              <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /var/log
+            <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> var_lib_docker_containers
+              <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /var/lib/docker/containers
+              <span class="token key atrule">readOnly</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+      <span class="token key atrule">terminationGracePeriodSeconds</span><span class="token punctuation">:</span> <span class="token number">30</span>
+      <span class="token key atrule">volumes</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> varlog
+          <span class="token key atrule">hostPath</span><span class="token punctuation">:</span>
+            <span class="token key atrule">path</span><span class="token punctuation">:</span> /var/log
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> var_lib_docker_containers
+          <span class="token key atrule">hostPath</span><span class="token punctuation">:</span>
+            <span class="token key atrule">path</span><span class="token punctuation">:</span> /var/lib/docker/containers<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</detais>
+
+<details>
+<summary>
+
+<blockquote>
+<p>You can use labels to run DaemonSet Pods on specific nodes.</p>
+</blockquote>
+</summary>
+
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># add label to node</span>
+<span class="token comment"># daemonset would find this using nodeSelector</span>
+kubectl label node <span class="token operator">&lt;</span>node-name<span class="token operator">></span> <span class="token assign-left variable">ssd</span><span class="token operator">=</span>true<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> extensions/v1beta1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> DaemonSet
+<span class="token key atrule">metadat</span><span class="token punctuation">:</span>
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> nginx
+    <span class="token key atrule">ssd</span><span class="token punctuation">:</span> <span class="token string">'true'</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> nginx<span class="token punctuation">-</span>fast<span class="token punctuation">-</span>storage
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">template</span><span class="token punctuation">:</span>
+    <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">labels</span><span class="token punctuation">:</span> nginx
+      <span class="token key atrule">ssd</span><span class="token punctuation">:</span> <span class="token string">'true'</span>
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">nodeSelector</span><span class="token punctuation">:</span>
+        <span class="token key atrule">ssd</span><span class="token punctuation">:</span> <span class="token string">'true'</span>
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> nginx
+          <span class="token key atrule">image</span><span class="token punctuation">:</span> nginx<span class="token punctuation">:</span>1.10.0<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</details>
+
+<h3 id="updating-daemonset"><a href="#updating-daemonset" class="headerlink" title="Updating DaemonSet"></a>Updating DaemonSet</h3><p>With the release of Kubernetes 1.6, DaemonSets gained an equivalent to the <em>Deployment object</em> that manages a DaemonSet rollout inside the cluster.</p>
+<p><code>spec.updateStrategy.type</code>: <code>RollingUpdate</code></p>
+<p><code>spec.minReadySeconds</code>: determines how long a Pod must be “ready” before the rolling update proceeds to upgrade subsequent Pods.</p>
+<p><code>spec.updateStrategy.rollingUpdate.maxUnavailable</code>: indicates how many Pods may be simultaneously updated by the rolling update.</p>
+<blockquote>
+<p>The DaemonSet provides its own controller and scheduler to ensure key services like monitoring agents are always up and running on the right nodes in your cluster.</p>
+</blockquote>
+<h2 id="node-selection"><a href="#node-selection" class="headerlink" title="Node Selection"></a>Node Selection</h2><p>In order to schedule DaemonSets to run on a subset of nodes, we need the help of <strong>nodeSelector</strong>.</p>
+<p>It allows us to constrain the nodes a pods runs on, by looking for specific lables and metadata. They simple match key-value pairs on the labels for each node.</p>
+<p>Actually, nodeSelectors work with Pod definitions as well.</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># label some node</span>
+kubectl label nodes <span class="token operator">&lt;</span>node-name<span class="token operator">></span> <span class="token operator">&lt;</span>label-key<span class="token operator">></span><span class="token operator">=</span><span class="token operator">&lt;</span>label-value<span class="token operator">></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment"># longtask Job with nodeSelector</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> batch/v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Job
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> long<span class="token punctuation">-</span>task<span class="token punctuation">-</span>ns
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">template</span><span class="token punctuation">:</span>
+    <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">name</span><span class="token punctuation">:</span> long<span class="token punctuation">-</span>task<span class="token punctuation">-</span>ns
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> long<span class="token punctuation">-</span>task<span class="token punctuation">-</span>ns
+          <span class="token key atrule">image</span><span class="token punctuation">:</span> docker/whalesay
+          <span class="token key atrule">command</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">'cowsay'</span><span class="token punctuation">,</span> <span class="token string">'Finishing that task in a jiffy'</span><span class="token punctuation">]</span>
+      <span class="token key atrule">restartPolicy</span><span class="token punctuation">:</span> OnFailure
+      <span class="token key atrule">nodeSelector</span><span class="token punctuation">:</span>
+        <span class="token key atrule">&lt;label-key></span><span class="token punctuation">:</span> &lt;label<span class="token punctuation">-</span>value<span class="token punctuation">></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

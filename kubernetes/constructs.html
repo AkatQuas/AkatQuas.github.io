@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="The architectureKubernetes gives us automation and tooling to ensure high availability, application stack, and service-wide portability. Kubernetes also allows finer control of resource usage, such as">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Kubernetes Constructs">
+<meta property="og:url" content="https://akatquas.github.io/kubernetes/constructs.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="The architectureKubernetes gives us automation and tooling to ensure high availability, application stack, and service-wide portability. Kubernetes also allows finer control of resource usage, such as">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-01-15T10:21:08.390Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.390Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="akat,programmer,frontend,node,javascript,golang,python">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://akatquas.github.io/kubernetes/constructs.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>Kubernetes Constructs | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#the-architecture"><span class="nav-text">The architecture</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#master"><span class="nav-text">Master</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#node-minions"><span class="nav-text">Node &#x2F; minions</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#core-constructs"><span class="nav-text">Core constructs</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#pods"><span class="nav-text">Pods</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#services"><span class="nav-text">Services</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#replication-controllers"><span class="nav-text">Replication controllers</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#replicaset"><span class="nav-text">ReplicaSet</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#health-checks"><span class="nav-text">Health checks</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#life-cycle-hooks-or-graceful-shutdown"><span class="nav-text">Life cycle hooks or graceful shutdown</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#application-scheduling"><span class="nav-text">Application scheduling</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#organizing-the-cluster-with-namespaces-labels-and-annotations"><span class="nav-text">Organizing the Cluster with Namespaces, Labels, and Annotations</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#namespaces"><span class="nav-text">Namespaces</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#labels-and-label-selector"><span class="nav-text">Labels and Label Selector</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#annotations"><span class="nav-text">Annotations</span></a></li></ol></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">Kubernetes Constructs
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <h2 id="the-architecture"><a href="#the-architecture" class="headerlink" title="The architecture"></a>The architecture</h2><p>Kubernetes gives us automation and tooling to ensure high availability, application stack, and service-wide portability.</p>
+<p>Kubernetes also allows finer control of resource usage, such as CPU, memory, and disk space across the infrastructure.</p>
+<p>All the pieces of Kubernetes are constantly working to monitor the current actual state and synchronize it with the desired state defined by the administrators via the API server or <code>kubectl</code> script.</p>
+<h3 id="master"><a href="#master" class="headerlink" title="Master"></a>Master</h3><p>In the <strong>master</strong> node, we have the core API server, which maintains RESTful web services for querying and defining our desired cluster and workload state. It’s important to note that the control pane only accesses the master to initiate changes and not the nodes directly.</p>
+<p>Additionally, the master includes the <strong>scheduler</strong>, which works with the API server to schedule workloads in the form of pods on the actual minion nodes.</p>
+<p>The <strong>replication controller/replica set</strong> works with the API server to ensure that the correct number of pod replicas are running at any given time.</p>
+<p>Also, we have <code>etcd</code> running as a distributed configuration store. The Kubernetes state is stored here and <code>etcd</code> allows values to be watched for changes.</p>
+<h3 id="node-minions"><a href="#node-minions" class="headerlink" title="Node / minions"></a>Node / minions</h3><p>In each node, we have a couple of components.</p>
+<p><code>kubelet</code> interacts with the API server to update the state and to start new workloads that have been invoked by the scheduler.</p>
+<p><code>kube-proxy</code> provides basic load balancing and directs the traffic destined for specific services to the proper pod on the backend.</p>
+<p>Also, there are some default pods running various infrastructure services for each node, including DNS, logging, health checks.</p>
+<h2 id="core-constructs"><a href="#core-constructs" class="headerlink" title="Core constructs"></a>Core constructs</h2><p>These abstractions will make it easier to think about our applications and ease the burden of life cycle management, high availability, and scheduling.</p>
+<h3 id="pods"><a href="#pods" class="headerlink" title="Pods"></a>Pods</h3><p>Pods allow you to keep related containers close in terms of the network and hardware infrastructure. Pods essentially allow you to logically group containers and pieces of our application stacks together.</p>
+<blockquote>
+<p>Data can live near the application, so processing can be done without incurring a high latency from network traversal. Similarly, common data can be stored on volumes that are shared between a number of containers.</p>
+</blockquote>
+<p>Pods give us a logical group of containers that we can then replicate, schedule, and balance service endpoints across. If the process in a container crashes, Kubernetes automatically restarts it.</p>
+<p>For example, they all share the same network namespace, which means that each container in a Pod can see the other containers in the Pod on <code>localhost</code>. Pods also share the process and interprocess communication namespaces so that different containers can use tools, like shared memory and signaling, to coordinate between the different processes in the Pod.</p>
+<blockquote>
+<p>Keeping the container images separate generally makes it more agile for different teams to own or reuse the container images, but grouping them together in a Pod at runtime enables them to operate cooperatively.</p>
+</blockquote>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Pod
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> kuard
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">volumes</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> <span class="token string">'kuard-data'</span>
+      <span class="token key atrule">hostPath</span><span class="token punctuation">:</span>
+        <span class="token key atrule">path</span><span class="token punctuation">:</span> <span class="token string">'/var/lib/kuard'</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> <span class="token string">'kuard-remote-data'</span>
+      <span class="token key atrule">nfs</span><span class="token punctuation">:</span>
+        <span class="token key atrule">server</span><span class="token punctuation">:</span> my.nfs.server.local
+        <span class="token key atrule">path</span><span class="token punctuation">:</span> <span class="token string">'/exports'</span>
+  <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">image</span><span class="token punctuation">:</span> kuard<span class="token punctuation">-</span>amd64<span class="token punctuation">:</span>blue
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> kuard
+    <span class="token key atrule">volumeMounts</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> <span class="token string">'/data'</span>
+        <span class="token key atrule">name</span><span class="token punctuation">:</span> <span class="token string">'kuard-data'</span>
+    <span class="token key atrule">resources</span><span class="token punctuation">:</span>
+      <span class="token key atrule">requests</span><span class="token punctuation">:</span> <span class="token comment"># minimum</span>
+        <span class="token key atrule">cpu</span><span class="token punctuation">:</span> <span class="token string">'500m'</span>
+        <span class="token key atrule">memory</span><span class="token punctuation">:</span> <span class="token string">'128Mi'</span>
+      <span class="token key atrule">limits</span><span class="token punctuation">:</span> <span class="token comment"># maximum</span>
+        <span class="token key atrule">cpu</span><span class="token punctuation">:</span> <span class="token string">'1000m'</span>
+        <span class="token key atrule">memory</span><span class="token punctuation">:</span> <span class="token string">'256Mi'</span>
+    <span class="token key atrule">livenessProbe</span><span class="token punctuation">:</span>
+      <span class="token key atrule">httpGet</span><span class="token punctuation">:</span>
+        <span class="token key atrule">path</span><span class="token punctuation">:</span> /healthy
+        <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">8080</span>
+      <span class="token key atrule">initialDelaySeconds</span><span class="token punctuation">:</span> <span class="token number">5</span>
+      <span class="token key atrule">timeoutSeconds</span><span class="token punctuation">:</span> <span class="token number">1</span>
+      <span class="token key atrule">periodSeconds</span><span class="token punctuation">:</span> <span class="token number">10</span>
+      <span class="token key atrule">failureThreshold</span><span class="token punctuation">:</span> <span class="token number">3</span>
+    <span class="token key atrule">readinessProbe</span><span class="token punctuation">:</span>
+      <span class="token key atrule">httpGet</span><span class="token punctuation">:</span>
+        <span class="token key atrule">path</span><span class="token punctuation">:</span> /ready
+        <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">8080</span>
+      <span class="token key atrule">initialDelaySeconds</span><span class="token punctuation">:</span> <span class="token number">30</span>
+      <span class="token key atrule">timeoutSeconds</span><span class="token punctuation">:</span> <span class="token number">1</span>
+      <span class="token key atrule">periodSeconds</span><span class="token punctuation">:</span> <span class="token number">10</span>
+      <span class="token key atrule">failureThreshold</span><span class="token punctuation">:</span> <span class="token number">3</span>
+    <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">containerPort</span><span class="token punctuation">:</span> <span class="token number">8080</span>
+        <span class="token key atrule">name</span><span class="token punctuation">:</span> http
+        <span class="token key atrule">protocol</span><span class="token punctuation">:</span> TCP<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<blockquote>
+<p>Resources are requested per container, not per Pod. The total resources requested by the Pod is the sum of all resources requested by all containers in the Pod. The reason for this is that in many cases the different containers have very different CPU requirements.</p>
+</blockquote>
+<blockquote>
+<p>Once a Pod is scheduled to a node, no rescheduling occurs if that node fails. Addi‐ tionally, to create multiple replicas of the same Pod you have to create and name them manually. (That’s why ReplicaSet comes into play.)</p>
+</blockquote>
+<h3 id="services"><a href="#services" class="headerlink" title="Services"></a>Services</h3><p>A <code>Service</code> represents a TCP or UDP load-balanced service, spreading traffic to these different Pod replicas.</p>
+<blockquote>
+<p>Using a reliable endpoint, users and other programs can access pods running on your cluster seamlessly.</p>
+</blockquote>
+<blockquote>
+<p>the <code>kube-proxy</code> watches for new services in the cluster via the API server. It then programs a set of <em>iptables</em> rules in the kernel of that host to rewrite the destinations of packets so they are directed at one of the endpoints for that service. If the set of endpoints for a service changes (due to Pods coming and going or due to a failed readiness check), the set of <em>iptables</em> rules is rewritten.</p>
+</blockquote>
+<p>Every Service that is created, whether TCP or UDP, gets three things:</p>
+<ul>
+<li>Its own virtual but fixed IP address, VIP, also called cluster IP</li>
+<li>A DNS entry in the Kubernetes cluster DNS</li>
+<li>Load-balancing rules that proxy traffic to the Pods that implement the Service</li>
+</ul>
+<p>The Service object does is track which of your Pods are ready via a readiness check.</p>
+<blockquote>
+<p>Only ready Pods are sent traffic.</p>
+</blockquote>
+<p>Kubernetes achieves this by making sure that every node in the cluster runs a proxy named <code>kube-proxy</code>. The job of <code>kube-proxy</code> is to proxy communication from a service endpoint back to the corresponding pod that is running the actual application.</p>
+<blockquote>
+<p>Updates to service definitions are monitored and coordinated from the Kubernetes cluster master and propagated to the <code>kube-proxy</code> daemons running on each node.</p>
+</blockquote>
+<p>The service could use label selectors for pod membership.</p>
+<p>The Service load balancing is programmed into the network fabric of the Kubernetes cluster so that any container that tries to talk to the Service IP address is correctly load balanced to the corresponding Pods.</p>
+<p>This programming of the network fabric is dynamic, so as Pods come and go due to failures or scaling of a ReplicaSet, the load balancer is constantly reprogrammed to match the current state of the cluster.</p>
+<p><strong>Importing External Services</strong></p>
+<p>We might have legacy server and service are not running directly in Kubernetes, but it’s still worthwhile to represent this server in Kubernetes.</p>
+<details>
+<summary>
+
+<p>To see concretely how you maintain high fidelity between <em>development</em> and <em>production</em>, remember that all Kubernetes objects are deployed into <code>namespaces</code>.</p>
+</summary>
+
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment"># service in test</span>
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Service
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> my<span class="token punctuation">-</span>database
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> test
+<span class="token punctuation">---</span>
+<span class="token comment"># service in production</span>
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Service
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> my<span class="token punctuation">-</span>database
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> prod<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>When you deploy a Pod into the <code>test</code> namespace and it looks up the service named <code>my-database</code>, it will receive a pointer to <code>my-database.test.svc.cluster.internal</code>, which in turn points to the test database.</p>
+<p>In contrast, when a Pod deployed in the <code>prod</code> namespace looks up the same name (<code>my-database</code>) it will receive a pointer to <code>my-database.prod.svc.cluster.internal</code>, which is the production database.</p>
+</details>
+
+<detais>
+<summary>
+
+<p><strong>Service without selectors</strong></p>
+<p>With external services, however, there is no such label query.</p>
+</summary>
+
+<p>Instead, you generally have a DNS name that points to the specific server running the database. To import this external database service into Kubernetes, we start by creating a service without a Pod selector that references the DNS name of the database server.</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">kind</span><span class="token punctuation">:</span> Service
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> external<span class="token punctuation">-</span>database
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">type</span><span class="token punctuation">:</span> ExternalName
+  <span class="token key atrule">externalName</span><span class="token punctuation">:</span> database.company.com<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>When a typical Kubernetes service is created, an IP address is also created and the Kubernetes DNS service is populated with an A record that points to that IP address.</p>
+<p>When you create a service of type <code>ExternalName</code>, the Kubernetes DNS service is instead populated with a CNAME record that points to the external name you specified (database.company.com in this case).</p>
+<p>When an application in the cluster does a DNS lookup for the hostname <code>external-database.svc.default.cluster</code>, the DNS protocol aliases that name to <code>database.company.com</code>. This then resolves to the IP address of your external database server.</p>
+<p>In this way, all containers in Kubernetes believe that they are talking to a service that is backed with other containers, when in fact they are being redirected to the external database.</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment"># external-ip-service.yaml</span>
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Service
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> external<span class="token punctuation">-</span>ip<span class="token punctuation">-</span>database<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>At this point, Kubernetes will allocate a virtual IP address for this service and populate an A record for it. However, because there is no selector for the service, there will be no endpoints populated for the load balancer to redirect traffic to.</p>
+<p>Given that this is an external service, the user is responsible for populating the endpoints manually with an <code>Endpoints</code> resource.</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml">external<span class="token punctuation">-</span>ip<span class="token punctuation">-</span>endpoints.yaml
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Endpoints
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> external<span class="token punctuation">-</span>ip<span class="token punctuation">-</span>database
+<span class="token key atrule">subsets</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">addresses</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">ip</span><span class="token punctuation">:</span> 192.168.0.1
+      <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">3306</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>If you have more than one IP address for redundancy, you can repeat them in the addresses array. Once the endpoints are populated, the load balancer will start redirecting traffic from your Kubernetes service to the IP address endpoint(s).</p>
+</details>
+
+<h3 id="replication-controllers"><a href="#replication-controllers" class="headerlink" title="Replication controllers"></a>Replication controllers</h3><p>Replication controllers (RCs) manage the number of nodes that a pod and included container images run on. They ensure that an instance of an image is being run with the specific number of copies.</p>
+<p>Replication controllers are simply charged with ensuring that you have the desired scale for your application.</p>
+<details>
+<summary>
+
+<p><strong>Example configuration file</strong></p>
+</summary>
+
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1 <span class="token comment"># schema version</span>
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> ReplicationController <span class="token comment">#  the type of resource</span>
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js <span class="token comment"># the name of the resource</span>
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span> <span class="token comment"># labels which will be used for searching/selecting</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">replicas</span><span class="token punctuation">:</span> <span class="token number">3</span> <span class="token comment"># number of pods</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token comment">#  the selector values need to match the labels values specified in the pod template.</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js <span class="token comment">#  tells the controller which pods to watch</span>
+  <span class="token key atrule">template</span><span class="token punctuation">:</span> <span class="token comment"># a template to launch a new pod</span>
+    <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+        <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js
+          <span class="token key atrule">image</span><span class="token punctuation">:</span> jonbaier/node<span class="token punctuation">-</span>express<span class="token punctuation">-</span>info<span class="token punctuation">:</span>latest
+          <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+            <span class="token punctuation">-</span> <span class="token key atrule">containerPort</span><span class="token punctuation">:</span> <span class="token number">80</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Service
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">type</span><span class="token punctuation">:</span> LoadBalancer
+  <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">80</span>
+    <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+      <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</details>
+
+<h3 id="replicaset"><a href="#replicaset" class="headerlink" title="ReplicaSet"></a>ReplicaSet</h3><p>A <code>ReplicaSet</code> ensures that, for a given Pod definition, a number of replicas exists within the system. The actual replication is handled by the Kubernetes controller manager, which creates Pod objects that are scheduled by the Kubernetes scheduler.</p>
+<blockquote>
+<p>Also, the usage of ReplicationController is strongly discouraged in favor of ReplicaSets.</p>
+</blockquote>
+<details>
+<summary>
+
+<p><strong>Example configuration file</strong></p>
+</summary>
+
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> extensions/v1beta1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> ReplicaSet
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token comment"># required unique field</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>rs
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">replicas</span><span class="token punctuation">:</span> <span class="token number">3</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token comment"># The selector should be a proper subset</span>
+    <span class="token comment"># of the labels in the Pod template.</span>
+    <span class="token key atrule">matchLabels</span><span class="token punctuation">:</span>
+      <span class="token key atrule">app</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>express
+      <span class="token key atrule">deployment</span><span class="token punctuation">:</span> test
+    <span class="token key atrule">matchExpressions</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token punctuation">&#123;</span> <span class="token key atrule">key</span><span class="token punctuation">:</span> name<span class="token punctuation">,</span> <span class="token key atrule">operator</span><span class="token punctuation">:</span> In<span class="token punctuation">,</span> <span class="token key atrule">values</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>rs<span class="token punctuation">]</span> <span class="token punctuation">&#125;</span>
+
+  <span class="token comment"># Pod template</span>
+  <span class="token key atrule">template</span><span class="token punctuation">:</span>
+    <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+        <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>rs
+        <span class="token key atrule">app</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>express
+        <span class="token key atrule">deployment</span><span class="token punctuation">:</span> test
+        <span class="token key atrule">version</span><span class="token punctuation">:</span> v1
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>rs
+          <span class="token key atrule">image</span><span class="token punctuation">:</span> jonbaier/node<span class="token punctuation">-</span>express<span class="token punctuation">-</span>info<span class="token punctuation">:</span>latest
+          <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+            <span class="token punctuation">-</span> <span class="token key atrule">containerPort</span><span class="token punctuation">:</span> <span class="token number">80</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>Reconciliation Loops</strong></p>
+<p>The central concept behind a reconciliation loop is the notion of <em>desired state</em> versus <em>observed or current state</em>.</p>
+<p>The reconciliation loop is constantly running, observing the current state of the world and taking action to try to make the observed state match the desired state.</p>
+<p>Though ReplicaSets create and manage Pods, they do not own the Pods they create.</p>
+<p>ReplicaSets use label queries to identify the set of Pods they should be managing. They then use the Pod API to create the Pods that they are managing.</p>
+<p><strong>Designing with ReplicaSets</strong></p>
+<p>ReplicaSets are designed to represent a single, scalable microservice inside your architecture.</p>
+<p>Typically, these Pods created by ReplicaSet are then fronted by a Kubernetes service load balancer, which spreads traffic across the Pods that make up the service.</p>
+<blockquote>
+<p>Generally speaking, ReplicaSets are designed for stateless (or nearly stateless) services.</p>
+</blockquote>
+</details>
+
+<h2 id="health-checks"><a href="#health-checks" class="headerlink" title="Health checks"></a>Health checks</h2><p>Kubernetes provides two layers of health checking.</p>
+<ol>
+<li><p>HTTP or TCP checks:</p>
+<p>Kubernetes can attempt to connect to a particular endpoint and give a status of healthy on a successful connection.</p>
+</li>
+<li><p>Application-specific health checks can be performed using command-line scripts.</p>
+</li>
+</ol>
+<details>
+<summary>
+
+<p><strong>Example configuration file</strong></p>
+</summary>
+
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> ReplicationController
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">replicas</span><span class="token punctuation">:</span> <span class="token number">3</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js
+  <span class="token key atrule">template</span><span class="token punctuation">:</span>
+    <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+        <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js
+          <span class="token key atrule">image</span><span class="token punctuation">:</span> jonbaier/node<span class="token punctuation">-</span>express<span class="token punctuation">-</span>info<span class="token punctuation">:</span>latest
+          <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+            <span class="token punctuation">-</span> <span class="token key atrule">containerPort</span><span class="token punctuation">:</span> <span class="token number">80</span>
+          <span class="token key atrule">livenessProbe</span><span class="token punctuation">:</span>
+            <span class="token comment"># An HTTP health check</span>
+            <span class="token key atrule">httpGet</span><span class="token punctuation">:</span>
+              <span class="token key atrule">path</span><span class="token punctuation">:</span> /status/
+              <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">80</span>
+            <span class="token key atrule">initialDelaySeconds</span><span class="token punctuation">:</span> <span class="token number">30</span>
+            <span class="token key atrule">timeoutSeconds</span><span class="token punctuation">:</span> <span class="token number">1</span>
+
+          <span class="token key atrule">readinessProbe</span><span class="token punctuation">:</span>
+            <span class="token comment"># An HTTP health check</span>
+            <span class="token key atrule">httpGet</span><span class="token punctuation">:</span>
+              <span class="token key atrule">path</span><span class="token punctuation">:</span> /status/
+              <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">80</span>
+            <span class="token key atrule">initialDelaySeconds</span><span class="token punctuation">:</span> <span class="token number">30</span>
+            <span class="token key atrule">timeoutSeconds</span><span class="token punctuation">:</span> <span class="token number">1</span>
+
+          <span class="token key atrule">livenessProbe</span><span class="token punctuation">:</span>
+            <span class="token comment"># An TCP health check</span>
+            <span class="token key atrule">tcpSocket</span><span class="token punctuation">:</span>
+              <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">80</span>
+            <span class="token key atrule">initialDelaySeconds</span><span class="token punctuation">:</span> <span class="token number">15</span>
+            <span class="token key atrule">timeoutSeconds</span><span class="token punctuation">:</span> <span class="token number">1</span>
+
+          <span class="token key atrule">livenessProbe</span><span class="token punctuation">:</span>
+            <span class="token key atrule">exec</span><span class="token punctuation">:</span>
+              <span class="token key atrule">command</span><span class="token punctuation">:</span>
+              <span class="token punctuation">-</span> /usr/bin/health/checkHttpService.sh
+            <span class="token key atrule">initialDelaySeconds</span><span class="token punctuation">:</span> <span class="token number">90</span>
+            <span class="token key atrule">timeoutSeconds</span><span class="token punctuation">:</span> <span class="token number">1</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Note the addition of the <code>livenessProbe</code> element. This is our core health check element. From here, we can specify <code>httpGet</code>, <code>tcpScoket</code>, or <code>exec</code>.</p>
+<p>The probe will check the path and port specified and <em>restart</em> the pod if it doesn’t successfully return.</p>
+<p>There is a separate <code>readinessProbe</code> that will remove a container from the pool of pods answering service endpoints.</p>
+</details>
+
+<h2 id="life-cycle-hooks-or-graceful-shutdown"><a href="#life-cycle-hooks-or-graceful-shutdown" class="headerlink" title="Life cycle hooks or graceful shutdown"></a>Life cycle hooks or graceful shutdown</h2><p><a target="_blank" rel="noopener" href="https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/">Container Lifecycle Hooks</a></p>
+<p>As you run into failures in real-life scenarios, you may find that you want to take additional action before containers are shutdown or right after they are started. Kubernetes actually provides life cycle hooks for just this kind of use case.</p>
+<details>
+
+<summary>
+
+<p>The following example controller definition defines both a <code>postStart</code> action and a <code>preStop</code> action to take place before Kubernetes moves the container into the next stage of its life cycle.</p>
+<p>It’s important to note that hook calls are delivered at least once. Therefore, any logic in the action should gracefully handle multiple calls.</p>
+<p>Another important note is that <code>postStart</code> runs before a pod enters its ready state. If the hook itself fails, the pod will be considered unhealthy.</p>
+</summary>
+
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> ReplicationController
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> apache<span class="token punctuation">-</span>hook
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> apache<span class="token punctuation">-</span>hook
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">replicas</span><span class="token punctuation">:</span> <span class="token number">3</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> apache<span class="token punctuation">-</span>hook
+  <span class="token key atrule">template</span><span class="token punctuation">:</span>
+    <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+        <span class="token key atrule">name</span><span class="token punctuation">:</span> apache<span class="token punctuation">-</span>hook
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> apache<span class="token punctuation">-</span>hook
+          <span class="token key atrule">image</span><span class="token punctuation">:</span> bitnami/apache<span class="token punctuation">:</span>latest
+          <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+            <span class="token punctuation">-</span> <span class="token key atrule">containerPort</span><span class="token punctuation">:</span> <span class="token number">80</span>
+          <span class="token key atrule">lifecycle</span><span class="token punctuation">:</span>
+            <span class="token key atrule">postStart</span><span class="token punctuation">:</span>
+              <span class="token comment"># make an HTTP call to the endpoint and port</span>
+              <span class="token key atrule">httpGet</span><span class="token punctuation">:</span>
+                <span class="token key atrule">path</span><span class="token punctuation">:</span> http<span class="token punctuation">:</span>//my.registration<span class="token punctuation">-</span>server.com/register/
+                <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">80</span>
+
+            <span class="token key atrule">preStop</span><span class="token punctuation">:</span>
+              <span class="token comment"># runs a local command in the container</span>
+              <span class="token comment"># a parameter named `reason` will be sent to the handler as a parameter</span>
+              <span class="token key atrule">exec</span><span class="token punctuation">:</span>
+                <span class="token key atrule">command</span><span class="token punctuation">:</span>
+                  <span class="token punctuation">[</span><span class="token string">'/usr/local/bin/apachectl'</span><span class="token punctuation">,</span> <span class="token string">'-k'</span><span class="token punctuation">,</span> <span class="token string">'graceful-stop'</span><span class="token punctuation">]</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</details>
+
+<h2 id="application-scheduling"><a href="#application-scheduling" class="headerlink" title="Application scheduling"></a>Application scheduling</h2><p>The default behavior for the Kubernetes scheduler is to spread container replicas across the nodes in the cluster. In the absence of all other contstraints, the scheduler will place new pods on nodes with the least number of other pods belonging to matching services or replication controllers.</p>
+<p>Additionally, the scheduler provides the ability to add constraints based on resources available to the node. Today, this includes minimum CPU and memory allocations.</p>
+<p>When additional constraintsare defined, Kubernetes will check a node for available resources. If a node does not meet all the constraints, it will move to the next. If no nodes can be found that meet the criteria, then we will see a scheduling error in the logs.</p>
+<details>
+<summary>
+
+<p><strong>Example configuration file</strong>: requesting <em>512 Mi</em> for memory and <em>1500 m</em> for CPU.</p>
+</summary>
+
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> ReplicationController
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>constraints
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>constraints
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">replicas</span><span class="token punctuation">:</span> <span class="token number">3</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>constraints
+  <span class="token key atrule">template</span><span class="token punctuation">:</span>
+    <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+        <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>constraints
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>js<span class="token punctuation">-</span>constraints
+          <span class="token key atrule">image</span><span class="token punctuation">:</span> jonbaier/node<span class="token punctuation">-</span>express<span class="token punctuation">-</span>info<span class="token punctuation">:</span>latest
+          <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+            <span class="token punctuation">-</span> <span class="token key atrule">containerPort</span><span class="token punctuation">:</span> <span class="token number">80</span>
+          <span class="token key atrule">resources</span><span class="token punctuation">:</span>
+            <span class="token key atrule">limits</span><span class="token punctuation">:</span>
+              <span class="token key atrule">memory</span><span class="token punctuation">:</span> <span class="token string">'512Mi'</span>
+              <span class="token key atrule">cpu</span><span class="token punctuation">:</span> <span class="token string">'1500m'</span> <span class="token comment"># '500m'</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kubectl apply -f nodejs-constraints-controller.yml
+
+kubectl get pods
+
+kubectl describe pods/<span class="token operator">&lt;</span>pod-id<span class="token operator">></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</details>
+
+<h2 id="organizing-the-cluster-with-namespaces-labels-and-annotations"><a href="#organizing-the-cluster-with-namespaces-labels-and-annotations" class="headerlink" title="Organizing the Cluster with Namespaces, Labels, and Annotations"></a>Organizing the Cluster with Namespaces, Labels, and Annotations</h2><h3 id="namespaces"><a href="#namespaces" class="headerlink" title="Namespaces"></a>Namespaces</h3><p>You can think of a <code>Namespace</code> as something like a folder for your Kubernetes API objects.</p>
+<blockquote>
+<p>Namespaces provide directories for containing most of the other objects in the cluster. Namespaces can also provide a scope for role-based access control (RBAC) rules.</p>
+</blockquote>
+<p>Every Kubernetes cluster has a single built-in Namespace named <code>default</code>, and most installations of Kubernetes also include a Namespace named <code>kube-system</code>, where cluster administration containers are created.</p>
+<p>Namespaces are also placed into the DNS names created for Services and the DNS search paths that are provided to containers.</p>
+<h3 id="labels-and-label-selector"><a href="#labels-and-label-selector" class="headerlink" title="Labels and Label Selector"></a>Labels and Label Selector</h3><p>Labels provide identifying metadata for objects. These are fundamental qualities of the object that will be used for grouping, viewing, and operating.</p>
+<p>Labels have simple syntax. They are key/value pairs, where both the key and value are represented by strings. Label keys can be broken down into two parts: an optional prefix and a name, separated by a slash. The prefix, if specified, must be a DNS sub‐ domain with a 253-character limit. The key name is required and must be shorter than 63 characters. Names must also start and end with an alphanumeric character and permit the use of dashes (-), underscores (_), and dots (.) between characters.</p>
+<table>
+<thead>
+<tr>
+<th align="left">Key</th>
+<th align="left">Value</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">example.com/app-version</td>
+<td align="left">1.0.0</td>
+</tr>
+<tr>
+<td align="left">appVersion</td>
+<td align="left">1.0.0</td>
+</tr>
+<tr>
+<td align="left">kubernetes.io/cluster-service</td>
+<td align="left">true</td>
+</tr>
+</tbody></table>
+<p>Label selectors are used to filter Kubernetes objects based on a set of labels. Selectors use a simple Boolean language.</p>
+<table>
+<thead>
+<tr>
+<th align="left">Operator</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">key=value</td>
+<td align="left">key is set to value</td>
+</tr>
+<tr>
+<td align="left">key!=value</td>
+<td align="left">key is not set to value</td>
+</tr>
+<tr>
+<td align="left">key in (value1, value2)</td>
+<td align="left">key is one of (…)</td>
+</tr>
+<tr>
+<td align="left">key notin (value1, value2)</td>
+<td align="left">key is not one of (…)</td>
+</tr>
+<tr>
+<td align="left">key</td>
+<td align="left">key is set</td>
+</tr>
+<tr>
+<td align="left">!key</td>
+<td align="left">key is not set</td>
+</tr>
+</tbody></table>
+<h3 id="annotations"><a href="#annotations" class="headerlink" title="Annotations"></a>Annotations</h3><p>Annotations provide a place to store additional metadata for Kubernetes objects with the sole purpose of assisting tools and libraries. They are a way for other programs driving Kubernetes via an API to store some opaque data with an object.</p>
+<p>Annotations are used in various places in Kubernetes, with the primary use case being rolling deployments. During rolling deployments, annotations are used to track rollout status and provide the necessary information required to roll back a deployment to a previous state.</p>
+<blockquote>
+<p>It is a matter of taste as to when to use an annotation or a label. When in doubt, add information to an object as an annotation and pro‐ mote it to a label if you find yourself wanting to use it in a selector.</p>
+</blockquote>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

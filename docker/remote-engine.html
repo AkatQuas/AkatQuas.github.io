@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="Remote access is how you administer test environments or debug issues in production, and it’s also how you enable the continuous deployment part of your CI&#x2F;CD pipeline. Continuous deployment is the ne">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Remote access">
+<meta property="og:url" content="https://akatquas.github.io/docker/remote-engine.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="Remote access is how you administer test environments or debug issues in production, and it’s also how you enable the continuous deployment part of your CI&#x2F;CD pipeline. Continuous deployment is the ne">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-01-15T10:21:08.374Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.374Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="akat,programmer,frontend,node,javascript,golang,python">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://akatquas.github.io/docker/remote-engine.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>Remote access | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#endpoint-options-for-the-docker-api"><span class="nav-text">Endpoint options for the Docker API</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#configuring-docker-for-secure-remote-access"><span class="nav-text">Configuring Docker for secure remote access</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#using-docker-contexts-to-work-with-remote-engines"><span class="nav-text">Using Docker Contexts to work with remote engines</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#adding-continuous-deployment-to-the-ci-pipeline"><span class="nav-text">Adding continuous deployment to the CI pipeline</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#understanding-teh-access-model-for-docker"><span class="nav-text">Understanding teh access model for Docker</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">Remote access
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <p>Remote access is how you administer test environments or debug issues in production, and it’s also how you enable the <em>continuous deployment</em> part of your CI/CD pipeline. Continuous deployment is the next stage of the pipeline – connecting to a remote Docker Engine and deploying the new version of the app.</p>
+<h3 id="endpoint-options-for-the-docker-api"><a href="#endpoint-options-for-the-docker-api" class="headerlink" title="Endpoint options for the Docker API"></a>Endpoint options for the Docker API</h3><p>The default setup is for the Engine to listen on a local channel, and for the command line to use that same channel. The local channel uses either Linux <em>sockets</em> or Windows named <em>pipes</em>, and those are both network technologies that restrict traffic to the local machine.</p>
+<pre class="line-numbers language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
+  <span class="token property">"hosts"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token comment">// enable remote access on port 2375</span>
+    <span class="token string">"tcp://0.0.0.0:2375"</span>
+    <span class="token comment">// keep listening on the local channel, Linux socket</span>
+    <span class="token string">"fd://"</span>
+    <span class="token comment">// keep listening on the local channel, Windows pipe</span>
+    <span class="token string">"npipe://"</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token property">"insecure-registries"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token string">"https://hub-mirror.c.163.com/"</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>The Docker and Docker Compose command lines both support a <code>host</code> parameter, which specifies the address of the Docker Engine where you want to send commands.</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">docker --host tcp://localhost:2375 image <span class="token function">ls</span>
+
+<span class="token function">curl</span> http://localhost:2375/containers/json<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>When you’re working with a remote Docker Engine, any commands you send work in the context of that machine. So if you run a container and mount a volume from <em>the local disk</em>, it’s the <em>remote machine’s disk</em> that the container sees.</p>
+<h3 id="configuring-docker-for-secure-remote-access"><a href="#configuring-docker-for-secure-remote-access" class="headerlink" title="Configuring Docker for secure remote access"></a>Configuring Docker for secure remote access</h3><p>Docker supports two other channels for the API to listen on, and both are secure.</p>
+<ul>
+<li><p>Transport Layer Security (TLS): the same encryption technique based on digital certificates used by HTTPS websites. The Docker API uses <em>mutual TLS</em>, so the server has a certificate to identify itself and encrypt traffic, and the client also has a certificate to identify itself.</p>
+</li>
+<li><p>Secure Shell (SSH) protocol: it is the standard way to connect to Linux servers, but it is also supported in Windows. SSH users can authenticate with username and password or with private keys.</p>
+</li>
+</ul>
+<h3 id="using-docker-contexts-to-work-with-remote-engines"><a href="#using-docker-contexts-to-work-with-remote-engines" class="headerlink" title="Using Docker Contexts to work with remote engines"></a>Using Docker Contexts to work with remote engines</h3><p>You can point your local Docker CLI to a remote machine using the <code>host</code> parameter, along with all the TLS cert paths if you’re using a secured channel, but it’s awkward to do that for every command you run. Docker makes it easier to switch between Docker Engines using Contexts.</p>
+<p>You create a Docker Context using the CLI, specifying all the connection details for the Engine. You can create multiple contexts, and all the connection details for each context are stored on your local machine.</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># create a context using your PWD domain and certs:</span>
+docker context create pwd-tls --docker <span class="token string">"host=tcp://<span class="token variable">$pwdDomain</span>,ca=/tmp/pwd-certs/ca.pem,cert=/tmp/pwd-certs/client-cert.pem,key=/tmp/pwd-certs/client-key.pem"</span>
+
+<span class="token comment"># for SSH it would be:</span>
+docker context create local-tls --docker <span class="token string">"host=ssh://user@server"</span>
+
+<span class="token comment"># list contexts:</span>
+docker context <span class="token function">ls</span>
+
+<span class="token comment"># switch contexts, system-wide default,</span>
+docker context use CONTEXT
+
+<span class="token comment"># using context in current terminal session, temporarily</span>
+<span class="token builtin class-name">export</span> <span class="token assign-left variable">DOCKER_CONTEXT</span><span class="token operator">=</span><span class="token string">'some-context'</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="adding-continuous-deployment-to-the-ci-pipeline"><a href="#adding-continuous-deployment-to-the-ci-pipeline" class="headerlink" title="Adding continuous deployment to the CI pipeline"></a>Adding continuous deployment to the CI pipeline</h3><p>That pipeline covered the continuous integration (CI) stages—building and testing the app in containers and pushing the built image to a Docker registry. The continuous Deployment (CD) stages add to that, deploying to a testing environment for final signoff and then to production.</p>
+<p>Most automation servers let you store secrets inside the build server and use them in pipeline jobs, and that separates credential management from source control.</p>
+<h3 id="understanding-teh-access-model-for-docker"><a href="#understanding-teh-access-model-for-docker" class="headerlink" title="Understanding teh access model for Docker"></a>Understanding teh access model for Docker</h3><p>Securing your Engine is about two things: encrypting the traffic between the CLI and API, and authenticating to ensure the user is allowed access to the API.</p>
+<p>There’s no authorization—the access model is all or nothing. If you can’t connect to the API, you can’t do anything, and if you can connect to the API, you can do everything.</p>
+<p>Kubernetes has a role-based access control model, as does Docker Enterprise, so you can restrict which users can access resources, and what they can do with those resources.</p>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

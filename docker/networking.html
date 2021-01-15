@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="Docker NetworkingDocker runs applications inside of containers, and applications need to communicate over lots of different networks. Docker networking is based on an open-source pluggable architectur">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Docker Networking">
+<meta property="og:url" content="https://akatquas.github.io/docker/networking.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="Docker NetworkingDocker runs applications inside of containers, and applications need to communicate over lots of different networks. Docker networking is based on an open-source pluggable architectur">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-01-15T10:21:08.374Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.374Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="akat,programmer,frontend,node,javascript,golang,python">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://akatquas.github.io/docker/networking.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>Docker Networking | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#docker-networking"><span class="nav-text">Docker Networking</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#the-theroy"><span class="nav-text">The theroy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#single-host-bridge-networks"><span class="nav-text">Single-host bridge networks</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#service-discovery"><span class="nav-text">Service discovery</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ingress-load-balancing"><span class="nav-text">Ingress load balancing</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#docker-overlay-networking"><span class="nav-text">Docker overlay networking</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#summary"><span class="nav-text">Summary</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">Docker Networking
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <h2 id="docker-networking"><a href="#docker-networking" class="headerlink" title="Docker Networking"></a>Docker Networking</h2><p>Docker runs applications inside of containers, and applications need to communicate over lots of different networks.</p>
+<p>Docker networking is based on an open-source pluggable architecture called the Container Network Model. <code>libnetwork</code> is Docker’s real-world implementation of the CNM, and it provides all of Docker’s core networking capabilities. Drivers plug in to <code>libnetwork</code> to provide specific network topologies.</p>
+<p><code>libnetwork</code> provides a native service discovery and basic container load balancing solution.</p>
+<h3 id="the-theroy"><a href="#the-theroy" class="headerlink" title="The theroy"></a>The theroy</h3><p>At the highest level, Docker networking comprises three major components:</p>
+<ul>
+<li>TheContainerNetworkModel(CNM)</li>
+<li>libnetwork</li>
+<li>Drivers</li>
+</ul>
+<p>The CNM is the design specification, which outlines the fundamental building blocks of a Docker network.</p>
+<p><code>libnetwork</code> is a real-world implementation of the CNM, which is written in Go.</p>
+<p>Drivers extend the model by implementing specific network topologies such as VXLAN overaly networks.</p>
+<p><strong>The Container Network Model</strong></p>
+<p>It outlines the fundamental building blocks of a Docker network, and you can read the full spec <a target="_blank" rel="noopener" href="https://github.com/docker/libnetwork/blob/master/docs/design.md">here</a>. The Container Network Model is all about providing networking to containers.</p>
+<p>It defines three major building blocks:</p>
+<ul>
+<li><p><strong>Sandboxes</strong>: an isolated network stack, including: Ethernet interfaces, ports, routing tables and DNS config.</p>
+</li>
+<li><p><strong>Endpoints</strong>: virtual network interfaces, responsible for making connections. In the case of the CNM, it’s the job of the <em>endpoint</em> to connect a <em>sandbox</em> to a <em>network</em>.</p>
+<p><strong>One endpoint con only be connected to one single network</strong>. Therefore, if a container needs connecting to multiple networks, it will need multiple endpoints.</p>
+</li>
+<li><p><strong>Networks</strong>: a software implementation of on switch (802.1d bridge), which will group together and isolate a collection of endpoints that need to commuicate.</p>
+</li>
+</ul>
+<p><strong>libnetwork</strong></p>
+<p>The CNM is the design doc, and <code>libnetwork</code> is the canonical implementation.</p>
+<p>It implements native <em>service discovery</em>, <em>ingress-based container load balancing</em>, and the network control panel and managment plane functionality.</p>
+<p><strong>Drivers</strong></p>
+<p>Drivers implement the data plane. Connectivity and isolation is all handled by drivers. So is the actual creation of networks. On Linux they include; <code>bridge</code>, <code>overlay</code> and <code>macvlan</code>. Each driver is in charge of the actual creation and management of all resources on the networks it is responsible for.</p>
+<p><code>libnetwork</code> allows multiple network drivers to be active at the same time.</p>
+<h3 id="single-host-bridge-networks"><a href="#single-host-bridge-networks" class="headerlink" title="Single-host bridge networks"></a>Single-host bridge networks</h3><p>This is the simplest type of Docker network.</p>
+<p><em>Single-host</em> tells that it only exists on a single Docker host and can only connect containers that are on the same host.</p>
+<p><em>Bridge</em> tells us that it’s an implementation of an 802.1d bridge.</p>
+<p>Docker on Linux creates single-host bridge networks with the built-in <code>bridge</code> driver, (<code>nat</code> driver on Windows).</p>
+<p>Every Docker host gets a default single-host bridge network. By default, this is the network that all new containers will be connected to unless you override it on the command line with the <code>--network</code> flag.</p>
+<p>The default <em>bridge</em> network, on all Linux-based Docker hosts, maps to an underlying Linux bridge in the kernel called <em>docker0</em>.</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">docker network inspect bridge <span class="token operator">|</span> <span class="token function">grep</span> bridge.name<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>Port mappings let you map a container to a port on teh Docker host. Any traffic hitting the Docker host on the configured port will be redirected to the container.</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># list port mappings or a specific mapping for the container</span>
+docker port CONTAINER  <span class="token punctuation">[</span>PRIVATE_PORT<span class="token punctuation">[</span>/PROTO<span class="token punctuation">]</span><span class="token punctuation">]</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<h3 id="service-discovery"><a href="#service-discovery" class="headerlink" title="Service discovery"></a>Service discovery</h3><p><em>Service discovery</em> allows all containers and Swarm services to locate each other by name. The only requirement is that they be on the same network.</p>
+<p>Under the hood, this leverages Docker’s embedded DNS server and the DNS resolver in each container.</p>
+<p>Every container has a local DNS resolver. If some service name miss hitting on local DNS resolver, the local DNS resolver would initiate a recursive query to the Docker DNS server. The local resolver is pre-configured to know how to reach the Docker DNS server. The Docker DNS server holds name-to-IP mappings for all containers created with the <code>--name</code> or <code>--net-alias</code> flags.</p>
+<p>Every Swarm service and standalone container started with the <code>--name</code> flag will register its name and IP with the Docker DNS service.</p>
+<p>However, service discovery is <em>network-scoped</em>. This means that name resolution only works for containers and Services on the same network. If two containers are on different networks, they will not be able to resolve each other.</p>
+<p>It’s possible to configure Swarm services and standalone containers with customized DNS options. For example, the <code>--dns</code> flag lets you specify a list of custom DNS servers to use in case the embedded Docker DNS server cannot resolve a query. This is common when querying names of services outside of Docker. You can also use the <code>--dns-search</code> flag to add custom search domains for queries against unqualified names.</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">docker container run -it --name c1 <span class="token punctuation">\</span>
+  --dns<span class="token operator">=</span><span class="token number">8.8</span>.8.8 <span class="token punctuation">\</span>
+  --dns-search<span class="token operator">=</span>bing.com <span class="token punctuation">\</span>
+  alpine <span class="token function">sh</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="ingress-load-balancing"><a href="#ingress-load-balancing" class="headerlink" title="Ingress load balancing"></a>Ingress load balancing</h3><p>Swarm supports two publishing modes that make services accessible outside the cluster: <em>Ingress mode(default)</em>, <em>Host mode</em>.</p>
+<p>Services published via <em>ingress mode</em> can be accessed from any node in the Swarm — even nodes not running a service replica.</p>
+<p>Services published via <em>host mode</em> can only be accessed by hitting nodes running service replicas.</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">docker <span class="token function">service</span> create -d --name svc1 <span class="token punctuation">\</span>
+  --publish <span class="token assign-left variable">published</span><span class="token operator">=</span><span class="token number">5000</span>,target<span class="token operator">=</span><span class="token number">80</span>,mode<span class="token operator">=</span>host <span class="token punctuation">\</span>
+  nginx<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<h2 id="docker-overlay-networking"><a href="#docker-overlay-networking" class="headerlink" title="Docker overlay networking"></a>Docker overlay networking</h2><p>Overlay networking allows you to create a flat, secure, layer-2 network, spanning multiple hosts. Containers connected to this network can communicate directly.</p>
+<p>By default, Docker overlay networks encrypt cluster management traffic but not application traffic. You must explicitly enable encryption of application traffic.</p>
+<p>Overlay networks are only extended to worker nodes when they are tasked with running a container on it. This lazy approach to extended overlay networks improves network scalability by reducing the amount of network gossip.</p>
+<p>When the Swarm starts a container on an overlay network, it automatically extends that network to the node the container is running on.</p>
+<p>Standalone containers that are not part of a swarm service cannot attach to overlay networks unless they have the <code>attachable=true</code> property. The following command can be used to create an attachable overlay network that standalone containers can also attach.</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">docker network creat -d overlay --attachable NETWORK_NAME
+
+<span class="token comment"># it'll display the containers attached</span>
+docker network inspect OVERLAY_NETWORK<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>On overlay networking, the control plane of all overlay networks is encrypted by default, but you have to explicitly encrypt the data plane. The control plane is for network management traffic and the data plane is for application traffic. Encrypting the data plane has a potential performance overhead.</p>
+<p>To encrypt the data plane, you have two choices:</p>
+<ul>
+<li><p>Pass the <code>-o encrypted</code> flag to the <code>docker network create</code> command.</p>
+</li>
+<li><p>Specify <code>encrypted:&#39;yes&#39;</code> under <code>driver_opts</code> in the stack file.</p>
+</li>
+</ul>
+<h2 id="summary"><a href="#summary" class="headerlink" title="Summary"></a>Summary</h2><p>The <strong>Docker Engine</strong> comes with three types of networks by default. These are <strong>bridged</strong>, <strong>host</strong>, and <strong>none</strong>.</p>
+<ul>
+<li><p>The bridged network is the default choice unless otherwise specified. In this mode, the container has its own networking namespace and is then bridged via virtual interfaces to the host (or node in the case of K8s) network. In the bridged network, two containers can use the same IP range because they are completely isolated. Therefore, service communication requires some additional port mapping through the host side of network interfaces.</p>
+</li>
+<li><p>Docker also supports a host network, which allows the containers to use the host network stack. Performance is greatly benefited since it removes a level of network virtualization; however, you lose the security of having an isolated network namespace. Additionally, port usage must be managed more carefully since all containers share an IP.</p>
+</li>
+<li><p>Finally, Docker supports a none network, which creates a container with no external interface. Only a loopback device is shown if you inspect the network interfaces.</p>
+</li>
+</ul>
+<p>In all these scenarios, we are still on a single machine, and outside of a host mode, the container IP space is not available, outside that machine. Connecting containers across two machines then requires <em>NAT</em> and <em>port mapping</em> for communication.</p>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

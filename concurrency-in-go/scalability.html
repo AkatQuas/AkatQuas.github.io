@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="Scaling concurrent operations within a single process. Finding out how concurrency comes into play when dealing with more than one process. Error PropagationWith concurrent code, and especially distri">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Concurrency at Scale">
+<meta property="og:url" content="https://akatquas.github.io/concurrency-in-go/scalability.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="Scaling concurrent operations within a single process. Finding out how concurrency comes into play when dealing with more than one process. Error PropagationWith concurrent code, and especially distri">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-01-15T10:21:08.374Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.374Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="akat,programmer,frontend,node,javascript,golang,python">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://akatquas.github.io/concurrency-in-go/scalability.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>Concurrency at Scale | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#error-propagation"><span class="nav-text">Error Propagation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#timeouts-and-cancellation"><span class="nav-text">Timeouts and Cancellation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#heartbeats"><span class="nav-text">Heartbeats</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#replicated-requests"><span class="nav-text">Replicated Requests</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rate-limiting"><span class="nav-text">Rate Limiting</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#healing-unhealthy-goroutines"><span class="nav-text">Healing Unhealthy Goroutines</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#contents"><span class="nav-text">Contents</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">Concurrency at Scale
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <p>Scaling concurrent operations within a single process.</p>
+<p>Finding out how concurrency comes into play when dealing with more than one process.</p>
+<h2 id="error-propagation"><a href="#error-propagation" class="headerlink" title="Error Propagation"></a>Error Propagation</h2><p>With concurrent code, and especially distributed systems, it’s both easy for something to go wrong in your system, and difficult to understand why it happened.</p>
+<p>Let’s spend some time here discussing a philosophy of error propagation. What follows is an opinionated framework for handling errors in concurrent systems.</p>
+<p>Errors indicate that your system has entered a state in which it cannot fulfill an operation. Because of this, it needs to relay a few pieces of critical information:</p>
+<ul>
+<li><p>What happended:</p>
+<p>This is the part of the error that contains information about what happened. This information is likely to be generated implicitly by whatever it was that generated the errors, although you can probably decorate this with some context that will help the user.</p>
+</li>
+<li><p>When and where it occurred:</p>
+<p>Errors should always contain a complete stack trace starting with how the call was initiated and ending with where the error was instantiated. The stack trace should not be contained in the error message, but should be easily accessible when handling the error up the stack.</p>
+<p>Further, the error should contain information regarding the context it’s running within, as well as the time on the machine the error was instantiated on, in UTC.</p>
+</li>
+<li><p>A friendly user-facing message, optional.</p>
+<p>The message that gets displayed to the user should be customized to suit your system and its users. It should only contain abbreviated and relevant information from the previous two points.</p>
+</li>
+<li><p>How the user can get more information, optional.</p>
+<p>At some point, someone will likely want to know, in detail, what happened when the error occurred. Errors that are presented to users should provide an ID that can be cross-referenced to a corresponding log that displays the full information of the error: time the error occurred (not the time the error was logged), the stack trace. It can also be helpful to include a hash of the stack trace to aid in aggregating like issues in bug trackers.</p>
+</li>
+</ul>
+<p>It’s possible to place all errors into one of two categories:</p>
+<ul>
+<li><p>Bugs</p>
+</li>
+<li><p>Known edge cases (e.g., broken network connections, failed disk writes, etc.)</p>
+</li>
+</ul>
+<p>Bugs are errors that the program have not customized to the system, or <em>raw errors</em>. Imagine a large system with multiple modules:</p>
+<pre class="line-numbers language-none"><code class="language-none">CLI Component --&gt; Intermediary Component --&gt; Low Level Component<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>At boundaries of each component, all incomming errors must be wrapeed in a well-formed error for the component code is within. Sometimes we need to wrap error to be malformed.</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">PostReport</span><span class="token punctuation">(</span>id <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token builtin">error</span> <span class="token punctuation">&#123;</span>
+  result<span class="token punctuation">,</span> err <span class="token operator">:=</span> lowlevel<span class="token punctuation">.</span><span class="token function">DoWork</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token boolean">_</span><span class="token punctuation">,</span> ok <span class="token operator">:=</span> err<span class="token punctuation">.</span><span class="token punctuation">(</span>lowlevel<span class="token punctuation">.</span>Error<span class="token punctuation">)</span><span class="token punctuation">;</span> ok <span class="token punctuation">&#123;</span>
+      err <span class="token operator">=</span> <span class="token function">WrapErr</span><span class="token punctuation">(</span>err<span class="token punctuation">,</span> <span class="token string">"cannot post report with id %q"</span><span class="token punctuation">,</span> id<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">return</span> err
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">type</span> MyError <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+  Inner <span class="token builtin">error</span>
+  Message <span class="token builtin">string</span>
+  StackTrace <span class="token builtin">string</span>
+  Misc <span class="token keyword">map</span><span class="token punctuation">[</span><span class="token builtin">string</span><span class="token punctuation">]</span><span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token function">wrapError</span><span class="token punctuation">(</span>err <span class="token builtin">error</span><span class="token punctuation">,</span> messagef <span class="token builtin">string</span><span class="token punctuation">,</span> msgArgs <span class="token operator">...</span><span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span> MyError <span class="token punctuation">&#123;</span>
+  <span class="token keyword">return</span> MyError<span class="token punctuation">&#123;</span>
+    Inner<span class="token punctuation">:</span> err<span class="token punctuation">,</span>
+    Message<span class="token punctuation">:</span> fmt<span class="token punctuation">.</span><span class="token function">Sprintf</span><span class="token punctuation">(</span>messagef<span class="token punctuation">,</span> msgArs<span class="token operator">...</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    StackTrace<span class="token punctuation">:</span> <span class="token function">string</span><span class="token punctuation">(</span>debug<span class="token punctuation">.</span><span class="token function">Stack</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    Misc<span class="token punctuation">:</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">map</span><span class="token punctuation">[</span><span class="token builtin">string</span><span class="token punctuation">]</span><span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token punctuation">(</span>err MyError<span class="token punctuation">)</span> <span class="token function">Error</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">string</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">return</span> err<span class="token punctuation">.</span>Message
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">type</span> LowLevelErr <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+  <span class="token builtin">error</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token function">isGloballyExec</span><span class="token punctuation">(</span>path <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token builtin">bool</span><span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  info<span class="token punctuation">,</span> err <span class="token operator">:=</span> os<span class="token punctuation">.</span><span class="token function">Stat</span><span class="token punctuation">(</span>path<span class="token punctuation">)</span>
+  <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">,</span> LowLevelErr<span class="token punctuation">&#123;</span><span class="token function">wrapError</span><span class="token punctuation">(</span>err<span class="token punctuation">,</span> err<span class="token punctuation">.</span><span class="token function">Error</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">return</span> info<span class="token punctuation">.</span><span class="token function">Mode</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Perm</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token number">0100</span> <span class="token operator">=</span> <span class="token number">0100</span><span class="token punctuation">,</span> <span class="token boolean">nil</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">type</span> IntermediateErr <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+  <span class="token builtin">error</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Note that it is only necessary to wrap errors in the module boundaries, such as public functions/methods, or when the code can add valuable context.</p>
+<p>As we logging these errors with much information, we should display a friendly message to the user stating something unexpected has happened.</p>
+<h2 id="timeouts-and-cancellation"><a href="#timeouts-and-cancellation" class="headerlink" title="Timeouts and Cancellation"></a>Timeouts and Cancellation</h2><p>Timeouts are crucial to creating a system with behavior you can understand. Cancellation is one natural response to a timeout.</p>
+<p>Here are some reasons we might want the concurrent processes to support timeouts:</p>
+<ul>
+<li><p>System saturation</p>
+<p>If the system is saturated, it may want the requests at the edges of the system to time out rather than take a long time to field them.</p>
+</li>
+<li><p>Stale data</p>
+<p>Sometimes data has a window within which it must be processed before more relevant data is available, or the need to process the data has expired. If a concurrent process takes longer to process the data than this window, we would want to time out and cancel the concurrent process.</p>
+<p>If this window is known beforehand, it would make sense to pass our concurrent process a <code>context.Context</code> created with <code>context.WithDeadline</code>, or <code>context.WithTimeout</code>. If the window is not known beforehand, the parent of the concurrent process could use <code>context.WithCancel</code> to be able to cancel the concurrent process when there’s no more need for the request.</p>
+</li>
+<li><p>Attempting to prevent deadlocks</p>
+<p>In a large system—especially distributed systems—it can sometimes be difficult to understand the way in which data might flow, or what edge cases might turn up. It is not unreasonable, and even recommended, to place timeouts on all of your concurrent operations to guarantee your system won’t deadlock. The timeout period doesn’t have to be close to the actual time it takes to perform your concurrent operation. The timeout period’s purpose is only to prevent deadlock, choose a reasonable time duration.</p>
+</li>
+</ul>
+<p>Here are a number of reasons why a concurrent process might be canceled:</p>
+<ul>
+<li><p>Timeouts</p>
+<p>A timeout is an implicit cancellation.</p>
+</li>
+<li><p>User intervention</p>
+<p>It’s usually advisable to start long-running processes concurrently and then report status back to the user at a polling interval, or allow the users to query for status as they see fit. So it is necessary to allow the users to cancel the operation they’ve started.</p>
+</li>
+<li><p>Parent cancellation</p>
+<p>For that matter, if any kind of parent of a concurrent operation stops, as a child of that parent, it should be canceled.</p>
+</li>
+<li><p>Replicated Requests</p>
+<p>Sometimes, we may send data to multiple concurrent processes in an attempt to get a faster response from one of them. When the first one comes back, we would want to cancel the rest of the processes.</p>
+</li>
+</ul>
+<p>To reify cancellation, we need to explore the preemptability of a concurrent process.</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go">val value <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+<span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+<span class="token keyword">case</span> <span class="token operator">&lt;-</span>done<span class="token punctuation">:</span>
+  <span class="token keyword">return</span>
+<span class="token keyword">case</span> value <span class="token operator">=</span> <span class="token operator">&lt;-</span>valueStream<span class="token punctuation">:</span>
+<span class="token punctuation">&#125;</span>
+
+result <span class="token operator">:=</span> <span class="token function">reallyLongCalculation</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span>
+
+<span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+<span class="token keyword">case</span> <span class="token operator">&lt;-</span>done<span class="token punctuation">:</span>
+  <span class="token keyword">return</span>
+<span class="token keyword">case</span> valueStream<span class="token operator">&lt;-</span>result<span class="token punctuation">:</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">// reallyLongCalculation is preemptable</span>
+reallyLongCalculation <span class="token operator">:=</span> <span class="token keyword">func</span><span class="token punctuation">(</span>
+  done <span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  value <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span>
+  intermediateResult <span class="token operator">:=</span> <span class="token function">longCalculation</span><span class="token punctuation">(</span>done<span class="token punctuation">,</span> value<span class="token punctuation">)</span>
+  <span class="token keyword">return</span> <span class="token function">logCalculation</span><span class="token punctuation">(</span>done<span class="token punctuation">,</span> intermediateResult<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Using cancellation lurking another problem: if the goroutine happens to modify shared state what happens when the goroutine is canceled? Does the goroutine try and roll back the intermediary work it’s done? How long does it have to do this work? Something has told the goroutine that it should halt, so the goroutine shouldn’t take too long to roll back its work, right?</p>
+<p>Backing out or rolling back may be required after a cancellation.</p>
+<p>Another issue is duplicated message/result. Both the parent and the child can take their own strategy to response the duplicated result:</p>
+<ul>
+<li><p>The child accept either the first or the last result</p>
+</li>
+<li><p>The child poll the parent for permission to deal with result</p>
+</li>
+</ul>
+<h2 id="heartbeats"><a href="#heartbeats" class="headerlink" title="Heartbeats"></a>Heartbeats</h2><p>Heartbeats are a way for concurrent processes to signal life to outside parties. There are two different types of heartbeats discussed below:</p>
+<ul>
+<li><p>Heartbeats that occur on a time interval</p>
+</li>
+<li><p>Heartbeats that occur at the beginning of a unit of work</p>
+</li>
+</ul>
+<p>Heartbeats that occur on a time interval are useful for concurrent code that might be waiting for something else to happen for it to process a unit of work. A heartbeat is a way to signal to its listeners that everything is well, and that the silence is expected.</p>
+<details>
+
+<summary>
+
+<p>The following code demostrates a goroutine that exposes a heartbeat:</p>
+</summary>
+
+<pre class="line-numbers language-go" data-language="go"><code class="language-go">doWork <span class="token operator">:=</span> <span class="token keyword">func</span><span class="token punctuation">(</span>
+  done <span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  pulseInterval time<span class="token punctuation">.</span>Duration<span class="token punctuation">,</span>
+<span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token operator">&lt;-</span><span class="token keyword">chan</span> item<span class="token punctuation">.</span>Time<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// set up a channel to send heartbeats on,</span>
+  <span class="token comment">// return this out of doWork</span>
+  heartbeat <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+  results <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> time<span class="token punctuation">.</span>Time<span class="token punctuation">)</span>
+  <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">defer</span> <span class="token function">close</span><span class="token punctuation">(</span>heartbeat<span class="token punctuation">)</span>
+    <span class="token keyword">defer</span> <span class="token function">close</span><span class="token punctuation">(</span>results<span class="token punctuation">)</span>
+
+    pulse <span class="token operator">:=</span> time<span class="token punctuation">.</span><span class="token function">Tick</span><span class="token punctuation">(</span>pulseInterval<span class="token punctuation">)</span>
+    workGen <span class="token operator">:=</span> time<span class="token punctuation">.</span><span class="token function">Tick</span><span class="token punctuation">(</span><span class="token number">2</span> <span class="token operator">*</span> pulseInterval<span class="token punctuation">)</span>
+
+    sendPulse <span class="token operator">:=</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">case</span> heartbeat <span class="token operator">&lt;-</span><span class="token keyword">struct</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">:</span>
+      <span class="token keyword">default</span><span class="token punctuation">:</span>
+        <span class="token comment">// guard against the fact no one may be</span>
+        <span class="token comment">// listening to the heartbeat</span>
+      <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+    sendResult <span class="token operator">:=</span> <span class="token keyword">func</span><span class="token punctuation">(</span>r time<span class="token punctuation">.</span>Time<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">for</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">case</span> <span class="token operator">&lt;-</span>done<span class="token punctuation">:</span>
+          <span class="token keyword">return</span>
+        <span class="token keyword">case</span> <span class="token operator">&lt;-</span>pulse<span class="token punctuation">:</span>
+          <span class="token comment">// just like with `done` channel</span>
+          <span class="token comment">// anytime performing a send or receive,</span>
+          <span class="token comment">// a case for the heartbeat's pulse is needed</span>
+          <span class="token function">sendPulse</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token keyword">case</span> results <span class="token operator">&lt;-</span> r<span class="token punctuation">:</span>
+          <span class="token keyword">return</span>
+        <span class="token punctuation">&#125;</span>
+      <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">for</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">case</span> <span class="token operator">&lt;-</span>done<span class="token punctuation">:</span>
+        <span class="token keyword">return</span>
+      <span class="token keyword">case</span> <span class="token operator">&lt;-</span>pulse<span class="token punctuation">:</span>
+        <span class="token comment">// just like with `done` channel</span>
+        <span class="token comment">// anytime performing a send or receive,</span>
+        <span class="token comment">// a case for the heartbeat's pulse is needed</span>
+        <span class="token function">sendPulse</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token keyword">case</span> r <span class="token operator">:=</span> <span class="token operator">&lt;-</span>workGen<span class="token punctuation">:</span>
+        <span class="token function">sendResult</span><span class="token punctuation">(</span>r<span class="token punctuation">)</span>
+      <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token keyword">return</span> heartbeat<span class="token punctuation">,</span> results
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">// set up the standard `done` channel</span>
+done <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token comment">// close the `done` channel after 10 seconds</span>
+time<span class="token punctuation">.</span><span class="token function">AfterFunc</span><span class="token punctuation">(</span><span class="token number">10</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Second<span class="token punctuation">,</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token function">close</span><span class="token punctuation">(</span>done<span class="token punctuation">)</span> <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+<span class="token keyword">const</span> timeout <span class="token operator">=</span> <span class="token number">2</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Second
+heartbeat<span class="token punctuation">,</span> results <span class="token operator">:=</span> <span class="token function">doWork</span><span class="token punctuation">(</span>done<span class="token punctuation">,</span> timeout <span class="token operator">/</span> <span class="token number">2</span><span class="token punctuation">)</span>
+<span class="token keyword">for</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">case</span> <span class="token boolean">_</span><span class="token punctuation">,</span> ok <span class="token operator">:=</span> <span class="token operator">&lt;-</span>heartbeat<span class="token punctuation">:</span>
+    <span class="token comment">// select on the heartbeat, if there is no result,</span>
+    <span class="token comment">// at least guaranteed a message from the heartbeat channel</span>
+    <span class="token keyword">if</span> ok <span class="token operator">==</span> <span class="token boolean">false</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span>
+    <span class="token punctuation">&#125;</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"pulse"</span><span class="token punctuation">)</span>
+  <span class="token keyword">case</span> r<span class="token punctuation">,</span> ok <span class="token operator">:=</span> <span class="token operator">&lt;-</span>results<span class="token punctuation">:</span>
+    <span class="token comment">// select from the results channel</span>
+    <span class="token keyword">if</span> ok <span class="token operator">==</span> <span class="token boolean">false</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span>
+    <span class="token punctuation">&#125;</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"results %v\n"</span><span class="token punctuation">,</span> r<span class="token punctuation">.</span><span class="token function">Second</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+  <span class="token keyword">case</span> <span class="token operator">&lt;-</span>time<span class="token punctuation">.</span><span class="token function">After</span><span class="token punctuation">(</span>timeout<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token comment">// here we timeout if we haven't</span>
+    <span class="token comment">// received either a heartbeat or a new result</span>
+    <span class="token keyword">return</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>By using a heartbeat, we have successfully avoided a deadlock, and we remain deterministic by not having to rely on a longer timeout.</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go">doWork <span class="token operator">:=</span> <span class="token keyword">func</span><span class="token punctuation">(</span>
+  done <span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  pulseInterval time<span class="token punctuation">.</span>Duration<span class="token punctuation">,</span>
+<span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token operator">&lt;-</span><span class="token keyword">chan</span> item<span class="token punctuation">.</span>Time<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  heartbeat <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+  results <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> time<span class="token punctuation">.</span>Time<span class="token punctuation">)</span>
+  <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// do not close either channel</span>
+    <span class="token comment">// after the end of this goroutine</span>
+    pulse <span class="token operator">:=</span> time<span class="token punctuation">.</span><span class="token function">Tick</span><span class="token punctuation">(</span>pulseInterval<span class="token punctuation">)</span>
+    workGen <span class="token operator">:=</span> time<span class="token punctuation">.</span><span class="token function">Tick</span><span class="token punctuation">(</span><span class="token number">2</span> <span class="token operator">*</span> pulseInterval<span class="token punctuation">)</span>
+
+    sendPulse <span class="token operator">:=</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">case</span> heartbeat <span class="token operator">&lt;-</span><span class="token keyword">struct</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">:</span>
+      <span class="token keyword">default</span><span class="token punctuation">:</span>
+      <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+    sendResult <span class="token operator">:=</span> <span class="token keyword">func</span><span class="token punctuation">(</span>r time<span class="token punctuation">.</span>Time<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">for</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">case</span> <span class="token operator">&lt;-</span>done<span class="token punctuation">:</span>
+          <span class="token keyword">return</span>
+        <span class="token keyword">case</span> <span class="token operator">&lt;-</span>pulse<span class="token punctuation">:</span>
+          <span class="token function">sendPulse</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token keyword">case</span> results <span class="token operator">&lt;-</span> r<span class="token punctuation">:</span>
+          <span class="token keyword">return</span>
+        <span class="token punctuation">&#125;</span>
+      <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token comment">// simulate a panic here,</span>
+    <span class="token comment">// only loop twice</span>
+    <span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">2</span><span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">case</span> <span class="token operator">&lt;-</span>done<span class="token punctuation">:</span>
+        <span class="token keyword">return</span>
+      <span class="token keyword">case</span> <span class="token operator">&lt;-</span>pulse<span class="token punctuation">:</span>
+        <span class="token function">sendPulse</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token keyword">case</span> r <span class="token operator">:=</span> <span class="token operator">&lt;-</span>workGen<span class="token punctuation">:</span>
+        <span class="token function">sendResult</span><span class="token punctuation">(</span>r<span class="token punctuation">)</span>
+      <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token keyword">return</span> heartbeat<span class="token punctuation">,</span> results
+<span class="token punctuation">&#125;</span>
+
+done <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+time<span class="token punctuation">.</span><span class="token function">AfterFunc</span><span class="token punctuation">(</span><span class="token number">10</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Second<span class="token punctuation">,</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token function">close</span><span class="token punctuation">(</span>done<span class="token punctuation">)</span> <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+<span class="token keyword">const</span> timeout <span class="token operator">=</span> <span class="token number">2</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Second
+heartbeat<span class="token punctuation">,</span> results <span class="token operator">:=</span> <span class="token function">doWork</span><span class="token punctuation">(</span>done<span class="token punctuation">,</span> timeout <span class="token operator">/</span> <span class="token number">2</span><span class="token punctuation">)</span>
+<span class="token keyword">for</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">case</span> <span class="token boolean">_</span><span class="token punctuation">,</span> ok <span class="token operator">:=</span> <span class="token operator">&lt;-</span>heartbeat<span class="token punctuation">:</span>
+    <span class="token keyword">if</span> ok <span class="token operator">==</span> <span class="token boolean">false</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span>
+    <span class="token punctuation">&#125;</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"pulse"</span><span class="token punctuation">)</span>
+  <span class="token keyword">case</span> r<span class="token punctuation">,</span> ok <span class="token operator">:=</span> <span class="token operator">&lt;-</span>results<span class="token punctuation">:</span>
+    <span class="token keyword">if</span> ok <span class="token operator">==</span> <span class="token boolean">false</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span>
+    <span class="token punctuation">&#125;</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"results %v\n"</span><span class="token punctuation">,</span> r<span class="token punctuation">.</span><span class="token function">Second</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+  <span class="token keyword">case</span> <span class="token operator">&lt;-</span>time<span class="token punctuation">.</span><span class="token function">After</span><span class="token punctuation">(</span>timeout<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token comment">// rely on a longer timeout</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"worker goroutine is not healthy"</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</details>
+
+<details>
+
+<summary>
+
+<p>Also, heartbeats can occur at the beginning of a unit of work. These are extremely useful for tests.</p>
+</summary>
+
+<pre class="line-numbers language-go" data-language="go"><code class="language-go">doWork <span class="token operator">:=</span> <span class="token keyword">func</span><span class="token punctuation">(</span>done <span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// create the heartbeat channel with a buffer of one.</span>
+  <span class="token comment">// this ensures that there's always at least one pulse sent</span>
+  <span class="token comment">// out even if no one is listening in time for the send to occur</span>
+  heartbeatStream <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span>
+  workStream <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">)</span>
+  <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">defer</span> <span class="token function">close</span><span class="token punctuation">(</span>heartbeatStream<span class="token punctuation">)</span>
+    <span class="token keyword">defer</span> <span class="token function">close</span><span class="token punctuation">(</span>workStream<span class="token punctuation">)</span>
+
+    <span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">10</span><span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+      <span class="token comment">// set up a separate select block for the heartbeat</span>
+      <span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">case</span> heartbeatStream <span class="token operator">&lt;-</span> <span class="token keyword">struct</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">:</span>
+        <span class="token comment">// we don't include this in the same select block as</span>
+        <span class="token comment">// the send on results because if the receiver isn't</span>
+        <span class="token comment">// ready for the result, they'll receive a pulse instead</span>
+        <span class="token comment">// and the current value of the result will be lost</span>
+      <span class="token keyword">default</span><span class="token punctuation">:</span>
+        <span class="token comment">// guard against the fact that no one may be lisitening</span>
+        <span class="token comment">// to the heartbeats.</span>
+        <span class="token comment">// the heartbeats is created with a buffer of one, if</span>
+        <span class="token comment">// someone is listening, but not in time for the first pulse,</span>
+        <span class="token comment">// it will still be notified of a pulse</span>
+      <span class="token punctuation">&#125;</span>
+
+      <span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">case</span> <span class="token operator">&lt;-</span>done<span class="token punctuation">:</span>
+        <span class="token keyword">return</span>
+      <span class="token keyword">case</span> workStream <span class="token operator">&lt;-</span> rand<span class="token punctuation">.</span><span class="token function">Intn</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+      <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">return</span> heartbeatStream<span class="token punctuation">,</span> workStream
+<span class="token punctuation">&#125;</span>
+
+done <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token keyword">defer</span> <span class="token function">close</span><span class="token punctuation">(</span>done<span class="token punctuation">)</span>
+
+heartbeat<span class="token punctuation">,</span> results <span class="token operator">:=</span> <span class="token function">doWork</span><span class="token punctuation">(</span>done<span class="token punctuation">)</span>
+<span class="token keyword">for</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">case</span> <span class="token boolean">_</span><span class="token punctuation">,</span> ok <span class="token operator">:=</span> <span class="token operator">&lt;-</span>heartbeat<span class="token punctuation">:</span>
+    <span class="token keyword">if</span> ok <span class="token punctuation">&#123;</span>
+      fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"pulse"</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token keyword">case</span> r<span class="token punctuation">,</span> ok <span class="token operator">:=</span> <span class="token operator">&lt;-</span>results<span class="token punctuation">:</span>
+    <span class="token keyword">if</span> ok <span class="token punctuation">&#123;</span>
+      fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"results %v\n"</span><span class="token punctuation">,</span> r<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</details>
+
+<details>
+
+<summary>
+
+<p>Where this technique really shines is in writing tests. Interval-based heartbeats can be used in the same fashion, but if you only care that the goroutine has started doing its work, this style of heartbeat is simple.</p>
+</summary>
+
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">DoWork</span><span class="token punctuation">(</span>
+  done <span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  nums <span class="token operator">...</span><span class="token builtin">int</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  heartbeat <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span>
+  intStream <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">)</span>
+  <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">defer</span> <span class="token function">close</span><span class="token punctuation">(</span>heartbeat<span class="token punctuation">)</span>
+    <span class="token keyword">defer</span> <span class="token function">close</span><span class="token punctuation">(</span>intStream<span class="token punctuation">)</span>
+    <span class="token comment">// simulate some kind of delay before</span>
+    <span class="token comment">// the goroutine can begin working</span>
+    time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span><span class="token number">2</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+
+    <span class="token keyword">for</span> <span class="token boolean">_</span><span class="token punctuation">,</span> n <span class="token operator">:=</span> <span class="token keyword">range</span> nums <span class="token punctuation">&#123;</span>
+      <span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">case</span> heartbeat <span class="token operator">&lt;-</span> <span class="token keyword">struct</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">:</span>
+      <span class="token keyword">default</span><span class="token punctuation">:</span>
+      <span class="token punctuation">&#125;</span>
+
+      <span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">case</span> <span class="token operator">&lt;-</span>done<span class="token punctuation">:</span>
+        <span class="token keyword">return</span>
+      <span class="token keyword">case</span> intStream <span class="token operator">&lt;-</span>n<span class="token punctuation">:</span>
+      <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+  <span class="token keyword">return</span> heartbeat<span class="token punctuation">,</span> intStream
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">/*
+  This test is bad because it's nondeterministic.
+  We cannot guaranteed that the first iteration of the goroutine
+  will occur before the timeout
+*/</span>
+<span class="token keyword">func</span> <span class="token function">TestDoWork_GeneratesAllNumbers</span><span class="token punctuation">(</span>t <span class="token operator">*</span>testing<span class="token punctuation">.</span>T<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  done <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+  <span class="token keyword">defer</span> <span class="token function">close</span><span class="token punctuation">(</span>done<span class="token punctuation">)</span>
+
+  intSlice <span class="token operator">:=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">int</span><span class="token punctuation">&#123;</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">&#125;</span>
+  <span class="token boolean">_</span><span class="token punctuation">,</span> results <span class="token operator">:=</span> <span class="token function">DoWork</span><span class="token punctuation">(</span>done<span class="token punctuation">,</span> intSlice<span class="token operator">...</span><span class="token punctuation">)</span>
+
+  <span class="token keyword">for</span> i<span class="token punctuation">,</span> expected <span class="token operator">:=</span> <span class="token keyword">range</span> intSlice <span class="token punctuation">&#123;</span>
+    <span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">case</span> r <span class="token operator">:=</span> <span class="token operator">&lt;-</span>results<span class="token punctuation">:</span>
+      <span class="token keyword">if</span> r <span class="token operator">!=</span> expected <span class="token punctuation">&#123;</span>
+        t<span class="token punctuation">.</span><span class="token function">Errorf</span><span class="token punctuation">(</span>
+          <span class="token string">"index %v: expected %v, but received %v,"</span>
+          i<span class="token punctuation">,</span>
+          expected<span class="token punctuation">,</span>
+          r<span class="token punctuation">,</span>
+        <span class="token punctuation">)</span>
+      <span class="token punctuation">&#125;</span>
+    <span class="token keyword">case</span> <span class="token operator">&lt;-</span>time<span class="token punctuation">.</span><span class="token function">After</span><span class="token punctuation">(</span><span class="token number">1</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span><span class="token punctuation">:</span>
+      t<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span><span class="token string">"test timed out"</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">/*
+  Using heartbeat, we can solve this problem
+  Here is a good and deterministic test.
+  The only risk is one of the iterations taking an
+  inordinate amount of time.
+*/</span>
+<span class="token keyword">func</span> <span class="token function">TestDoWork_GenerateAllNumbers</span><span class="token punctuation">(</span>t <span class="token operator">*</span>testing<span class="token punctuation">.</span>T<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  done <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+  <span class="token keyword">defer</span> <span class="token function">close</span><span class="token punctuation">(</span>done<span class="token punctuation">)</span>
+
+  intSlice <span class="token operator">:=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">int</span><span class="token punctuation">&#123;</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">&#125;</span>
+  heartbeat<span class="token punctuation">,</span> results <span class="token operator">:=</span> <span class="token function">DoWork</span><span class="token punctuation">(</span>done<span class="token punctuation">,</span> intSlice<span class="token operator">...</span><span class="token punctuation">)</span>
+
+  <span class="token comment">// we wait for the goroutine to signal that</span>
+  <span class="token comment">// it's beginning to process an iteration, aka results working</span>
+  <span class="token operator">&lt;-</span>heartbeat
+
+  i <span class="token operator">:=</span> <span class="token number">0</span>
+  <span class="token keyword">for</span> r <span class="token operator">:=</span> <span class="token keyword">range</span> results <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> expected <span class="token operator">:=</span> intSlice<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span> r <span class="token operator">!=</span> expected <span class="token punctuation">&#123;</span>
+      t<span class="token punctuation">.</span><span class="token function">Errorf</span><span class="token punctuation">(</span>
+        <span class="token string">"index %v: expected %v, but received %v"</span><span class="token punctuation">,</span>
+        i<span class="token punctuation">,</span>
+        expected<span class="token punctuation">,</span>
+        r<span class="token punctuation">,</span>
+      <span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+    i<span class="token operator">++</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</details>
+
+<h2 id="replicated-requests"><a href="#replicated-requests" class="headerlink" title="Replicated Requests"></a>Replicated Requests</h2><p>If this replication is done in-memory, it might not be that costly, but if replicating the handlers requires replicating processes, servers, or even data centers, this can become quite costly.</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go">doWork <span class="token operator">:=</span> <span class="token keyword">func</span><span class="token punctuation">(</span>
+  done <span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  id <span class="token builtin">int</span><span class="token punctuation">,</span>
+  wg <span class="token operator">*</span>sync<span class="token punctuation">.</span>WaitGroup<span class="token punctuation">,</span>
+  result <span class="token keyword">chan</span><span class="token operator">&lt;-</span><span class="token builtin">int</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  started <span class="token operator">:=</span> time<span class="token punctuation">.</span><span class="token function">Now</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token keyword">defer</span> wg<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+  simulatedLoadTime <span class="token operator">:=</span> time<span class="token punctuation">.</span><span class="token function">Duration</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token operator">+</span>rand<span class="token punctuation">.</span><span class="token function">Intn</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Second
+  fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"%v would take %v\n"</span><span class="token punctuation">,</span> id<span class="token punctuation">,</span> simulatedLoadTime<span class="token punctuation">)</span>
+  <span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">case</span> <span class="token operator">&lt;-</span>done<span class="token punctuation">:</span>
+  <span class="token keyword">case</span> <span class="token operator">&lt;-</span>time<span class="token punctuation">.</span><span class="token function">After</span><span class="token punctuation">(</span>simulatedLoadTime<span class="token punctuation">)</span><span class="token punctuation">:</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">case</span> <span class="token operator">&lt;-</span>done<span class="token punctuation">:</span>
+  <span class="token keyword">case</span> result<span class="token operator">&lt;-</span>id<span class="token punctuation">:</span>
+  <span class="token punctuation">&#125;</span>
+
+  took <span class="token operator">:=</span> time<span class="token punctuation">.</span><span class="token function">Since</span><span class="token punctuation">(</span>started<span class="token punctuation">)</span>
+  <span class="token comment">// Display how long handlers would have taken</span>
+  <span class="token keyword">if</span> took <span class="token operator">&lt;</span> simulatedLoadTime <span class="token punctuation">&#123;</span>
+    took <span class="token operator">=</span> simulatedLoadTime
+  <span class="token punctuation">&#125;</span>
+  fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"%v took %v\n"</span><span class="token punctuation">,</span> id<span class="token punctuation">,</span> took<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+done <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+result <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">)</span>
+
+<span class="token keyword">var</span> wg sync<span class="token punctuation">.</span>WaitGroup
+wg<span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span>
+
+<span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">10</span><span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">go</span> <span class="token function">doWork</span><span class="token punctuation">(</span>done<span class="token punctuation">,</span> i<span class="token punctuation">,</span> <span class="token operator">&amp;</span>wg<span class="token punctuation">,</span> result<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+firstReturned <span class="token operator">:=</span> <span class="token operator">&lt;-</span>result
+<span class="token comment">// cancel the remaining handlers</span>
+<span class="token function">close</span><span class="token punctuation">(</span>done<span class="token punctuation">)</span>
+wg<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"Received an answer from #%v\n"</span><span class="token punctuation">,</span> firstReturned<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>The only caveat to this approach is that all of the handlers need to have equal opportunity to service the request. In other words, the program is not going to have a chance at receiving the fastest time from a handler that can’t service the request. Whatever resources the handlers are using to do their job need to be replicated as well.</p>
+<h2 id="rate-limiting"><a href="#rate-limiting" class="headerlink" title="Rate Limiting"></a>Rate Limiting</h2><p>Rate limiting constrains the number of times some kind of resource is accessed to some finite number per unit of time.</p>
+<p>Rate limiting allow you to reason about the performance and stability of your system by preventing it from falling outside the boundaries.</p>
+<p>In scenarios where you’re charing for access to your system, rate limits can maintain a healthy realtionship with your clients. You can allow them to try the system out under heavily constrained rate limits.</p>
+<p>Most rate limiting is done by utilizing an algorithm called the <em>token bucket</em>.</p>
+<p>Assuming it to utilize a resource, the program has to have an <em>access token</em> for the resource. Without an token, the request is denied. Now imagine these tokens are stored in a bucket, which has a finite capacity <code>d</code>, waiting to be retrieved for usage. Now everytime you need to access the resource, the program reach into the bucket and remove a token, and never put it back. So when there’s no token available, the program could either have to queue the request until a token becomes available, or just deny the request.</p>
+<p>In order to replenishing the tokens, we could define <code>r</code> to be the rate at which tokens are <em>added back</em> to the bucket. This becomes what we commonly think of as the rate limit.</p>
+<p>The capacity <code>d</code> and the replenishing rate <code>r</code> help us to control both the <em>burstiness</em> and overall rate limit. Burstiness simply means how many requests can be made when the buckets is full.</p>
+<details>
+
+<summary>
+
+<p>There’s an official implementation of a bucket token rate limit algorithm which is located in <code>golang.org/x/time/rate</code> package.</p>
+</summary>
+
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">/* helper functions */</span>
+<span class="token keyword">func</span> <span class="token function">Per</span><span class="token punctuation">(</span>eventCount <span class="token builtin">int</span><span class="token punctuation">,</span> duration time<span class="token punctuation">.</span>Duration<span class="token punctuation">)</span> rate<span class="token punctuation">.</span>Limit <span class="token punctuation">&#123;</span>
+  <span class="token keyword">return</span> rate<span class="token punctuation">.</span><span class="token function">Every</span><span class="token punctuation">(</span>duration<span class="token operator">/</span>time<span class="token punctuation">.</span><span class="token function">Duration</span><span class="token punctuation">(</span>eventCount<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+
+<span class="token keyword">func</span> <span class="token function">Open</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">*</span>APIConnection <span class="token punctuation">&#123;</span>
+  <span class="token keyword">return</span> <span class="token operator">&amp;</span>APIConnection<span class="token punctuation">&#123;</span>
+    <span class="token comment">// set the rate limit for all API connections</span>
+    <span class="token comment">// to one event per second</span>
+    rateLimiter<span class="token punctuation">:</span> rate<span class="token punctuation">.</span><span class="token function">NewLimiter</span><span class="token punctuation">(</span>rate<span class="token punctuation">.</span><span class="token function">Limit</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">type</span> APIConnection <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+  rateLimiter <span class="token operator">*</span>rate<span class="token punctuation">.</span>Limiter
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token punctuation">(</span>a <span class="token operator">*</span>APIConnection<span class="token punctuation">)</span> <span class="token function">ReadFile</span><span class="token punctuation">(</span>ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token builtin">error</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// wait on the rate limiter to have enough</span>
+  <span class="token comment">// access tokens to complete our request</span>
+  <span class="token keyword">if</span> err <span class="token operator">:=</span> a<span class="token punctuation">.</span>rateLimiter<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span>ctx<span class="token punctuation">)</span><span class="token punctuation">;</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> err
+  <span class="token punctuation">&#125;</span>
+  <span class="token comment">// pass</span>
+  <span class="token keyword">return</span> <span class="token boolean">nil</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token punctuation">(</span>a <span class="token operator">*</span>APIConnection<span class="token punctuation">)</span> <span class="token function">ResolveAddress</span><span class="token punctuation">(</span>ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token builtin">error</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// wait on the rate limiter to have enough</span>
+  <span class="token comment">// access tokens to complete our request</span>
+  <span class="token keyword">if</span> err <span class="token operator">:=</span> a<span class="token punctuation">.</span>rateLimiter<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span>ctx<span class="token punctuation">)</span><span class="token punctuation">;</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> err
+  <span class="token punctuation">&#125;</span>
+  <span class="token comment">// pass</span>
+  <span class="token keyword">return</span> <span class="token boolean">nil</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">defer</span> log<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"Done."</span><span class="token punctuation">)</span>
+
+  log<span class="token punctuation">.</span><span class="token function">SetOutput</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span>Stdout<span class="token punctuation">)</span>
+  log<span class="token punctuation">.</span><span class="token function">SetFlags</span><span class="token punctuation">(</span>log<span class="token punctuation">.</span>Ltime <span class="token operator">|</span> log<span class="token punctuation">.</span>LUTC<span class="token punctuation">)</span>
+
+  apiConnection <span class="token operator">:=</span> <span class="token function">Open</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+  <span class="token keyword">var</span> wg sync<span class="token punctuation">.</span>WaitGroup
+  wg<span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span>
+
+  <span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">10</span><span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">defer</span> wg<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      err <span class="token operator">:=</span> apiConnection<span class="token punctuation">.</span><span class="token function">ReadFile</span><span class="token punctuation">(</span>context<span class="token punctuation">.</span><span class="token function">Background</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+      <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+        log<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"cannot ReadFile: %v"</span><span class="token punctuation">,</span> err<span class="token punctuation">)</span>
+        <span class="token keyword">return</span>
+      <span class="token punctuation">&#125;</span>
+      log<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"ReadFile"</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">10</span><span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">defer</span> wg<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      err <span class="token operator">:=</span> apiConnection<span class="token punctuation">.</span><span class="token function">ResolveAddress</span><span class="token punctuation">(</span>context<span class="token punctuation">.</span><span class="token function">Background</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+      <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+        log<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"cannot ResolveAddress: %v"</span><span class="token punctuation">,</span> err<span class="token punctuation">)</span>
+        <span class="token keyword">return</span>
+      <span class="token punctuation">&#125;</span>
+      log<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"ResolveAddress"</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
+
+  wg<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Sometimes instead of attempting to roll the semantics of limits per unit of time into a single layer, the program could keep the limiters separate and then combine them into one rate limiter that mangaes the iteraction.</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// define a RateLimiter interface so that</span>
+<span class="token comment">// a MultiLimiter can recursively define other</span>
+<span class="token comment">// MultiLimiter instances</span>
+<span class="token keyword">type</span> RateLimiter <span class="token keyword">interface</span> <span class="token punctuation">&#123;</span>
+  <span class="token function">Wait</span><span class="token punctuation">(</span>context<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token builtin">error</span>
+  <span class="token function">Limit</span><span class="token punctuation">(</span><span class="token punctuation">)</span> rate<span class="token punctuation">.</span>Limit
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token function">MultiLimiter</span><span class="token punctuation">(</span>limiters <span class="token operator">...</span>RateLimiter<span class="token punctuation">)</span> <span class="token operator">*</span>multiLimiter <span class="token punctuation">&#123;</span>
+  byLimit <span class="token operator">:=</span> <span class="token keyword">func</span><span class="token punctuation">(</span>i<span class="token punctuation">,</span> j <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token builtin">bool</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> limiters<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">Limit</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&lt;</span> limiters<span class="token punctuation">[</span>j<span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">Limit</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token comment">// implement an optimization and</span>
+  <span class="token comment">// sort by the Limit() of each RateLimiter</span>
+  sort<span class="token punctuation">.</span><span class="token function">Slice</span><span class="token punctuation">(</span>limiters<span class="token punctuation">,</span> byLimit<span class="token punctuation">)</span>
+  <span class="token keyword">return</span> <span class="token operator">&amp;</span>multiLimiter<span class="token punctuation">&#123;</span>limiters<span class="token punctuation">:</span> limiters<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">type</span> multiLimiter <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+  limiters <span class="token punctuation">[</span><span class="token punctuation">]</span>RateLimiter
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token punctuation">(</span>l <span class="token operator">*</span>multiLimiter<span class="token punctuation">)</span> <span class="token function">Wait</span><span class="token punctuation">(</span>ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token builtin">error</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">for</span> <span class="token boolean">_</span><span class="token punctuation">,</span> l <span class="token operator">:=</span> <span class="token keyword">range</span> l<span class="token punctuation">.</span>limiters <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> err <span class="token operator">:=</span> l<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span>ctx<span class="token punctuation">)</span><span class="token punctuation">;</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span> err
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">return</span> <span class="token boolean">nil</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token punctuation">(</span>l <span class="token operator">*</span>multiLimiter<span class="token punctuation">)</span> <span class="token function">Limit</span><span class="token punctuation">(</span><span class="token punctuation">)</span> rate<span class="token punctuation">.</span>Limit <span class="token punctuation">&#123;</span>
+  <span class="token comment">// the multiLimiter is sorted</span>
+  <span class="token comment">// so simply return the most restrictive limit</span>
+  <span class="token keyword">return</span> l<span class="token punctuation">.</span>limiters<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">Limit</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>The <code>Wait</code> method loops through all the child rate limiters and calls <code>Wait</code> on each of them. These calls may or may not block, but we need to notify each rate limiter of the request so we can decrement our token bucket. By waiting for each limiter, we are guaranteed to wait for exactly the time of the longest wait. This is because if we perform smaller waits that only wait for segments of the longest wait and then hit the longest wait, the longest wait will be recalculated to only be the remaining time. This is because while the earlier waits were blocking, the latter waits were refilling their buckets; any waits after will be returned instantaneously.</p>
+<p>Modify the <code>APIConnection</code>:</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">Open</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">*</span>APIConnection <span class="token punctuation">&#123;</span>
+  <span class="token comment">// define the limit per second with no burstiness</span>
+  <span class="token comment">// the limit per second will ensure the system</span>
+  <span class="token comment">// won't overload with request</span>
+  secondLimit <span class="token operator">:=</span> rate<span class="token punctuation">.</span><span class="token function">NewLimiter</span><span class="token punctuation">(</span><span class="token function">Per</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">,</span> time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span>
+
+  <span class="token comment">// define the limit per minute with a burstiness of 10</span>
+  <span class="token comment">// to give the users their initial pool.</span>
+  minuteLimit <span class="token operator">:=</span> rate<span class="token punctuation">.</span><span class="token function">NewLimiter</span><span class="token punctuation">(</span><span class="token function">Per</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">,</span> time<span class="token punctuation">.</span>Minute<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">)</span>
+
+  <span class="token keyword">return</span> <span class="token operator">&amp;</span>APIConnection<span class="token punctuation">&#123;</span>
+    <span class="token comment">// combine the two limits and set this as</span>
+    <span class="token comment">// the master rate limiter for APIConnection</span>
+    rateLimiter<span class="token punctuation">:</span> <span class="token function">MultiLimiter</span><span class="token punctuation">(</span>secondLimit<span class="token punctuation">,</span> minuteLimit<span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">type</span> APIConnection <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+  rateLimiter RateLimiter
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token punctuation">(</span>a <span class="token operator">*</span>APIConnection<span class="token punctuation">)</span> <span class="token function">ReadFile</span><span class="token punctuation">(</span>ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token builtin">error</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">if</span> err <span class="token operator">:=</span> a<span class="token punctuation">.</span>rateLimiter<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span>ctx<span class="token punctuation">)</span><span class="token punctuation">;</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> err
+  <span class="token punctuation">&#125;</span>
+  <span class="token comment">// pass</span>
+  <span class="token keyword">return</span> <span class="token boolean">nil</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token punctuation">(</span>a <span class="token operator">*</span>APIConnection<span class="token punctuation">)</span> <span class="token function">ResolveAddress</span><span class="token punctuation">(</span>ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token builtin">error</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">if</span> err <span class="token operator">:=</span> a<span class="token punctuation">.</span>rateLimiter<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span>ctx<span class="token punctuation">)</span><span class="token punctuation">;</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> err
+  <span class="token punctuation">&#125;</span>
+  <span class="token comment">// pass</span>
+  <span class="token keyword">return</span> <span class="token boolean">nil</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Defining limits like this allows us to express our coarse-grained limits plainly while still limiting the number of requests at a finer level of detail.</p>
+<p>This technique also allows us to begin thinking across dimensions other than time. When you rate limit a system, you’ll likely have some kind of limit on the number of API requests, but in addition, you’ll probably also have limits on other resources like disk access, network access, etc. Let’s flesh out our example a bit and set up rate limits for disk and network:</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">Open</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">*</span>APIConnection <span class="token punctuation">&#123;</span>
+  <span class="token keyword">return</span> <span class="token operator">&amp;</span>APIConnection<span class="token punctuation">&#123;</span>
+    <span class="token comment">// set up a combined rate limiter for API calls,</span>
+    <span class="token comment">// there are limits for both requests per second, and requests per minute</span>
+    apiLimit<span class="token punctuation">:</span> <span class="token function">MultiLimiter</span><span class="token punctuation">(</span>
+      rate<span class="token punctuation">.</span><span class="token function">NewLimiter</span><span class="token punctuation">(</span><span class="token function">Per</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">,</span> time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      rate<span class="token punctuation">.</span><span class="token function">NewLimiter</span><span class="token punctuation">(</span><span class="token function">Per</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">,</span> time<span class="token punctuation">.</span>Minute<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token comment">// a rate limit for disk reads.</span>
+    <span class="token comment">// only limit this to one read per second</span>
+    diskLimit<span class="token punctuation">:</span> <span class="token function">MultiLimiter</span><span class="token punctuation">(</span>
+      rate<span class="token punctuation">.</span><span class="token function">NewLimiter</span><span class="token punctuation">(</span>rate<span class="token punctuation">.</span><span class="token function">Limit</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token comment">// a rate limit for disk reads.</span>
+    <span class="token comment">// limit this to three read per second</span>
+    apiLimit<span class="token punctuation">:</span> <span class="token function">MultiLimiter</span><span class="token punctuation">(</span>
+      rate<span class="token punctuation">.</span><span class="token function">NewLimiter</span><span class="token punctuation">(</span><span class="token function">Per</span><span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">,</span> time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">type</span> APIConnection <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+  networkLimit<span class="token punctuation">,</span>
+  diskLimit<span class="token punctuation">,</span>
+  apiLimit RateLimiter
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token punctuation">(</span>a <span class="token operator">*</span>APIConnection<span class="token punctuation">)</span> <span class="token function">ReadFile</span><span class="token punctuation">(</span>ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token builtin">error</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// when read a file, combine the limits</span>
+  err <span class="token operator">:=</span> <span class="token function">MultiLimiter</span><span class="token punctuation">(</span>a<span class="token punctuation">.</span>apiLimit<span class="token punctuation">,</span> a<span class="token punctuation">.</span>diskLimit<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span>ctx<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> err
+  <span class="token punctuation">&#125;</span>
+  <span class="token comment">// pass</span>
+  <span class="token keyword">return</span> <span class="token boolean">nil</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token punctuation">(</span>a <span class="token operator">*</span>APIConnection<span class="token punctuation">)</span> <span class="token function">ResolveAddress</span><span class="token punctuation">(</span>ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token builtin">error</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// when read a file, combine the limits</span>
+  err <span class="token operator">:=</span> <span class="token function">MultiLimiter</span><span class="token punctuation">(</span>a<span class="token punctuation">.</span>apiLimit<span class="token punctuation">,</span> a<span class="token punctuation">.</span>networkLimit<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span>ctx<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> err
+  <span class="token punctuation">&#125;</span>
+  <span class="token comment">// pass</span>
+  <span class="token keyword">return</span> <span class="token boolean">nil</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</details>
+
+<h2 id="healing-unhealthy-goroutines"><a href="#healing-unhealthy-goroutines" class="headerlink" title="Healing Unhealthy Goroutines"></a>Healing Unhealthy Goroutines</h2><p>Some goroutine may fall into a bad state from which itself cannot recover without external help.</p>
+<p>To heal goroutines, the program could use the heartbeat pattern to check up on the liveliness of the goroutine. The type of heartbeat will be determined by what the program is trying to monitor, but if the goroutine can become livelocked, make sure that the heartbeat contains some kind of information indicating that the goroutine is not only up, but doing useful work.</p>
+<p>The logic that monitors a goroutine’s health is called <em>steward</em>, the monited goroutine is called <em>ward</em>. Stewards will also be responsible for restarting a ward’s goroutine should it become unhealthy.</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// define the signature of a goroutine that</span>
+<span class="token comment">// can be monitored and restarted.</span>
+<span class="token keyword">type</span> startGoroutineFn <span class="token keyword">func</span><span class="token punctuation">(</span>
+  done <span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  pulseInterval time<span class="token punctuation">.</span>Duration<span class="token punctuation">,</span>
+<span class="token punctuation">)</span> <span class="token punctuation">(</span>heartbeat <span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+<span class="token comment">// a steward takes in a `timeout`,</span>
+<span class="token comment">// `startGoroutine` will start the to-be-monitored goroutine,</span>
+<span class="token comment">// the steward itself is also monitorable</span>
+newSteward <span class="token operator">:=</span> <span class="token keyword">func</span><span class="token punctuation">(</span>
+  timeout time<span class="token punctuation">.</span>Duration<span class="token punctuation">,</span>
+  startGoroutine startGoroutineFn<span class="token punctuation">,</span>
+<span class="token punctuation">)</span> startGoroutineFn <span class="token punctuation">&#123;</span>
+  <span class="token keyword">return</span> <span class="token keyword">func</span><span class="token punctuation">(</span>
+    done <span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    pulseInterval time<span class="token punctuation">.</span>Duration<span class="token punctuation">,</span>
+  <span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    heartbeat <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+    <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">defer</span> <span class="token function">close</span><span class="token punctuation">(</span>heartbeat<span class="token punctuation">)</span>
+
+      <span class="token keyword">var</span> wardDone <span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+      <span class="token keyword">var</span> wardHeartbeat <span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+      <span class="token comment">// a closure that encodes a consistent way</span>
+      <span class="token comment">// to start the goroutine parent monitoring</span>
+      startWard <span class="token operator">:=</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token comment">// create a new channel passed into the ward goroutine</span>
+        <span class="token comment">// incase we need to signal that it should halt</span>
+        wardDone <span class="token operator">=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+        <span class="token comment">// start the goroutine</span>
+        wardHeartbeat <span class="token operator">=</span> <span class="token function">startGoroutine</span><span class="token punctuation">(</span><span class="token function">or</span><span class="token punctuation">(</span>wardDone<span class="token punctuation">,</span> done<span class="token punctuation">)</span><span class="token punctuation">,</span> timeout<span class="token operator">/</span><span class="token number">2</span><span class="token punctuation">)</span>
+      <span class="token punctuation">&#125;</span>
+      <span class="token function">startWard</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      pulse <span class="token operator">:=</span> time<span class="token punctuation">.</span><span class="token function">Tick</span><span class="token punctuation">(</span>pulseInterval<span class="token punctuation">)</span>
+
+  monitorLoop<span class="token punctuation">:</span>
+      <span class="token keyword">for</span> <span class="token punctuation">&#123;</span>
+        timeoutSignal <span class="token operator">:=</span> time<span class="token punctuation">.</span><span class="token function">After</span><span class="token punctuation">(</span>timeout<span class="token punctuation">)</span>
+
+        <span class="token keyword">for</span> <span class="token punctuation">&#123;</span>
+          <span class="token comment">// inner loop which ensures the steward</span>
+          <span class="token comment">// can send  out pulses of its own</span>
+          <span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+          <span class="token keyword">case</span> <span class="token operator">&lt;-</span>pulse<span class="token punctuation">:</span>
+            <span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">case</span> heartbeat <span class="token operator">&lt;-</span> <span class="token keyword">struct</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">:</span>
+            <span class="token keyword">default</span><span class="token punctuation">:</span>
+            <span class="token punctuation">&#125;</span>
+          <span class="token keyword">case</span> <span class="token operator">&lt;-</span>wardHeartbeat<span class="token punctuation">:</span>
+            <span class="token comment">// continue the monitoring loop when</span>
+            <span class="token comment">// receiving the ward's pulse</span>
+            <span class="token keyword">continue</span> monitorLoop
+          <span class="token keyword">case</span> <span class="token operator">&lt;-</span>timeoutSignal<span class="token punctuation">:</span>
+            <span class="token comment">// no pulse received from the ward within the timeout period</span>
+            <span class="token comment">// request the ward halt and start a new ward goroutine</span>
+            log<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"steward: ward unhealyth; restarting"</span><span class="token punctuation">)</span>
+            <span class="token function">close</span><span class="token punctuation">(</span>wardDone<span class="token punctuation">)</span>
+            <span class="token function">startWard</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+            <span class="token keyword">continue</span> monitorLoop
+          <span class="token keyword">case</span> <span class="token operator">&lt;-</span>done<span class="token punctuation">:</span>
+            <span class="token keyword">return</span>
+          <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span>
+      <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> heartbeat
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+log<span class="token punctuation">.</span><span class="token function">SetOutput</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span>Stdout<span class="token punctuation">)</span>
+log<span class="token punctuation">.</span><span class="token function">SetFlags</span><span class="token punctuation">(</span>log<span class="token punctuation">.</span>Ltime <span class="token operator">|</span> log<span class="token punctuation">.</span>LUTC<span class="token punctuation">)</span>
+
+doWork <span class="token operator">:=</span> <span class="token keyword">func</span><span class="token punctuation">(</span>done <span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token boolean">_</span> time<span class="token punctuation">.</span>Duration<span class="token punctuation">)</span> <span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span>
+  log<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"ward: hello, irresponsible!"</span><span class="token punctuation">)</span>
+  <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// this goroutine isn't doing anything</span>
+    <span class="token comment">// and doesn't sending out any pulses</span>
+    <span class="token operator">&lt;-</span>done
+    log<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"ward: halt"</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token keyword">return</span> <span class="token boolean">nil</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">// create a function that will create a steward</span>
+<span class="token comment">// for the goroutine `doWork` starts</span>
+doWorkWithSteward <span class="token operator">:=</span> <span class="token function">newSteward</span><span class="token punctuation">(</span><span class="token number">4</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Second<span class="token punctuation">,</span> doWork<span class="token punctuation">)</span>
+
+done <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token comment">// halt the steward and its ward after 9 seconds</span>
+time<span class="token punctuation">.</span><span class="token function">AfterFunc</span><span class="token punctuation">(</span><span class="token number">9</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Second<span class="token punctuation">,</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  log<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"main: halt steward and ward"</span><span class="token punctuation">)</span>
+  <span class="token function">close</span><span class="token punctuation">(</span>done<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+<span class="token comment">// start the steward and range over its pulses</span>
+<span class="token comment">// to prevent the code from halting</span>
+<span class="token keyword">for</span> <span class="token keyword">range</span> <span class="token function">doWorkWithSteward</span><span class="token punctuation">(</span>done<span class="token punctuation">,</span> <span class="token number">4</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+log<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"main done"</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<details>
+
+<summary>
+
+<p>Create a ward that will generate an integer stream based on a discrete list of values:</p>
+</summary>
+
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// take in the values and return any channels</span>
+<span class="token comment">// the ward will be using to communicate back on</span>
+doWorkFn <span class="token operator">:=</span> <span class="token keyword">func</span><span class="token punctuation">(</span>
+  done <span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  intList <span class="token operator">...</span><span class="token builtin">int</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span> <span class="token punctuation">(</span>startGoroutineFn<span class="token punctuation">,</span> <span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// create channel of channels as part of the bridge pattern</span>
+  intChanStream <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token punctuation">(</span><span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+  intStream <span class="token operator">:=</span> <span class="token function">bridge</span><span class="token punctuation">(</span>done<span class="token punctuation">,</span> intChanStream<span class="token punctuation">)</span>
+  <span class="token comment">// create a closuer that will be started</span>
+  <span class="token comment">// and mointored by the steward</span>
+  doWork <span class="token operator">:=</span> <span class="token keyword">func</span><span class="token punctuation">(</span>
+    done <span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    pulseInterval time<span class="token punctuation">.</span>Duration<span class="token punctuation">,</span>
+  <span class="token punctuation">)</span> <span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// instantiate the channel to communicate on</span>
+    <span class="token comment">// within this instance of the ward's goroutine</span>
+    intStream <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+    heartbeat <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+    <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">defer</span> <span class="token function">close</span><span class="token punctuation">(</span>intStream<span class="token punctuation">)</span>
+      <span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">case</span> intChanStream <span class="token operator">&lt;-</span> intStream<span class="token punctuation">:</span>
+        <span class="token comment">// let the bridge know about the new channel</span>
+        <span class="token comment">// the programm will be communicating on</span>
+      <span class="token keyword">case</span> <span class="token operator">&lt;-</span>done<span class="token punctuation">:</span>
+        <span class="token keyword">return</span>
+      <span class="token punctuation">&#125;</span>
+
+      pulse <span class="token operator">:=</span> time<span class="token punctuation">.</span><span class="token function">Tick</span><span class="token punctuation">(</span>pulseInterval<span class="token punctuation">)</span>
+
+      <span class="token keyword">for</span> <span class="token punctuation">&#123;</span>
+        valueLoop<span class="token punctuation">:</span>
+        <span class="token keyword">for</span> <span class="token boolean">_</span><span class="token punctuation">,</span> intVal <span class="token operator">:=</span> <span class="token keyword">range</span> intList <span class="token punctuation">&#123;</span>
+          <span class="token keyword">if</span> intVal <span class="token operator">&lt;</span> <span class="token number">0</span> <span class="token punctuation">&#123;</span>
+            <span class="token comment">// simulate an unhealyth ward by</span>
+            <span class="token comment">// logging error and return from goroutine</span>
+            log<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"negative value: %v\n"</span><span class="token punctuation">,</span> intVal<span class="token punctuation">)</span>
+            <span class="token keyword">return</span>
+          <span class="token punctuation">&#125;</span>
+          <span class="token keyword">for</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">case</span> <span class="token operator">&lt;-</span>pulse<span class="token punctuation">:</span>
+              <span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+              <span class="token keyword">case</span> heartbeat <span class="token operator">&lt;-</span> <span class="token keyword">struct</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">:</span>
+              <span class="token keyword">default</span><span class="token punctuation">:</span>
+              <span class="token punctuation">&#125;</span>
+            <span class="token keyword">case</span> intStream <span class="token operator">&lt;-</span> intVal<span class="token punctuation">:</span>
+              <span class="token keyword">continue</span> valueLoop
+            <span class="token keyword">case</span> <span class="token operator">&lt;-</span>done<span class="token punctuation">:</span>
+              <span class="token keyword">return</span>
+            <span class="token punctuation">&#125;</span>
+          <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span>
+      <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> heartbeat
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">return</span> doWork<span class="token punctuation">,</span> intStream
+<span class="token punctuation">&#125;</span>
+
+log<span class="token punctuation">.</span><span class="token function">SetFlags</span><span class="token punctuation">(</span>log<span class="token punctuation">.</span>Ltime <span class="token operator">|</span> log<span class="token punctuation">.</span>LUTC<span class="token punctuation">)</span>
+log<span class="token punctuation">.</span><span class="token function">SetOutput</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span>Stdout<span class="token punctuation">)</span>
+
+done <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token keyword">defer</span> <span class="token function">close</span><span class="token punctuation">(</span>done<span class="token punctuation">)</span>
+<span class="token comment">// create the ward function, allowing it to</span>
+<span class="token comment">// close over the silce of integers,</span>
+<span class="token comment">// and return a stream that it will communicate back on</span>
+doWork<span class="token punctuation">,</span> intStream <span class="token operator">:=</span> <span class="token function">doWorkFn</span><span class="token punctuation">(</span>done<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">)</span>
+
+<span class="token comment">// create the steward function, monitoring doWork goroutine</span>
+<span class="token comment">// we expect the failures fairly quickly,</span>
+<span class="token comment">// set the period at just one millisecond</span>
+doWorkWithSteward <span class="token operator">:=</span> <span class="token function">newSteward</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token operator">*</span>time<span class="token punctuation">.</span>Millisecond<span class="token punctuation">,</span> doWork<span class="token punctuation">)</span>
+<span class="token function">doWorkWithSteward</span><span class="token punctuation">(</span>done<span class="token punctuation">,</span> <span class="token number">1</span><span class="token operator">*</span>time<span class="token punctuation">.</span>Hour<span class="token punctuation">)</span>
+
+<span class="token comment">// use one of the pipeline stages, take the first six values from the intStream</span>
+<span class="token keyword">for</span> intVal <span class="token operator">:=</span> <span class="token keyword">range</span> <span class="token function">take</span><span class="token punctuation">(</span>done<span class="token punctuation">,</span> intStream<span class="token punctuation">,</span> <span class="token number">6</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"Received: %v\n"</span><span class="token punctuation">,</span> intVal<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</details>
+
+<p>Without the benefit of a language designed around concurrency, these patterns would likely be much more cumbersome, and much less robust.</p>
+<h2 id="contents"><a href="#contents" class="headerlink" title="Contents"></a>Contents</h2><p><a href="./introduction.html">Introduction on Concurrency and Parallelism</a></p>
+<p><a href="./primitives.html">Go’s Concurrency Primitives</a></p>
+<p><a href="./patterns.html">Concurrency Patterns in go</a></p>
+<p><a href="./scalability.html">Concurrency at Scale</a></p>
+<p><a href="./internal.html">Goroutines and the Go Runtime</a></p>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

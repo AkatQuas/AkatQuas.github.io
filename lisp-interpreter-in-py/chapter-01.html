@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="I will give you three reasons.  To write an interpreter or a compiler you have to have a lot of technical skills that you need to use together. Writing an interpreter or a compiler will help you impro">
+<meta property="og:type" content="website">
+<meta property="og:title" content="01 Why study interpreters and compilers?">
+<meta property="og:url" content="https://akatquas.github.io/lisp-interpreter-in-py/chapter-01.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="I will give you three reasons.  To write an interpreter or a compiler you have to have a lot of technical skills that you need to use together. Writing an interpreter or a compiler will help you impro">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://akatquas.github.io/lisp-interpreter-in-py/imgs/lsbasi_part1_compiler_interpreter.png">
+<meta property="og:image" content="https://akatquas.github.io/lisp-interpreter-in-py/imgs/lsbasi_part1_lexer1.png">
+<meta property="og:image" content="https://akatquas.github.io/lisp-interpreter-in-py/imgs/lsbasi_part1_lexer2.png">
+<meta property="og:image" content="https://akatquas.github.io/lisp-interpreter-in-py/imgs/lsbasi_part1_lexer3.png">
+<meta property="og:image" content="https://akatquas.github.io/lisp-interpreter-in-py/imgs/lsbasi_part1_lexer4.png">
+<meta property="article:published_time" content="2021-01-15T10:21:08.394Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.394Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="lisp">
+<meta property="article:tag" content="interpreter">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://akatquas.github.io/lisp-interpreter-in-py/imgs/lsbasi_part1_compiler_interpreter.png">
+
+
+<link rel="canonical" href="https://akatquas.github.io/lisp-interpreter-in-py/chapter-01.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>01 Why study interpreters and compilers? | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#quick-reference"><span class="nav-text">Quick Reference</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">01 Why study interpreters and compilers?
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <p>I will give you three reasons.</p>
+<ol>
+<li><p>To write an interpreter or a compiler you have to have a lot of technical skills that you need to use together. Writing an interpreter or a compiler will help you improve those skills and become a better software developer. As well, the skills you will learn are useful in writing any software, not just interpreters or compilers.</p>
+</li>
+<li><p>You really want to know how computers work. Often interpreters and compilers look like magic. And you shouldn’t be comfortable with that magic. You want to demystify the process of building an interpreter and a compiler, understand how they work, and get in control of things.</p>
+</li>
+<li><p>You want to create your own programming language or domain specific language. If you create one, you will also need to create either an interpreter or a compiler for it. Recently, there has been a resurgence of interest in new programming languages. And you can see a new programming language pop up almost every day: Elixir, Go, Rust just to name a few.</p>
+</li>
+</ol>
+<p><strong>What are interpreters and compilers?</strong></p>
+<p>The goal of an interpreter or a compiler is to translate a source program in some high-level language into some other form. Pretty vague, but later in the series you will learn exactly what the source program is translated into.</p>
+<p>At this point you may also wonder what the difference is between an interpreter and a compiler. For the purpose of this series, let’s agree that if a translator translates a source program into machine language, it is a compiler. If a translator processes and executes the source program without translating it into machine language first, it is an interpreter. Visually it looks something like this:</p>
+<img data-src="./imgs/lsbasi_part1_compiler_interpreter.png" alt="" />
+
+<p>We are going to create a simple interpreter for a large subset of Pascal language. At the end of this series you will have working <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Pascal_%28programming_language%29">Pascal</a> interpreter and a source-level debugger like <a target="_blank" rel="noopener" href="https://docs.python.org/2/library/pdb.html">Python’s pdb</a>.</p>
+<p>The implementation language of the Pascal interpreter will be Python, but you can use any language you want because the ideas presented don’t depend on any particular implementation language.</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># Token types</span>
+<span class="token comment">#</span>
+<span class="token comment"># EOF (end-of-file) token is used to indicate that</span>
+<span class="token comment"># there is no more input left for lexical analysis</span>
+INTEGER<span class="token punctuation">,</span> PLUS<span class="token punctuation">,</span> EOF <span class="token operator">=</span> <span class="token string">'INTEGER'</span><span class="token punctuation">,</span> <span class="token string">'PLUS'</span><span class="token punctuation">,</span> <span class="token string">'EOF'</span>
+
+
+<span class="token keyword">class</span> <span class="token class-name">Token</span><span class="token punctuation">(</span><span class="token builtin">object</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> <span class="token builtin">type</span><span class="token punctuation">,</span> value<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token comment"># token type: INTEGER, PLUS, EOF</span>
+        self<span class="token punctuation">.</span><span class="token builtin">type</span> <span class="token operator">=</span> <span class="token builtin">type</span>
+        <span class="token comment"># token value: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, '+', or None</span>
+        self<span class="token punctuation">.</span>value <span class="token operator">=</span> value
+
+    <span class="token keyword">def</span> <span class="token function">__str__</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">"""String representation of the class instance.
+
+        Examples:
+            Token(INTEGER, 3)
+            Token(PLUS, '+')
+        """</span>
+        <span class="token keyword">return</span> <span class="token string">'Token(&#123;type&#125;, &#123;value&#125;)'</span><span class="token punctuation">.</span><span class="token builtin">format</span><span class="token punctuation">(</span>
+            <span class="token builtin">type</span><span class="token operator">=</span>self<span class="token punctuation">.</span><span class="token builtin">type</span><span class="token punctuation">,</span>
+            value<span class="token operator">=</span><span class="token builtin">repr</span><span class="token punctuation">(</span>self<span class="token punctuation">.</span>value<span class="token punctuation">)</span>
+        <span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">__repr__</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">return</span> self<span class="token punctuation">.</span>__str__<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token keyword">class</span> <span class="token class-name">Interpreter</span><span class="token punctuation">(</span><span class="token builtin">object</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> text<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token comment"># client string input, e.g. "3+5"</span>
+        self<span class="token punctuation">.</span>text <span class="token operator">=</span> text
+        <span class="token comment"># self.pos is an index into self.text</span>
+        self<span class="token punctuation">.</span>pos <span class="token operator">=</span> <span class="token number">0</span>
+        <span class="token comment"># current token instance</span>
+        self<span class="token punctuation">.</span>current_token <span class="token operator">=</span> <span class="token boolean">None</span>
+
+    <span class="token keyword">def</span> <span class="token function">error</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">raise</span> Exception<span class="token punctuation">(</span><span class="token string">'Error parsing input'</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">get_next_token</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">"""Lexical analyzer (also know as scanner or tokenizer)
+
+        This method is responsible for breaking a sentence
+        apart into tokens. One token at a time.
+        """</span>
+        text <span class="token operator">=</span> self<span class="token punctuation">.</span>text
+
+        <span class="token comment"># is self.pos index past the end of the self.text ?</span>
+        <span class="token comment"># if so, then return EOF token because there is no more</span>
+        <span class="token comment"># input left to convert into tokens</span>
+        <span class="token keyword">if</span> self<span class="token punctuation">.</span>pos <span class="token operator">></span> <span class="token builtin">len</span><span class="token punctuation">(</span>text<span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">:</span>
+            <span class="token keyword">return</span> Token<span class="token punctuation">(</span>EOF<span class="token punctuation">,</span> <span class="token boolean">None</span><span class="token punctuation">)</span>
+
+        <span class="token comment"># get a character at the position self.pos and decide</span>
+        <span class="token comment"># what token to create based on the single character</span>
+        current_char <span class="token operator">=</span> text<span class="token punctuation">[</span>self<span class="token punctuation">.</span>pos<span class="token punctuation">]</span>
+
+        <span class="token comment"># if the character is a digit then convert it to</span>
+        <span class="token comment"># integer, create an INTEGER token, increment self.pos</span>
+        <span class="token comment"># index to point to the next character after the digit,</span>
+        <span class="token comment"># and return the INTEGER token</span>
+        <span class="token keyword">if</span> current_char<span class="token punctuation">.</span>isdigit<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+            token <span class="token operator">=</span> Token<span class="token punctuation">(</span>INTEGER<span class="token punctuation">,</span> <span class="token builtin">int</span><span class="token punctuation">(</span>current_char<span class="token punctuation">)</span><span class="token punctuation">)</span>
+            self<span class="token punctuation">.</span>pos <span class="token operator">+=</span> <span class="token number">1</span>
+            <span class="token keyword">return</span> token
+
+        <span class="token keyword">if</span> current_char <span class="token operator">==</span> <span class="token string">'+'</span><span class="token punctuation">:</span>
+            token <span class="token operator">=</span> Token<span class="token punctuation">(</span>PLUS<span class="token punctuation">,</span> current_char<span class="token punctuation">)</span>
+            self<span class="token punctuation">.</span>pos <span class="token operator">+=</span> <span class="token number">1</span>
+            <span class="token keyword">return</span> token
+
+        self<span class="token punctuation">.</span>error<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">eat</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> token_type<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token comment"># compare the current token type with the passed token</span>
+        <span class="token comment"># type and if they match then "eat" the current token</span>
+        <span class="token comment"># and assign the next token to the self.current_token,</span>
+        <span class="token comment"># otherwise raise an exception</span>
+        <span class="token keyword">if</span> self<span class="token punctuation">.</span>current_token<span class="token punctuation">.</span><span class="token builtin">type</span> <span class="token operator">==</span> token_type<span class="token punctuation">:</span>
+            self<span class="token punctuation">.</span>current_token <span class="token operator">=</span> self<span class="token punctuation">.</span>get_next_token<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token keyword">else</span><span class="token punctuation">:</span>
+            self<span class="token punctuation">.</span>error<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">expr</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">""" expr -> INTEGER PLUS INTEGER """</span>
+        <span class="token comment"># set current token to the first token taken from the input</span>
+        self<span class="token punctuation">.</span>current_token <span class="token operator">=</span> self<span class="token punctuation">.</span>get_next_token<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+        <span class="token comment"># we expect the current token to be a single-digit integer</span>
+        left <span class="token operator">=</span> self<span class="token punctuation">.</span>current_token
+        self<span class="token punctuation">.</span>eat<span class="token punctuation">(</span>INTEGER<span class="token punctuation">)</span>
+
+        <span class="token comment"># we expect the current token to be a '+' token</span>
+        op <span class="token operator">=</span> self<span class="token punctuation">.</span>current_token
+        self<span class="token punctuation">.</span>eat<span class="token punctuation">(</span>PLUS<span class="token punctuation">)</span>
+
+        <span class="token comment"># we expect the current token to be a single-digit integer</span>
+        right <span class="token operator">=</span> self<span class="token punctuation">.</span>current_token
+        self<span class="token punctuation">.</span>eat<span class="token punctuation">(</span>INTEGER<span class="token punctuation">)</span>
+
+        <span class="token comment"># after the above call the self.current_token is set to</span>
+        <span class="token comment"># EOF token</span>
+
+        <span class="token comment"># at this point INTEGER PLUS INTEGER sequence of tokens</span>
+        <span class="token comment"># has been successfully found and the method can just</span>
+        <span class="token comment"># return the result of adding two integers, thus</span>
+        <span class="token comment"># effectively interpreting client input</span>
+        result <span class="token operator">=</span> left<span class="token punctuation">.</span>value <span class="token operator">+</span> right<span class="token punctuation">.</span>value
+        <span class="token keyword">return</span> result
+
+<span class="token keyword">def</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">while</span> <span class="token boolean">True</span><span class="token punctuation">:</span>
+        <span class="token keyword">try</span><span class="token punctuation">:</span>
+            <span class="token keyword">try</span><span class="token punctuation">:</span>
+                text <span class="token operator">=</span> <span class="token builtin">input</span><span class="token punctuation">(</span><span class="token string">'calc> '</span><span class="token punctuation">)</span>
+            <span class="token keyword">except</span> NameError<span class="token punctuation">:</span> <span class="token comment"># python3</span>
+                text <span class="token operator">=</span> <span class="token builtin">raw_input</span><span class="token punctuation">(</span><span class="token string">'calc> '</span><span class="token punctuation">)</span>
+        <span class="token keyword">except</span> EOFError<span class="token punctuation">:</span>
+            <span class="token keyword">break</span>
+        <span class="token keyword">if</span> <span class="token keyword">not</span> text<span class="token punctuation">:</span>
+            <span class="token keyword">continue</span>
+        interpreter <span class="token operator">=</span> Interpreter<span class="token punctuation">(</span>text<span class="token punctuation">)</span>
+        result <span class="token operator">=</span> interpreter<span class="token punctuation">.</span>expr<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token keyword">print</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span>
+
+
+<span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">'__main__'</span><span class="token punctuation">:</span>
+    main<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>For your simple calculator to work properly without throwing an exception, your input needs to follow certain rules:</p>
+<ul>
+<li>Only single digit integers are allowed in the input</li>
+<li>The only arithmetic operation supported at the moment is addition</li>
+<li>No whitesapce characters are allowed anywhere in the input</li>
+</ul>
+<p>Those restrictions are necessary to make the calculator simple.</p>
+<p>When you enter an expression <em>3+5</em> on the command line your interpreter gets a string <em>3+5</em> . In order for the interpreter to actually understand what to do with that string it first needs to break the input <em>3+5</em> into components called tokens. A token is an object that has a type and a value. For example, for the string <em>3</em> the type of the token will be <strong>INTEGER</strong> and the corresponding value will be integer <em>3</em>.</p>
+<p>The process of breaking the input string into tokens is called <strong>lexical analysis</strong>. So, the first step your interpreter needs to do is read the input of characters and convert it into a stream of tokens.</p>
+<p>The part of the interpreter that does it is called a <strong>lexical analyzer</strong>, or lexer for short. You might also encounter other names for the same component, like scanner or tokenizer. They all mean the same: the part of your interpreter or compiler that turns the input of characters into a stream of tokens.</p>
+<p>The method <em>get_next_token</em> of the <em>Interpreter</em> class is your lexical analyzer. Every time you call it, you get the next token created from the input of characters passed to the interpreter.</p>
+<p>Let’s take a closer look at the method itself and see how it actually dose its job of converting characters into tokens. The input is stored in the variable <em>text</em> that holds the input string and <em>pos</em> is an index into that stirng. <em>pos</em> is initially set to 0 and points to the character <em>3</em>. The method first checks whether the character is a digit and if so, it increments <em>pos</em> and returns a token instance with the type <strong>INTEGER</strong> and the value set to the integer value of the string <em>3</em>, which is an integer <em>3</em>:</p>
+<img data-src="./imgs/lsbasi_part1_lexer1.png" alt="" />
+
+<p>The <em>pos</em> now points to the <em>+</em> character in the <em>text</em>. The next time you call the method, it tests if a character at the position <em>pos</em> is a digit and then it tests if the character is a plus sign, which it is. As a result the method increments <em>pos</em> and returns a newly created token with the type <strong>PLUS</strong> and value <em>+</em>:</p>
+<img data-src="./imgs/lsbasi_part1_lexer2.png" alt="" />
+
+<p>The <em>pos</em> now points to character <em>5</em>. When you call the <em>get_next_token</em> method again the method checks if it’s a digit, which it is, so it increment <em>pos</em> and returns a new INTEGER token with the value of the token set to integer <em>5</em>:</p>
+<img data-src="./imgs/lsbasi_part1_lexer3.png" alt="" />
+
+<p>Because the <em>pos</em> index is now past the end of the string <em>3+5</em> the <em>get_next_token</em> method returns the EOF token every time you call it:</p>
+<img data-src="./imgs/lsbasi_part1_lexer4.png" alt="" />
+
+<p>So now that your interpreter has access to the stream of tokens made from the input characters, the interpreter needs to do something with it: it needs to find the structure in the flat stream of tokens it gets from the lexer <em>get_next_token</em>. Your interpreter expects to find the following structure in that stream: <strong>INTEGER -&gt; PLUS -&gt; INTEGER</strong>. That is, it tries to find a sequence of tokens: integer followed by a plus sign followed by an integer.</p>
+<p>The method responsible for finding and interpreting that structure is <em>expr</em>. This method verifies that the sequence of tokens does indeed correspond to the expected sequence of tokens, i.e <strong>INTEGER -&gt; PLUS -&gt; INTEGER</strong>. After it’s successfully confirmed the structure, it generates the result by adding the value of the token on the left side of the PLUS and the right side of the PLUS, thus successfully interpreting the arithmetic expression you passed to the interpreter.</p>
+<p>The <em>expr</em> method itself uses the helper method <em>eat</em> to verify that the token type passed to the <em>eat</em> method matches the current token type. After matching the passed token type the <em>eat</em> method gets the next token and assigns it to the _current_token_ variable, thus effectively “eating” the currently matched token and advancing the imaginary pointer in the stream of tokens. If the structure in the stream of tokens doesn’t correspond to the expected <strong>INTEGER PLUS INTEGER</strong> sequence of tokens the eat method throws an exception.</p>
+<p>Let’s recap what your interpreter does to evaluate an arithmetic expression:</p>
+<ol>
+<li>The interpreter accepts an input string, let’s say “3+5”</li>
+<li>The interpreter calls the <em>expr</em> method to find a structure in the stream of tokens returned by the lexical analyzer <em>get_next_token</em>. The structure it tries to find is of the form <strong>INTEGER PLUS INTEGER</strong>. After it’s confirmed the structure, it interprets the input by adding the values of two <strong>INTEGER</strong> tokens because it’s clear to the interpreter at that point that what it needs to do is add two integers, 3 and 5.</li>
+</ol>
+<p><a href="./chapter-02.html">Next</a></p>
+<h3 id="quick-reference"><a href="#quick-reference" class="headerlink" title="Quick Reference"></a>Quick Reference</h3><ol>
+<li><a href="/lisp-interpreter-in-py/chapter-01.html">Chapter 01</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-02.html">Chapter 02</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-03.html">Chapter 03</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-04.html">Chapter 04</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-05.html">Chapter 05</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-06.html">Chapter 06</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-07.html">Chapter 07</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-08.html">Chapter 08</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-09.html">Chapter 09</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-10.html">Chapter 10</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-11.html">Chapter 11</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-12.html">Chapter 12</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-13.html">Chapter 13</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-14.html">Chapter 14</a></li>
+</ol>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

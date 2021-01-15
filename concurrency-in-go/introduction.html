@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="Why is Concurrency hard?It brings us  race condition  atomicity loss  memory access synchronization failure  deadlocks, livelocks, and starvation.    In fact, there’s a name for a section of your prog">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Introduction on Concurrency and Parallelism">
+<meta property="og:url" content="https://akatquas.github.io/concurrency-in-go/introduction.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="Why is Concurrency hard?It brings us  race condition  atomicity loss  memory access synchronization failure  deadlocks, livelocks, and starvation.    In fact, there’s a name for a section of your prog">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://akatquas.github.io/concurrency-in-go/decision-tree.png">
+<meta property="article:published_time" content="2021-01-15T10:21:08.370Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.370Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="akat,programmer,frontend,node,javascript,golang,python">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://akatquas.github.io/concurrency-in-go/decision-tree.png">
+
+
+<link rel="canonical" href="https://akatquas.github.io/concurrency-in-go/introduction.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>Introduction on Concurrency and Parallelism | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#why-is-concurrency-hard"><span class="nav-text">Why is Concurrency hard?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#the-difference-between-concurrency-and-parallelism"><span class="nav-text">The Difference Between Concurrency and Parallelism</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#communicating-sequential-processes"><span class="nav-text">Communicating Sequential Processes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#contents"><span class="nav-text">Contents</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">Introduction on Concurrency and Parallelism
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <h2 id="why-is-concurrency-hard"><a href="#why-is-concurrency-hard" class="headerlink" title="Why is Concurrency hard?"></a>Why is Concurrency hard?</h2><p>It brings us</p>
+<ol>
+<li><p>race condition</p>
+</li>
+<li><p>atomicity loss</p>
+</li>
+<li><p>memory access synchronization failure</p>
+</li>
+<li><p>deadlocks, livelocks, and starvation.</p>
+</li>
+</ol>
+<blockquote>
+<p>In fact, there’s a name for a section of your program that needs exclusive access to a shared resource. This is called a <em>critical section</em>.</p>
+</blockquote>
+<p>When interfacing with some concurrency-like code, these code should come with important comment that covers these aspects:</p>
+<ol>
+<li><p>Who is responsible for the concurrency?</p>
+</li>
+<li><p>How is the problem space mapped onto concurrency primitives?</p>
+</li>
+<li><p>Who is responsible for the synchronization?</p>
+</li>
+</ol>
+<p>Go’s runtime does most of the heavy lifting and provides the foundation for most of Go’s concurrency niceties. For example, you would write a function and then prepend its invocation with the <code>go</code> keyword to start the thread. The runtime handles everything else we discussed automatically</p>
+<p>Go’s runtime also automatically handles multiplexing concurrent operations onto operating system threads.</p>
+<p>The low-latency garbage collector in Go is implemented through concurrency.</p>
+<h2 id="the-difference-between-concurrency-and-parallelism"><a href="#the-difference-between-concurrency-and-parallelism" class="headerlink" title="The Difference Between Concurrency and Parallelism"></a>The Difference Between Concurrency and Parallelism</h2><p>In conversations, the two terms are often used interchangeably to mean <em>something that runs at the same time as something else.</em> Sometimes using the word <em>parallel</em> in this context is correct, but usually if the we are discussing code, we really ought to be using the word <em>concurrent</em>.</p>
+<p>The difference between <em>concurrency</em> and <em>parallelism</em> turns out to be a very powerful abstraction when modeling your code.</p>
+<blockquote>
+<p>Concurrency is a property of the code; parallelism is a property of the running program.</p>
+</blockquote>
+<p>The chunks of our program code may appear to be running in parallel, but really they’re executing in a sequential manner <em>faster than is distinguishable</em>. If we were to run the same binary on a machine with two cores, the program’s chunks might actually be running in parallel. This reveals a few interesting and important things:</p>
+<ol>
+<li><p>The first is that <em>we do not write parallel code</em>, <strong>only concurrent code that we hope will be run in parallel</strong>. Once again, parallelism is a property of the runtime of our program, not the code.</p>
+</li>
+<li><p>The second interesting thing is that we see it is possible—maybe even desirable—to <strong>be ignorant of</strong> whether our concurrent code is actually running in parallel, which is only made possible by the layers of abstraction that lie beneath our program’s model: the concurrency primitives, the program’s runtime, the operating system, the platform the operating system runs on (in the case of hypervisors, containers, and virtual machines), and ultimately the CPUs.</p>
+</li>
+<li><p>The third and final interesting thing is that parallelism is a function of time, or context. This context is defined as the bounds by which two or more operations could be considered parallel. For example, if our context was a space of five seconds, and we ran two operations that each took a second to run, we would consider the operations to have run in parallel. If our context was one second, we would consider the operations to have run sequentially.</p>
+</li>
+</ol>
+<p>It’s obvious that most concurrent logic in our industry is written at one of the highest levels of abstraction: OS threads. If you wanted to write concurrent code, you would model your program in terms of threads and synchronize the access to the memory between them. If you had a lot of things you had to model concurrently and your machine couldn’t handle that many threads, you created a thread pool and multiplexed your operations onto the thread pool.</p>
+<p>However, Go has added another link in that chain: the <code>goroutine</code>. In addition, Go has borrowed several concepts from the work of famed computer scientist Tony Hoare, and introduced new primitives for us to use, namely <code>channels</code>.</p>
+<p>To be further, <code>goroutine</code> doesn’t really added another layer of abstraction on top of OS threads, it has just supplanted them. Threads are still there, of course, but the developers find that they rarely have to think about our problem space in terms of OS threads. Instead, they model things in <code>goroutines</code> and <code>channels</code>, and <em>occasionally shared memory</em>.</p>
+<h2 id="communicating-sequential-processes"><a href="#communicating-sequential-processes" class="headerlink" title="Communicating Sequential Processes"></a>Communicating Sequential Processes</h2><p>In a CSP programming language, inputs and outputs needed to be considered language primitives. This primitive can model input and output, or <em>communication</em>, <em>between processes</em> correctly.</p>
+<blockquote>
+<p>Just because there is a framework available for a language that abstracts the concerns of parallelism away for you, doesn’t mean this natural way of modeling concurrent problems doesn’t matter! Someone has to write the framework, and your code will be sitting on top of whatever complexity the author(s) had to deal with. Just because the complexity is hidden from you doesn’t mean it’s not there, and complexity breeds bugs. In the case of Go, the language was designed around concurrency, so the language is not incongruent with the concurrency primitives it provides. This means less friction and fewer bugs!</p>
+</blockquote>
+<p>Go’s runtime multiplexes goroutines onto OS threads automatically and manages their scheduling for us. This means that optimizations to the runtime can be made without us having to change how we’ve modeled our problem; this is classic separation of concerns. As advancements in parallelism are made, Go’s runtime will improve, as will the performance of your program.</p>
+<p>The <code>channels</code>, for instance, are inherently composable with other channels. This makes writing large systems simpler because you can coordinate the input from multiple subsystems by easily composing the output together. You can combine input channels with timeouts, cancellations, or messages to other subsystems. Coordinating mutexes is a much more difficult proposition.</p>
+<p>The <code>select</code> statement is the <em>complement</em> to Go’s channels and is what enables all the difficult bits of composing channels. <code>select</code> statements allow you to efficiently wait for events, select a message from competing channels in a uniform random way, continue on if there are no messages waiting, and more.</p>
+<p>CSP was and is a large part of what Go was designed around; however, Go also supports more traditional means of writing concurrent code through memory access synchronization and the primitives that follow that technique. Structs and methods in the <code>sync</code> and other packages allow you to perform <em>locks</em>, create <em>pools of resources</em>, preempt <em>goroutines</em>, and more.</p>
+<p>One of Go’s mottos is <strong>Share memory by communicating, don’t communicate by sharing memory</strong>.</p>
+<p>That said, Go does provide traditional locking mechanisms in the sync package. Most locking issues can be solved using either channels or traditional locks.</p>
+<p>So which should you use? Use whichever is most expressive and/or most simple.</p>
+<img data-src="./decision-tree.png" alt="Primitives or Channel" />
+
+<ol>
+<li><p>Are you trying to transfer ownership of data?</p>
+<p>If you have a bit of code that produces a result and wants to share that result with another bit of code, what you’re really doing is transferring ownership of that data. If you’re familiar with the concept of memory-ownership in languages that don’t support garbage collection, this is the same idea: data has an owner, and one way to make concurrent programs safe is to ensure only one concurrent context has ownership of data at a time. Channels help us communicate this concept by encoding that intent into the channel’s type.</p>
+<p>One large benefit of doing so is you can create buffered channels to implement a cheap in-memory queue and thus decouple your producer from your consumer. Another is that by using channels, you’ve implicitly made your concurrent code <em>composable</em> with other concurrent code.</p>
+</li>
+<li><p>Are you trying to guard internal state of a struct?</p>
+<p>This is a great candidate for memory access synchronization primitives, and a pretty strong indicator that you shouldn’t use channels. By using memory access synchronization primitives, you can hide the implementation detail of locking your critical section from your callers. Here’s a small example of a type that is thread-safe, but doesn’t expose that complexity to its callers:</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> Counter <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+  mu sync<span class="token punctuation">.</span>Mutex
+  value <span class="token builtin">int</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token punctuation">(</span>c <span class="token operator">*</span>Counter<span class="token punctuation">)</span> <span class="token function">Increment</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  c<span class="token punctuation">.</span>mu<span class="token punctuation">.</span><span class="token function">Lock</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token keyword">defer</span> c<span class="token punctuation">.</span>mu<span class="token punctuation">.</span><span class="token function">Unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  c<span class="token punctuation">.</span>value<span class="token operator">++</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>If you recall the concept of atomicity, we can say that what we’ve done here is defined the scope of atomicity for the <code>Counter</code> type. Calls to <code>Increment</code> can be considered <em>atomic</em>.</p>
+<p>Remember the key word here is <em>internal</em>. If you find yourself exposing locks beyond a type, this should raise a red flag. Try to keep the locks constrained to a small lexical scope.</p>
+</li>
+<li><p>Are you trying to coordinate multiple pieces of logic?</p>
+<p>Remember that channels are inherently more composable than memory access synchronization primitives. Having locks scattered throughout your object-graph sounds like a nightmare, but having channels everywhere is expected and encouraged! I can compose channels, but I can’t easily compose locks or methods that return values.</p>
+<p>You will find it much easier to control the emergent complexity that arises in your software if you use channels because of Go’s <code>select</code> statement, and their ability to serve as queues and be safely passed around. If you find yourself struggling to understand how your concurrent code works, why a deadlock or race is occurring, and you’re using primitives, this is probably a good indicator that you should switch to channels.</p>
+</li>
+<li><p>Is it a performance-critical section?</p>
+<p>This absolutely does not mean, “I want my program to be performant, therefore I will only use mutexes.” Rather, if you have a section of your program that you have profiled, and it turns out to be a major bottleneck that is orders of magnitude slower than the rest of the program, using memory access synchronization primitives may help this critical section perform under load. This is because channels use memory access synchronization to operate, therefore they can only be slower. Before we even consider this, however, a performance-critical section might be hinting that we need to restructure our program.</p>
+</li>
+</ol>
+<p>Stick to modeling your problem space with goroutines, use them to represent the concurrent parts of your workflow, and don’t be afraid to be liberal when starting them. Go’s philosophy on concurrency can be summed up like this: aim for simplicity, use channels when possible, and treat goroutines like a free resource.</p>
+<h2 id="contents"><a href="#contents" class="headerlink" title="Contents"></a>Contents</h2><p><a href="./introduction.html">Introduction on Concurrency and Parallelism</a></p>
+<p><a href="./primitives.html">Go’s Concurrency Primitives</a></p>
+<p><a href="./patterns.html">Concurrency Patterns in go</a></p>
+<p><a href="./scalability.html">Concurrency at Scale</a></p>
+<p><a href="./internal.html">Goroutines and the Go Runtime</a></p>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

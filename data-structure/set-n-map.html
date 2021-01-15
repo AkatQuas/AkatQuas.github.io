@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="Overview set是一个排序后到容器，不允许重复。  map是用来存储排序后的键值对的集合，map 中键是保持逻辑排序后的顺序。  set和map都保证了基本操作（插入、删除、查找等）的对数时间开销。  set和map底层实现都是平衡二叉查找树，常常使用自顶向下的红黑树。  set和map实现的一个重要问题是需要提供对迭代器类的支持，如何高效的将迭代器推进至下一个结点。  Set  Map">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Set and Map">
+<meta property="og:url" content="https://akatquas.github.io/data-structure/set-n-map.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="Overview set是一个排序后到容器，不允许重复。  map是用来存储排序后的键值对的集合，map 中键是保持逻辑排序后的顺序。  set和map都保证了基本操作（插入、删除、查找等）的对数时间开销。  set和map底层实现都是平衡二叉查找树，常常使用自顶向下的红黑树。  set和map实现的一个重要问题是需要提供对迭代器类的支持，如何高效的将迭代器推进至下一个结点。  Set  Map">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-01-15T10:21:08.374Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.374Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="akat,programmer,frontend,node,javascript,golang,python">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://akatquas.github.io/data-structure/set-n-map.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>Set and Map | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#overview"><span class="nav-text">Overview</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#set"><span class="nav-text">SET</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9B%86%E5%90%88%E7%9A%84%E8%BF%90%E7%AE%97"><span class="nav-text">集合的运算</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%A1%E7%AE%97%E6%B3%95%E5%88%99"><span class="nav-text">计算法则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%90%E9%9B%86-%E4%B8%8E-%E7%9C%9F%E5%AD%90%E9%9B%86"><span class="nav-text">子集 与 真子集</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B9%82%E9%9B%86%EF%BC%9A"><span class="nav-text">幂集：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9B%86%E5%90%88%E7%9A%84%E9%93%BE%E8%A1%A8%E5%AE%9E%E7%8E%B0"><span class="nav-text">集合的链表实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9B%86%E5%90%88%E7%9A%84%E7%89%B9%E5%BE%81%E5%90%91%E9%87%8F%E5%AE%9E%E7%8E%B0"><span class="nav-text">集合的特征向量实现</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#map"><span class="nav-text">MAP</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">Set and Map
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <h1 id="overview"><a href="#overview" class="headerlink" title="Overview"></a>Overview</h1><ul>
+<li><p><code>set</code>是一个排序后到容器，不允许重复。</p>
+</li>
+<li><p><code>map</code>是用来存储排序后的键值对的集合，map 中键是保持逻辑排序后的顺序。</p>
+</li>
+<li><p><code>set</code>和<code>map</code>都保证了基本操作（插入、删除、查找等）的对数时间开销。</p>
+</li>
+<li><p><code>set</code>和<code>map</code>底层实现都是平衡二叉查找树，常常使用自顶向下的<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Red-black_tree">红黑树</a>。</p>
+</li>
+<li><p><code>set</code>和<code>map</code>实现的一个重要问题是需要提供对迭代器类的支持，如何高效的将迭代器推进至下一个结点。</p>
+</li>
+<li><p><a href="#set">Set</a></p>
+</li>
+<li><p><a href="#map">Map</a></p>
+</li>
+</ul>
+<h1 id="set"><a href="#set" class="headerlink" title="SET"></a>SET</h1><h2 id="集合的运算"><a href="#集合的运算" class="headerlink" title="集合的运算"></a>集合的运算</h2><ul>
+<li>并集</li>
+<li>交集</li>
+<li>差集</li>
+</ul>
+<h2 id="计算法则"><a href="#计算法则" class="headerlink" title="计算法则"></a>计算法则</h2><ul>
+<li>并集的交换律：S ∪ T = T ∪ S</li>
+<li>并集的结合律：S ∪ (T ∪ R) = (S ∪ T) ∪ R</li>
+<li>交集的交换律：S ∩ T = T ∩ S</li>
+<li>交集的结合律：S ∩ (T ∩ R) = (S ∩ T) ∩ R</li>
+<li>交集对并集的分配律：S ∩ (T ∪ R) = (S ∩ T) ∪ (S ∩ R)</li>
+<li>并集对交集的分配律：S ∪ (T ∩ R) = (S ∪ T) ∩ (S ∪ R)</li>
+<li>并集和差集的结合律：S - (T ∪ R) = (S - T) - R</li>
+<li>差集对并集的分配律：(S ∪ T) - R = (S - R) ∪ (T - R)</li>
+<li>并集的幂等律: S ∪ S = S</li>
+<li>交集的幂等律: S ∩ S = S</li>
+<li>对空集：<ul>
+<li>S - S = Ø</li>
+<li>Ø - S = Ø</li>
+<li>Ø ∩ S = Ø</li>
+</ul>
+</li>
+</ul>
+<h2 id="子集-与-真子集"><a href="#子集-与-真子集" class="headerlink" title="子集 与 真子集"></a>子集 与 真子集</h2><h2 id="幂集："><a href="#幂集：" class="headerlink" title="幂集："></a>幂集：</h2><ul>
+<li>定义：对于任一集合 S，其幂集就是指由 S 的所有子集组成的集合。</li>
+<li>大小：如果 S 有<code>n</code>个成员，那么其幂集则有 2<sup>n</sup>个成员。</li>
+</ul>
+<h3 id="集合的链表实现"><a href="#集合的链表实现" class="headerlink" title="集合的链表实现"></a>集合的链表实现</h3><p>如果集合有 n 个元素，插入、删除、查找点期望运行时间为 O(n)。</p>
+<p>特别要说明的是，为表排序可以显著改善并集、交集和差集运算的运行时间。</p>
+<pre class="line-numbers language-C" data-language="C"><code class="language-C">&#x2F;*
+# assemble函数，先创建一个新单元，然后调用setUnion求L和M的并集，最后返回对应的新单元。
+
+# setUnion函数会从给定的已排序的表中选出最小的元素，并将选定的元素与两个表其余部分一起传给assemble函数。对setUnion来说有6种情况，取决于两个表中有没有NULL，都没有时，看看那个表的表头元素先于另一个。
+
+# 1）两个表都为NULL，setUnion返回NULL，递归结束。
+# 2）L为NULL，M不为NULL，从M中取第一个元素，后面跟上NULL表及M的后续部分，调用assemble。
+# 3）M为NULL，L不为NULL，与2）相反的工作，用L点第一个元素及其尾部调用assemble。
+# 4）L和M的第一个元素相同，则创建一个副本，L-&gt;element，加上L的尾部和M的尾部调用assemble。
+# 5）如果L的元素先于M，取L的元素，L的尾部，整个M调用assemble。
+# 6）如果M的元素先于L，取M的元素，M的尾部，整个L调用assemble。
+*&#x2F;
+DefCell(int, CELL, LIST);
+LIST setUnion(LIST L, LIST M);
+LIST assemble(int x, LIST L, LIST M);
+
+LIST assemble(int x, LIST L, LIST M)
+&#123;
+    LIST first;
+    first &#x3D; (LIST) malloc(sizeof(struct CELL));
+    first-&gt;element &#x3D; x;
+    first-&gt;next &#x3D; setUnion(L, M);
+    return first;
+&#125;
+
+LIST setUnion(LIST L, LIST M)
+&#123;
+    if (L &#x3D;&#x3D; NULL &amp;&amp; M &#x3D;&#x3D; NULL)
+        return NULL;
+    else if (L &#x3D;&#x3D; NULL)
+        return assemble(M-&gt;element, NULL, M-&gt;next);
+    else if (M &#x3D;&#x3D; NULL)
+        return assemble(L-&gt;element, L-&gt;next, NULL);
+    else if (L-&gt;element &#x3D;&#x3D; M-&gt;element)
+        return assemble(L-&gt;element, L-&gt;next, M-&gt;next);
+    else if (L-&gt;element &lt; M-&gt;element)
+        return assemble(L-&gt;element, L-next, M);
+    else
+        return assemble(M-&gt;element, L, M-&gt;next);
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-C" data-language="C"><code class="language-C">&#x2F;*
+# assemble函数，先创建一个新单元，然后调用intersection求L和M的交集，最后返回对应的新单元。
+
+# intersection函数会从给定的已排序的表中选出最小的元素，并将选定的元素与两个表其余部分一起传给assemble函数。对intersection来说有4种情况，取决于两个表中有没有NULL，都没有时，看看那个表的表头元素先于另一个。
+
+# 1）**两个表都为NULL** OR **L为NULL，M不为NULL** OR **M为NULL，L不为NULL**，表示一个或两个表为空，剩余不再有交集，返回NULL。
+# 2）L和M的第一个元素相同，则创建一个副本，L-&gt;element，加上L的尾部和M的尾部调用assemble。
+# 3）如果L的元素先于M，扔掉L的较小元素，将L的尾部，整个M调用intersection。
+# 4）如果M的元素先于L，扔掉M的较小元素，将M的尾部，整个L调用intersection。
+*&#x2F;
+DefCell(int, CELL, LIST);
+LIST setUnion(LIST L, LIST M);
+LIST assemble(int x, LIST L, LIST M);
+
+LIST assemble(int x, LIST L, LIST M)
+&#123;
+    LIST first;
+    first &#x3D; (LIST) malloc(sizeof(struct CELL));
+    first-&gt;element &#x3D; x;
+    first-&gt;next &#x3D; intersection(L, M);
+    return first;
+&#125;
+
+LIST intersection(LIST L, LIST M)
+&#123;
+    if (L &#x3D;&#x3D; NULL || M &#x3D;&#x3D; NULL)
+        return NULL;
+    else if (L-&gt;element &#x3D;&#x3D; M-&gt;element)
+        return assemble(L-&gt;element, L-&gt;next, M-&gt;next);
+    else if (L-&gt;element &lt; M-&gt;element)
+        return intersection(L-next, M);
+    else
+        return intersection(L, M-&gt;next);
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-C" data-language="C"><code class="language-C">&#x2F;*
+# relative complement
+*&#x2F;
+LIST assemble(int x, LIST L, LIST M)
+&#123;
+    LIST first;
+    first &#x3D; (LIST) malloc(sizeof(struct CELL));
+    first-&gt;element &#x3D; x;
+    first-&gt;next &#x3D; relativeComplement(L, M);
+    return first;
+&#125;
+
+LIST relativeComplement(LIST L, LIST M)
+&#123;
+    if (L &#x3D;&#x3D; NULL)
+        return NULL;
+    else if (M &#x3D;&#x3D; NULL)
+        return L;
+    else if (L-&gt;element &#x3D;&#x3D; M-&gt;element)
+        return relativeComplement(L-&gt;next, M-&gt;next);
+    else if (L-&gt;element &lt; M-&gt;element)
+        return assemble(L-&gt;element, L-&gt;next, M);
+    else
+        return relativeComplement(L, M-&gt;next);
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="集合的特征向量实现"><a href="#集合的特征向量实现" class="headerlink" title="集合的特征向量实现"></a>集合的特征向量实现</h3><p>很多时候，要处理的集合是称为“全集”的某个小集合 U 的各子集。可以通过某种方式为 U 中的元素排定次序，那么 U 中的每个元素都可以与一个唯一的“位置”相关联，位置是从 0 到 n-1 的整数，其中 n 是 U 中元素的个数。接着，给定一个包含于 U 的集合 S，就可以用由 0 和 1 组成的<em>特征向量</em>来表示，规则是，对于 U 中的每个元素 x，如果 x 在 S 中，对应 x 位置上就是 1，否则就是 0。</p>
+<p>要表示某 n 元素全集各子集的特征向量，可以使用如下类型的布尔数组：</p>
+<pre class="line-numbers language-C" data-language="C"><code class="language-C">typedef BOOLEAN USET[n]
+# 对应位置i的元素插入到S中
+void insert(int i)
+&#123;
+    S[i] &#x3D; TRUE;
+&#125;
+
+# 对应位置i的元素不在S中
+void clear(int i)
+&#123;
+    S[i] &#x3D; FALSE;
+&#125;
+
+# 查找位置i的元素是否在S中
+void search(int i)
+&#123;
+    return S[i];
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>此时，插入、删除、查找的时间均为 O(1)，缺点是数组可能会很大，而且初始化数组的开销也很大。</p>
+<pre class="line-numbers language-C" data-language="C"><code class="language-C"># 交集
+while ( 0 &lt;&#x3D; i &amp;&amp; i &lt;&#x3D; n) &#123;
+    R[i] &#x3D; S[i] || T[i];
+    i++;
+&#125;
+# 并集
+while ( 0 &lt;&#x3D; i &amp;&amp; i &lt;&#x3D; n) &#123;
+    R[i] &#x3D; S[i] &amp;&amp; T[i];
+    i++;
+&#125;
+# 差集 (S - T)
+while ( 0 &lt;&#x3D; i &amp;&amp; i &lt;&#x3D; n) &#123;
+    R[i] &#x3D; S[i] || !T[i];
+    i++;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h1 id="map"><a href="#map" class="headerlink" title="MAP"></a>MAP</h1>
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

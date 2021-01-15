@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="VolumeVolume in this chapter is actually a part of the Pod API. Within a Pod, you can define a set of Volumes. Each Volume can be one of a large number of different types. When you add a Volume to you">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Storage and Running Stateful Applications">
+<meta property="og:url" content="https://akatquas.github.io/kubernetes/pv-pvc.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="VolumeVolume in this chapter is actually a part of the Pod API. Within a Pod, you can define a set of Volumes. Each Volume can be one of a large number of different types. When you add a Volume to you">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-01-15T10:21:08.390Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.390Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="akat,programmer,frontend,node,javascript,golang,python">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://akatquas.github.io/kubernetes/pv-pvc.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>Storage and Running Stateful Applications | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#volume"><span class="nav-text">Volume</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#confimap"><span class="nav-text">ConfiMap</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#persistent-storage"><span class="nav-text">Persistent storage</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#persistentvolumes-and-storageclasses"><span class="nav-text">PersistentVolumes and StorageClasses</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#statefulsets"><span class="nav-text">StatefulSets</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#persistent-volumes-and-statefulsets"><span class="nav-text">Persistent Volumes and StatefulSets</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">Storage and Running Stateful Applications
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <h2 id="volume"><a href="#volume" class="headerlink" title="Volume"></a>Volume</h2><p><code>Volume</code> in this chapter is actually a part of the Pod API. Within a Pod, you can define a set of Volumes. Each Volume can be one of a large number of different types.</p>
+<p>When you add a Volume to your Pod, you can choose to mount it to an arbitrary location in each running container. This enables your running container to have access to the storage within the Volume. Different containers can mount these Volumes at different locations or can ignore the Volume entirely.</p>
+<h2 id="confimap"><a href="#confimap" class="headerlink" title="ConfiMap"></a>ConfiMap</h2><p>In addition to basic files, there are several types of Kubernetes objects that can themselves be mounted into your Pod as a Volume.</p>
+<p>A <code>ConfigMap</code> represents a collection of configuration files. In Kubernetes, you want to have different configurations for the same container image. When you add a ConfigMap-based Volume to your Pod, the files in the ConfigMap show up in the specified directory in your running container.</p>
+<p>Kubernetes uses the Secret configuration type for secure data, such as database passwords and certificates. In the context of Volumes, a Secret works identically to a Con figMap. It can be attached to a Pod via a Volume and mounted into a running container for use.</p>
+<hr>
+<p>Instead of binding a Volume directly into a Pod, a <code>PersistentVolume</code> is created as a separate object. This object is then claimed to a specific Pod by a <code>PersistentVolumeClaim</code> and finally mounted into the Pod via this claim.</p>
+<h2 id="persistent-storage"><a href="#persistent-storage" class="headerlink" title="Persistent storage"></a>Persistent storage</h2><p>Real-world applications often carry state and record data that we prefer (even insist) not to lose.</p>
+<p>A <strong>volume</strong> that exists outside the container allows us to save our important data across containers outages. Further, if we have a volume at the pod level, data can be shared between containers in the same application stack and within the same pod.</p>
+<p>Additionally, a pod can have multiple volumes from a variety of sources.</p>
+<p><strong>Temporary disk</strong></p>
+<p>One of the easiest ways to achieve improved persistence amid container crashes and data sharing within a pod is to use the <code>emptydir</code> volume. This volume type can be used with either the storage volumes of the node machine itself or an optional RAM disk for higher performance.</p>
+<p>Again, we improve our persistence beyond a single container, but when a pod is removed, the data will be lost. Also, Machine reboot will also clear any data from RAM-type disks. There may be times when we just need some shared temporary space or have containers that process data and hand it off to another container before they die.</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Pod
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> memory<span class="token punctuation">-</span>pd
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">image</span><span class="token punctuation">:</span> nginx<span class="token punctuation">:</span>latest
+      <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">containerPort</span><span class="token punctuation">:</span> <span class="token number">80</span>
+      <span class="token key atrule">name</span><span class="token punctuation">:</span> memory<span class="token punctuation">-</span>pd
+      <span class="token key atrule">volumeMounts</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /memory<span class="token punctuation">-</span>pd
+          <span class="token key atrule">name</span><span class="token punctuation">:</span> memory<span class="token punctuation">-</span>volume
+  <span class="token key atrule">volumes</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> memory<span class="token punctuation">-</span>volume
+      <span class="token key atrule">emptyDir</span><span class="token punctuation">:</span>
+        <span class="token key atrule">medium</span><span class="token punctuation">:</span> Memory
+<span class="token comment"># this folder is quite temporary as</span>
+<span class="token comment"># everything is stored in the node's (minion's) RAM.</span>
+<span class="token comment"># When the node gets restarted, all the files will be erased.</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>Cloud volumes</strong></p>
+<details>
+<summary>
+
+<p>Create some Persistent Disks in GCE in advance.</p>
+</summary>
+
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Pod
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> test<span class="token punctuation">-</span>gce
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">image</span><span class="token punctuation">:</span> nginx<span class="token punctuation">:</span>latest
+      <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">containerPort</span><span class="token punctuation">:</span> <span class="token number">80</span>
+      <span class="token key atrule">name</span><span class="token punctuation">:</span> test<span class="token punctuation">-</span>gce
+      <span class="token key atrule">volumeMounts</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /usr/share/nginx/html
+          <span class="token key atrule">name</span><span class="token punctuation">:</span> gce<span class="token punctuation">-</span>pd
+  <span class="token key atrule">volumes</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> gce<span class="token punctuation">-</span>pd
+      <span class="token key atrule">gcePersistentDisk</span><span class="token punctuation">:</span>
+        <span class="token key atrule">pdName</span><span class="token punctuation">:</span> mysite<span class="token punctuation">-</span>volume<span class="token punctuation">-</span><span class="token number">1</span>
+        <span class="token key atrule">fsType</span><span class="token punctuation">:</span> ext4<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> ReplicationController
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> http<span class="token punctuation">-</span>pd
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> http<span class="token punctuation">-</span>pd
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">replicas</span><span class="token punctuation">:</span> <span class="token number">3</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> http<span class="token punctuation">-</span>pd
+  <span class="token key atrule">template</span><span class="token punctuation">:</span>
+    <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">name</span><span class="token punctuation">:</span> http<span class="token punctuation">-</span>pd
+      <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+        <span class="token key atrule">name</span><span class="token punctuation">:</span> http<span class="token punctuation">-</span>pd
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">image</span><span class="token punctuation">:</span> nginx<span class="token punctuation">:</span>latest
+          <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+            <span class="token punctuation">-</span> <span class="token key atrule">containerPort</span><span class="token punctuation">:</span> <span class="token number">80</span>
+          <span class="token key atrule">name</span><span class="token punctuation">:</span> http<span class="token punctuation">-</span>pd
+          <span class="token key atrule">volumeMounts</span><span class="token punctuation">:</span>
+            <span class="token punctuation">-</span> <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /usr/share/nginx/html
+              <span class="token key atrule">name</span><span class="token punctuation">:</span> gce<span class="token punctuation">-</span>pd
+      <span class="token key atrule">volumes</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> gce<span class="token punctuation">-</span>pd
+          <span class="token key atrule">gcePersistentDisk</span><span class="token punctuation">:</span>
+            <span class="token key atrule">pdName</span><span class="token punctuation">:</span> mysite<span class="token punctuation">-</span>volume<span class="token punctuation">-</span><span class="token number">1</span>
+            <span class="token key atrule">fsType</span><span class="token punctuation">:</span> ext4
+            <span class="token key atrule">readOnly</span><span class="token punctuation">:</span> <span class="token boolean important">true</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Service
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> http<span class="token punctuation">-</span>pd
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> http<span class="token punctuation">-</span>pd
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">type</span><span class="token punctuation">:</span> LoadBalancer
+  <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> http
+      <span class="token key atrule">protocol</span><span class="token punctuation">:</span> TCP
+      <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">80</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> http<span class="token punctuation">-</span>pd<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</details>
+
+<h2 id="persistentvolumes-and-storageclasses"><a href="#persistentvolumes-and-storageclasses" class="headerlink" title="PersistentVolumes and StorageClasses"></a>PersistentVolumes and StorageClasses</h2><p>We need some way for the application to specify and request storage without being concerned with how that storage is provided.</p>
+<p><code>PersistentVolumes</code> are similar to <code>volumes</code> we created earlier, but they are provided by the cluster administer and are not dependent on a particular pod. This volume can then be claimed by pods using <code>PersistentVolumeClaims</code>.</p>
+<p><code>PersistentVolumeClaims</code> allows us to specify the details of the storage needed. We can defined the amount of storage as well as the access type such as <code>ReadWriteOnce</code> (read and write by one node), <code>ReadOnlyMany</code> (read-only by multiple nodes), and <code>ReadWriteMany</code> (read and write by many nodes).</p>
+<details>
+<summary>
+
+<p>A small exmaple to use PV and PVC.</p>
+</summary>
+
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> PersistentVolume
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> database
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">volume</span><span class="token punctuation">:</span> my<span class="token punctuation">-</span>volume
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">accessModes</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> ReadWriteMany
+  <span class="token key atrule">capacity</span><span class="token punctuation">:</span>
+    <span class="token key atrule">storage</span><span class="token punctuation">:</span> 1Gi
+  <span class="token key atrule">nfs</span><span class="token punctuation">:</span>
+    <span class="token key atrule">server</span><span class="token punctuation">:</span> 192.168.0.1
+    <span class="token key atrule">path</span><span class="token punctuation">:</span> <span class="token string">'/exports'</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment"># this request "1Gi" of storage in "ReadWriteOnce" mode</span>
+<span class="token comment"># with a StorageClass of "solidstate" and label of "aws-storage".</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> PersistentVolumeClaim
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> demo<span class="token punctuation">-</span>claim
+  <span class="token key atrule">annotations</span><span class="token punctuation">:</span>
+    <span class="token key atrule">volume.beta.kubernetes.io/storage-class</span><span class="token punctuation">:</span> <span class="token string">'solidstate'</span>
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">accessModes</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> ReadWriteMany
+  <span class="token key atrule">resources</span><span class="token punctuation">:</span>
+    <span class="token key atrule">requests</span><span class="token punctuation">:</span>
+      <span class="token key atrule">storage</span><span class="token punctuation">:</span> 1Gi
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">matchLabels</span><span class="token punctuation">:</span>
+      <span class="token key atrule">release</span><span class="token punctuation">:</span> <span class="token string">'aws-storage'</span>
+      <span class="token key atrule">volume</span><span class="token punctuation">:</span> my<span class="token punctuation">-</span>volume<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment"># using PVC in ReplicaSets</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> extensions/v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> ReplicaSet
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> mysql
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> mysql
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">replicas</span><span class="token punctuation">:</span> <span class="token number">1</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">matchLabels</span><span class="token punctuation">:</span>
+      <span class="token key atrule">app</span><span class="token punctuation">:</span> mysql
+  <span class="token key atrule">template</span><span class="token punctuation">:</span>
+    <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+        <span class="token key atrule">app</span><span class="token punctuation">:</span> mysql
+    <span class="token key atrule">sepc</span><span class="token punctuation">:</span>
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> database
+          <span class="token key atrule">image</span><span class="token punctuation">:</span> mysql
+          <span class="token key atrule">resources</span><span class="token punctuation">:</span>
+            <span class="token key atrule">requests</span><span class="token punctuation">:</span>
+              <span class="token key atrule">cpu</span><span class="token punctuation">:</span> <span class="token number">1</span>
+              <span class="token key atrule">memory</span><span class="token punctuation">:</span> 2Gi
+          <span class="token key atrule">env</span><span class="token punctuation">:</span>
+            <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> MYSQL_ROOT_PASSWORD
+              <span class="token key atrule">value</span><span class="token punctuation">:</span> some<span class="token punctuation">-</span>password
+          <span class="token key atrule">livenessProbe</span><span class="token punctuation">:</span>
+            <span class="token key atrule">tcpSocket</span><span class="token punctuation">:</span>
+              <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">3306</span>
+          <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+            <span class="token punctuation">-</span> <span class="token key atrule">containerPort</span><span class="token punctuation">:</span> <span class="token number">3306</span>
+          <span class="token key atrule">volumeMounts</span><span class="token punctuation">:</span>
+            <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> database
+              <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> <span class="token string">'/var/lib/mysql'</span>
+      <span class="token key atrule">volumes</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> database
+          <span class="token key atrule">persistentVolumeClaim</span><span class="token punctuation">:</span>
+            <span class="token key atrule">claimName</span><span class="token punctuation">:</span> demo<span class="token punctuation">-</span>claim<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment"># expose mysql ReplicaSet as a Service</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Service
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> mysql
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">3306</span>
+      <span class="token key atrule">protocol</span><span class="token punctuation">:</span> TCP
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> mysql<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</details>
+
+<p>Kubernetes provides two other methods for specifying certain groupings or types of storage volumes:</p>
+<ul>
+<li><p>selectors: labels can be applied to storage volumes and then claims can reference these labels to further filter the volume they are provided.</p>
+</li>
+<li><p>StorageClass: it allows us to specify a storage provisioner and parameters for the type of volumes it provisions.</p>
+</li>
+</ul>
+<p><strong>Dynamic Volume Provisioning</strong></p>
+<p>Many clusters also include <em>dynamic volume provisioning</em>. With dynamic volume provisioning, the cluster operator creates one or more <code>StorageClass</code> objects.</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment"># a default storage class that automatically</span>
+<span class="token comment"># provisions disk objects on the Microsoft Azure platform.</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> storage.k8s.io/v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> StorageClass
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> default
+  <span class="token key atrule">annotations</span><span class="token punctuation">:</span>
+    <span class="token key atrule">storageclass.beta.kubernetes.io/is-default-class</span><span class="token punctuation">:</span> <span class="token string">'true'</span>
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">kubernetes.io/cluster-service</span><span class="token punctuation">:</span> <span class="token string">'true'</span>
+<span class="token key atrule">provisioner</span><span class="token punctuation">:</span> kubernetes.io/azure<span class="token punctuation">-</span>disk<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Once a storage class has been created for a cluster, you can refer to this storage class in your persistent volume claim, rather than referring to any specific persistent volume.</p>
+<p>When the dynamic provisioner sees this storage claim, it uses the appropriate volume driver to create the volume and bind it to your persistent volume claim.</p>
+<details>
+
+<summary>
+
+<p>An example of a <code>PersistentVolumeClaim</code> that uses the default storage class to claim a newly created persistent volume.</p>
+</summary>
+
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> PersistentVolumeClaim
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> my<span class="token punctuation">-</span>claim
+  <span class="token key atrule">annotations</span><span class="token punctuation">:</span>
+    <span class="token comment"># this links the claim back up to the storage class</span>
+    <span class="token key atrule">volume.beta.kubernetes.io/storage-class</span><span class="token punctuation">:</span> default
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">accessModes</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> ReadWriteOnce
+  <span class="token key atrule">resources</span><span class="token punctuation">:</span>
+    <span class="token key atrule">requests</span><span class="token punctuation">:</span>
+      <span class="token key atrule">storage</span><span class="token punctuation">:</span> 10Gi<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</details>
+
+<h2 id="statefulsets"><a href="#statefulsets" class="headerlink" title="StatefulSets"></a>StatefulSets</h2><p>However, some applications, especially stateful storage workloads or sharded applications, require more differentiation between the replicas in the application.</p>
+<p>The purpose of <strong>StatefulSets</strong> is to provide some consistency and predictability to application deployments with stateful data.</p>
+<p>In a ReplicaSet, each replicated Pod receives a name that involves a random hash (e.g., frontend-14a2), and there is no notion of ordering in a ReplicaSet. In contrast, with StatefulSets, each replica receives a monotonically increasing index (e.g., backend-0, backend-1, and so on).</p>
+<p>Further, StatefulSets guarantee that replica zero will be created and become healthy before replica one is created and so forth.</p>
+<p>StatefulSets receive DNS names so that each replica can be accessed directly, in addition to the complete StatefulSet. This allows clients to easily target specific shards in a sharded service.</p>
+<blockquote>
+<p>This means that a Statefulset called db with 3 replicas will create the following pods:</p>
+<pre><code>db-0
+db-1
+db-2</code></pre>
+</blockquote>
+<details>
+<summary>
+
+<p>A stateful example</p>
+</summary>
+
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment"># a StorageClass kind of SSD dirves in sea-central1-c</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> storage.k8s.io/v1beta1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> StorageClass
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> solidstate
+<span class="token key atrule">provisioner</span><span class="token punctuation">:</span> kubernetes.io/gce<span class="token punctuation">-</span>pd
+<span class="token key atrule">parameters</span><span class="token punctuation">:</span>
+  <span class="token key atrule">type</span><span class="token punctuation">:</span> pd<span class="token punctuation">-</span>ssd
+  <span class="token key atrule">zone</span><span class="token punctuation">:</span> sea<span class="token punctuation">-</span>central1<span class="token punctuation">-</span>c
+
+<span class="token comment"># a StatefulSet with storage claims</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> apps/v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> StatefulSet
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> whaleset
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">serviceName</span><span class="token punctuation">:</span> sayhey<span class="token punctuation">-</span>svc
+  <span class="token key atrule">replicas</span><span class="token punctuation">:</span> <span class="token number">3</span>
+  <span class="token key atrule">template</span><span class="token punctuation">:</span>
+    <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+        <span class="token key atrule">app</span><span class="token punctuation">:</span> sayhey
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">terminationGracePeriodSeconds</span><span class="token punctuation">:</span> <span class="token number">10</span>
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> sayhey
+          <span class="token key atrule">image</span><span class="token punctuation">:</span> httpwhalesay<span class="token punctuation">:</span><span class="token number">0.2</span>
+          <span class="token key atrule">command</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"node"</span><span class="token punctuation">,</span> <span class="token string">"index.js"</span><span class="token punctuation">,</span> <span class="token string">"Whale it up!"</span><span class="token punctuation">]</span>
+          <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+            <span class="token punctuation">-</span> <span class="token key atrule">containerPort</span><span class="token punctuation">:</span> <span class="token number">80</span>
+              <span class="token key atrule">name</span><span class="token punctuation">:</span> web
+          <span class="token key atrule">volumeMounts</span><span class="token punctuation">:</span>
+            <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> www
+              <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /usr/share/nginx/html
+  <span class="token key atrule">volumeClaimTemplates</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+        <span class="token key atrule">name</span><span class="token punctuation">:</span>         www
+        <span class="token key atrule">annotations</span><span class="token punctuation">:</span>
+          <span class="token key atrule">volume.beta.kubernetes.io/storage-class</span><span class="token punctuation">:</span> solidstate
+      <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+        <span class="token key atrule">accessModes</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"ReadWriteOnce"</span><span class="token punctuation">]</span>
+        <span class="token key atrule">resources</span><span class="token punctuation">:</span>
+          <span class="token key atrule">requests</span><span class="token punctuation">:</span>
+            <span class="token key atrule">storage</span><span class="token punctuation">:</span> 1Gi
+
+<span class="token comment"># service endpoint</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Service
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> sayhey<span class="token punctuation">-</span>svc
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> sayhey
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">80</span>
+      <span class="token key atrule">name</span><span class="token punctuation">:</span> web
+  <span class="token key atrule">clusterIP</span><span class="token punctuation">:</span> None
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> sayhey<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Using <code>kubectl get pv</code> to show the PersistentVolumes.</p>
+<p><code>kubectl get pvc</code> to show the PersistentVolumesClaims.</p>
+</details>
+
+<details>
+<summary>
+
+<p>Stateful Mongo Pods, automated initialization.</p>
+</summary>
+
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> apps/v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> StatefulSet
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> mongo
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">serviceName</span><span class="token punctuation">:</span> <span class="token string">'mongo'</span>
+  <span class="token key atrule">replicas</span><span class="token punctuation">:</span> <span class="token number">3</span>
+  <span class="token key atrule">template</span><span class="token punctuation">:</span>
+    <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+        <span class="token key atrule">app</span><span class="token punctuation">:</span> mongo
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> mongodb
+          <span class="token key atrule">image</span><span class="token punctuation">:</span> mongodb<span class="token punctuation">:</span>3.4.1
+          <span class="token key atrule">command</span><span class="token punctuation">:</span>
+            <span class="token punctuation">-</span> mongod
+            <span class="token punctuation">-</span> <span class="token punctuation">-</span><span class="token punctuation">-</span>replSet
+            <span class="token punctuation">-</span> rs0
+          <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+            <span class="token punctuation">-</span> <span class="token key atrule">containerPort</span><span class="token punctuation">:</span> <span class="token number">27017</span>
+              <span class="token key atrule">name</span><span class="token punctuation">:</span> peer<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Once the StatefulSet is created, we also need to create a “headless” service to manage the DNS entries for the StatefulSet. In Kubernetes a service is called “headless” if it doesn’t have a cluster virtual IP address. Since with StatefulSets each Pod has a unique identity, it doesn’t really make sense to have a load-balancing IP address for the replicated service. You can create a headless service using <code>clusterIP: None</code> in the service specification</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Service
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> mongo
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">27017</span>
+      <span class="token key atrule">name</span><span class="token punctuation">:</span> peer
+  <span class="token key atrule">clusterIP</span><span class="token punctuation">:</span> None
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> mongo<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Once you create that service, there are usually four DNS entries that are populated. As usual, <code>mongo.default.svc.cluster.local</code> is created, but unlike with a standard service, doing a DNS lookup on this hostname provides all the addresses in the StatefulSet. In addition, entries are created for <code>mongo-0.mongo.default.svc.cluster.local</code> as well as <code>mongo-1.mongo</code> and <code>mongo-2.mongo</code>. Each of these resolves to the specific IP address of the replica index in the StatefulSet.</p>
+<p>We’ll choose <code>mongo-0.mongo</code> to be our initial primary. Run the <code>mongo</code> tool in that Pod:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kubectl <span class="token builtin class-name">exec</span> -it mongo-0 mongo
+
+<span class="token comment"># primary replica</span>
+<span class="token operator">></span> rs.initiate<span class="token punctuation">(</span> <span class="token punctuation">&#123;</span>
+    _id: <span class="token string">"rs0"</span>,
+    members:<span class="token punctuation">[</span> <span class="token punctuation">&#123;</span> _id: <span class="token number">0</span>, host: <span class="token string">"mongo-0.mongo:27017"</span> <span class="token punctuation">&#125;</span> <span class="token punctuation">]</span> <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment"># OK</span>
+
+<span class="token comment"># adding the remaining replicas</span>
+<span class="token operator">></span> rs.add<span class="token punctuation">(</span><span class="token string">"mongo-1.mongo:27017"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token operator">></span> rs.add<span class="token punctuation">(</span><span class="token string">"mongo-2.mongo:27017"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>However, we can automate the deployment of adding shards in the MongoDB by using an additional container in the Pods manifest to perform the initialization.</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment"># refine the previous mongodb Pod manifest</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> apps/v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> StatefulSet
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> mongo
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">serviceName</span><span class="token punctuation">:</span> <span class="token string">'mongo'</span>
+  <span class="token key atrule">replicas</span><span class="token punctuation">:</span> <span class="token number">3</span>
+  <span class="token key atrule">template</span><span class="token punctuation">:</span>
+    <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+        <span class="token key atrule">app</span><span class="token punctuation">:</span> mongo
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> mongodb
+          <span class="token key atrule">image</span><span class="token punctuation">:</span> mongodb<span class="token punctuation">:</span>3.4.1
+          <span class="token key atrule">command</span><span class="token punctuation">:</span>
+            <span class="token punctuation">-</span> mongod
+            <span class="token punctuation">-</span> <span class="token punctuation">-</span><span class="token punctuation">-</span>replSet
+            <span class="token punctuation">-</span> rs0
+          <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+            <span class="token punctuation">-</span> <span class="token key atrule">containerPort</span><span class="token punctuation">:</span> <span class="token number">27017</span>
+              <span class="token key atrule">name</span><span class="token punctuation">:</span> web
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> init<span class="token punctuation">-</span>mongo
+          <span class="token key atrule">image</span><span class="token punctuation">:</span> mongo<span class="token punctuation">:</span>3.4.1
+          <span class="token key atrule">command</span><span class="token punctuation">:</span>
+            <span class="token punctuation">-</span> bash
+            <span class="token punctuation">-</span> /config/init.sh
+          <span class="token key atrule">volumeMounts</span><span class="token punctuation">:</span>
+            <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> config
+              <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /config
+      <span class="token key atrule">volumes</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> config
+          <span class="token key atrule">configMap</span><span class="token punctuation">:</span>
+            <span class="token key atrule">name</span><span class="token punctuation">:</span> <span class="token string">'mongo-init'</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> ConfigMap
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> mongo<span class="token punctuation">-</span>init
+<span class="token key atrule">data</span><span class="token punctuation">:</span>
+  <span class="token key atrule">init.sh</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token scalar string">
+    #! /bin/bash</span>
+
+    <span class="token comment"># Need to wait for the readiness health check to pass so that the</span>
+    <span class="token comment"># mongo names resolve. This is kind of wonky.</span>
+    until ping <span class="token punctuation">-</span>c 1 $<span class="token punctuation">&#123;</span>HOSTNAME<span class="token punctuation">&#125;</span>.mongo; do
+      echo "waiting for DNS ($<span class="token punctuation">&#123;</span>HOSTNAME<span class="token punctuation">&#125;</span>.mongo)<span class="token punctuation">...</span>"
+      sleep 2
+    done
+
+    until /usr/bin/mongo <span class="token punctuation">-</span><span class="token punctuation">-</span>eval 'printjson(db.serverStatus())'; do
+      echo "connecting to local mongo<span class="token punctuation">...</span>"
+      sleep 2
+    done
+    echo "connected to local."
+
+    HOST=mongo<span class="token punctuation">-</span>0.mongo.27017
+
+    until /usr/bin/mongo <span class="token punctuation">-</span><span class="token punctuation">-</span>host=$<span class="token punctuation">&#123;</span>HOST<span class="token punctuation">&#125;</span> <span class="token punctuation">-</span><span class="token punctuation">-</span>eval 'printjson(db.serverStatus())'; do
+      echo "connecting to remote mongo<span class="token punctuation">...</span>"
+      sleep 2
+    done
+    echo "connected to remone."
+
+    if <span class="token punctuation">[</span><span class="token punctuation">[</span> "$<span class="token punctuation">&#123;</span>HOSTNAME<span class="token punctuation">&#125;</span>" <span class="token tag">!=</span> 'mongo<span class="token punctuation">-</span>0' <span class="token punctuation">]</span><span class="token punctuation">]</span>; then
+      until /usr/bin/mongo <span class="token punctuation">-</span><span class="token punctuation">-</span>host=$<span class="token punctuation">&#123;</span>HOST<span class="token punctuation">&#125;</span> <span class="token punctuation">-</span><span class="token punctuation">-</span>eval="printjson(rs.status())" \
+            <span class="token punctuation">|</span> grep <span class="token punctuation">-</span>v "no replset config has been received"; do
+        echo "waiting for replication set initialization"
+        sleep 2
+      done
+
+      echo "adding self $<span class="token punctuation">&#123;</span>HOSTNAME<span class="token punctuation">&#125;</span> to $<span class="token punctuation">&#123;</span>HOST<span class="token punctuation">&#125;</span>"
+      /usr/bin/mongo <span class="token punctuation">-</span><span class="token punctuation">-</span>host=$<span class="token punctuation">&#123;</span>HOST<span class="token punctuation">&#125;</span> \
+          <span class="token punctuation">-</span><span class="token punctuation">-</span>eval="printjson(rs.add('$<span class="token punctuation">&#123;</span>HOSTNAME<span class="token punctuation">&#125;</span>.mongo'))"
+    fi
+
+    if <span class="token punctuation">[</span><span class="token punctuation">[</span> "$<span class="token punctuation">&#123;</span>HOSTNAME<span class="token punctuation">&#125;</span>" == 'mongo<span class="token punctuation">-</span>0' <span class="token punctuation">]</span><span class="token punctuation">]</span>; then
+      echo "initializing replica set"
+      /usr/bin/mongo <span class="token punctuation">-</span><span class="token punctuation">-</span>eval="printjson(rs.initiate(\
+        <span class="token punctuation">&#123;</span>'_id'<span class="token punctuation">:</span><span class="token string">'rs0'</span><span class="token punctuation">,</span> <span class="token key atrule">'members'</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">&#123;</span> <span class="token key atrule">'_id'</span><span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">,</span> \
+         <span class="token key atrule">'host'</span><span class="token punctuation">:</span> <span class="token string">'mongo-0.mongo:27017'</span> <span class="token punctuation">&#125;</span><span class="token punctuation">]</span><span class="token punctuation">&#125;</span>))"
+    fi
+    echo "initialized"
+
+    while true; do
+      sleep 3600
+    done<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<blockquote>
+<p>This script (<code>init.sh</code>) currently sleeps forever after initializing the cluster. Every container in a Pod has to have the same RestartPolicy. Since we do not want our main Mongo container to be restarted, we need to have our initialization container run forever too, or else Kubernetes might think our Mongo Pod is unhealthy.</p>
+</blockquote>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kubectl apply -f mongo-config-map.yaml
+kubectl apply -f mongo-service.yaml
+kubectl apply -f mongo.yaml<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+</details>
+
+<details>
+<summary>Readiness Probe</summary>
+Add liveness checks to the StatefulSet object
+
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment"># ...</span>
+<span class="token key atrule">livenessProbe</span><span class="token punctuation">:</span>
+  <span class="token key atrule">exec</span><span class="token punctuation">:</span>
+    <span class="token key atrule">command</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> /usr/bin/mongo
+      <span class="token punctuation">-</span> <span class="token punctuation">-</span><span class="token punctuation">-</span>eval
+      <span class="token punctuation">-</span> db.serverStatus()
+  <span class="token key atrule">initialDelaySeconds</span><span class="token punctuation">:</span> <span class="token number">10</span>
+  <span class="token key atrule">timeoutSeconds</span><span class="token punctuation">:</span> <span class="token number">10</span>
+<span class="token comment"># ...</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</details>
+
+<h2 id="persistent-volumes-and-statefulsets"><a href="#persistent-volumes-and-statefulsets" class="headerlink" title="Persistent Volumes and StatefulSets"></a>Persistent Volumes and StatefulSets</h2><p>For persistent storage, you need to mount a persistent volume into the <code>/data/db</code> directory. In the Pod template, you need to update it to mount a persistent volume claim to that directory:</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment"># ...</span>
+<span class="token key atrule">volumeMounts</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> database
+    <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /data/db<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>While this approach is similar to the one we saw with reliable singletons, because the StatefulSet replicates more than one Pod you cannot simply reference a persistent volume claim. Instead, you need to add a <em>persistent volume claim template</em>.</p>
+<p>You need to add the following onto the bottom of your StatefulSet definition:</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">volumeClaimTemplates</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> database
+    <span class="token key atrule">annotations</span><span class="token punctuation">:</span>
+      <span class="token key atrule">volume.alpha.kubernetes.io/storage-class</span><span class="token punctuation">:</span> anything
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">accessModes</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">'ReadWriteOnce'</span><span class="token punctuation">]</span>
+      <span class="token key atrule">resources</span><span class="token punctuation">:</span>
+        <span class="token key atrule">requests</span><span class="token punctuation">:</span>
+          <span class="token key atrule">storage</span><span class="token punctuation">:</span> 100Gi<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>When you add a volume claim template to a StatefulSet definition, each time the StatefulSet controller creates a Pod that is part of the StatefulSet it will create a persistent volume claim based on this template as part of that Pod.</p>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

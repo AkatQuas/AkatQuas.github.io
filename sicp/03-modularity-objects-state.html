@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="Effective program synthesis also requires organizational principles that can guide us in formulating the overall design of a program. In particular, we need strategies to help us structure large syste">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Modularity, Objects, and State">
+<meta property="og:url" content="https://akatquas.github.io/sicp/03-modularity-objects-state.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="Effective program synthesis also requires organizational principles that can guide us in formulating the overall design of a program. In particular, we need strategies to help us structure large syste">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-01-15T10:21:08.426Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.426Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="sicp">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://akatquas.github.io/sicp/03-modularity-objects-state.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>Modularity, Objects, and State | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#assignment-and-local-state"><span class="nav-text">Assignment and Local State</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#local-state-variables"><span class="nav-text">Local State Variables</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#the-benefits-of-introducing-assignment"><span class="nav-text">The Benefits of Introducing Assignment</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#the-costs-of-introducing-assignment"><span class="nav-text">The Costs of Introducing Assignment</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#sameness-and-change"><span class="nav-text">Sameness and change</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#pitfalls-of-imperative-programming"><span class="nav-text">Pitfalls of imperative programming</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#the-environment-model-of-evaluation"><span class="nav-text">The Environment Model of Evaluation</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#the-rules-for-evaluation"><span class="nav-text">The Rules for Evaluation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#internal-definitions"><span class="nav-text">Internal Definitions</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#modeling-with-mutable-data"><span class="nav-text">Modeling with Mutable Data</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#sharing-and-identity"><span class="nav-text">Sharing and identity</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mutation-is-just-assignment"><span class="nav-text">Mutation is just assignment</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#representing-queues"><span class="nav-text">Representing Queues</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#propagation-of-constraints"><span class="nav-text">Propagation of Constraints</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#implementing-the-constraint-system"><span class="nav-text">Implementing the constraint system</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#representing-connectors"><span class="nav-text">Representing connectors</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#concurrency-time-is-of-the-essence"><span class="nav-text">Concurrency: Time Is of the Essence</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#the-nature-of-time-in-concurrent-systems"><span class="nav-text">The Nature of Time in Concurrent Systems</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#correct-behavior-of-concurrent-programs"><span class="nav-text">Correct behavior of concurrent programs</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mechanisms-for-controlling-concurrency"><span class="nav-text">Mechanisms for Controlling Concurrency</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#serializing-access-to-shared-state"><span class="nav-text">Serializing access to shared state</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#complexity-of-using-multiple-shared-resources"><span class="nav-text">Complexity of using multiple shared resources</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#implementing-serializers"><span class="nav-text">Implementing serializers</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#streams"><span class="nav-text">Streams</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#streams-are-delayed-lists"><span class="nav-text">Streams Are Delayed Lists</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#infinite-streams"><span class="nav-text">Infinite Streams</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#defining-streams-implicitly"><span class="nav-text">Defining streams implicitly</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#exploiting-the-stream-paradigm"><span class="nav-text">Exploiting the Stream Paradigm</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#streams-and-delayed-evaluation"><span class="nav-text">Streams and Delayed Evaluation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#modularity-of-functional-programs-and-modularity-of-objects"><span class="nav-text">Modularity of Functional Programs and Modularity of Objects</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#a-functional-programming-view-of-time"><span class="nav-text">A functional-programming view of time</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#quick-contents"><span class="nav-text">Quick Contents</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">Modularity, Objects, and State
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <p>Effective program synthesis also requires organizational principles that can guide us in formulating the overall design of a program.</p>
+<p>In particular, we need strategies to help us structure large systems so that they will be <em>modular</em>, that is, so that they can be divided <em>naturally</em> into coherent parts that can be separately developed and maintained.</p>
+<p>There are two prominent organizational strategies arising from two rather different <em>world views</em> of the structure of systems:</p>
+<ul>
+<li><p>object-based: viewing a large system as a collection of distinct objects whose behaviors may change over time.</p>
+</li>
+<li><p>stream-processing: concentrating on the streams of information that flow in the system.</p>
+</li>
+</ul>
+<h2 id="assignment-and-local-state"><a href="#assignment-and-local-state" class="headerlink" title="Assignment and Local State"></a>Assignment and Local State</h2><p>An object is said to <em>have state</em> if its behavior is influenced by its history.</p>
+<p>We can characterize an object’s state by one or more <em>state variables</em>, which among them maintain enough information about history to determine the object’s current behavior.</p>
+<p>In a system composed of many objects, the objects are rarely completely independent. Each may influence the states of others through interactions, which serve to couple the state variables of one object to those of other objects.</p>
+<blockquote>
+<p>Indeed, the view that a system is composed of separate objects is most useful when the state variables of the system can be grouped into <em>closely coupled</em> subsystems that are only <em>loosely coupled</em> to other subsystems.</p>
+</blockquote>
+<p>For such a model to be modular, it should be decomposed into computational objects that model the actual objects in the system. Each computational object must have its own <em>local state variables</em> describing the actual object’s state. Since the states of objects in the system being modeled change over time, the state variables of the corresponding computational objects must also change. In particular, if we wish to model state variables by ordinary symbolic names in the programming language, then the language must provide an <em>assignment operator</em> to enable us to change the value associated with a name.</p>
+<h3 id="local-state-variables"><a href="#local-state-variables" class="headerlink" title="Local State Variables"></a>Local State Variables</h3><p>This uses the <code>set!</code> special form, whose syntax is</p>
+<pre class="line-numbers language-none"><code class="language-none">(set! &lt;name&gt; &lt;new-value&gt;)<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>Here <code>&lt;name&gt;</code> is a symbol and <code>&lt;new-value&gt;</code> is any expression. <code>set!</code> changes <code>&lt;name&gt;</code> so that its value is the result obtained by evaluating <code>&lt;new-value&gt;</code>.</p>
+<p>In general, evaluating the expression:</p>
+<pre class="line-numbers language-none"><code class="language-none">(begin &lt;exp1&gt; &lt;exp2&gt; ... &lt;expk&gt;)<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>causes the expressions <code>⟨exp1⟩</code> through <code>⟨expk⟩</code> to be evaluated in sequence and the value of the final expression <code>⟨expk⟩</code> to be returned as the value ofe the entire <code>begin</code> form.</p>
+<p>Combining <code>set!</code> with local variable is the general programming technique for constructing computational objects with local state. (It’s a closure.)</p>
+<h3 id="the-benefits-of-introducing-assignment"><a href="#the-benefits-of-introducing-assignment" class="headerlink" title="The Benefits of Introducing Assignment"></a>The Benefits of Introducing Assignment</h3><p>Viewing systems as collections of objects with <em>local state</em> is a powerful technique for maintaining a <em>modular design</em>.</p>
+<p>From the point of view of one part of a complex process, the other parts appear to change with time. They have hidden time-varying local state. If we wish to write computer programs whose structure reflects this decomposition, we make computational objects whose behavior changes with time. We model state with local state variables, and we model the changes of state with assignments to those variables.</p>
+<p>By introducing assignment and the technique of hiding state in local variables, we are able to structure systems in a more modular fashion than if all state had to be manipulated explicitly, by passing additional parameters.</p>
+<h3 id="the-costs-of-introducing-assignment"><a href="#the-costs-of-introducing-assignment" class="headerlink" title="The Costs of Introducing Assignment"></a>The Costs of Introducing Assignment</h3><p>The advantage of local state assignment when modeling objects coms with a price: the program can no longer be interpreted in terms of the substitution model of procedure application. Moreover, no simple model with <em>nice</em> mathematical properties can be an adequate framework for dealing with objects and assignment in programming languages.</p>
+<blockquote>
+<p>Programming without any use of assignments, as we did throughout the first two chapters of this book, is accordingly known as <em>functional programming</em>. (No more assignment after first assignment?)</p>
+</blockquote>
+<p>Without assignment, that symbols in the language could be viewed as essentially names for values.</p>
+<p>But if the value of a variable can change, a variable can no longer be simply a symbol. Now a variable somehow refers to a place where a value can be stored, and the value stored at this place can change.</p>
+<h4 id="sameness-and-change"><a href="#sameness-and-change" class="headerlink" title="Sameness and change"></a>Sameness and change</h4><p>In general, we can determine that two apparently identical objects are indeed <em>the same one</em> only by modifying one object and then observing whether the other object has changed in the same way.</p>
+<p>In general, so long as we never modify data objects, we can regard a compound data object to be precisely the totality of its pieces. But this view is no longer valid in the presence of change, where a compound data object has an <em>identity</em> that is something different from the pieces of which it is composed. An object is still <em>the same</em> object even if some of its pieces change; conversely, two different objects can both exist with the same state imformation.</p>
+<h4 id="pitfalls-of-imperative-programming"><a href="#pitfalls-of-imperative-programming" class="headerlink" title="Pitfalls of imperative programming"></a>Pitfalls of imperative programming</h4><p>In contrast to <em>functional programming</em>, programming that makes extensive use of assignment is known as <em>imperative programming</em>.</p>
+<p>In general, programming with assignment forces us to carefully consider the relative orders of the assignments to make sure that each statement is using the correct version of the variables that have been changed.</p>
+<h2 id="the-environment-model-of-evaluation"><a href="#the-environment-model-of-evaluation" class="headerlink" title="The Environment Model of Evaluation"></a>The Environment Model of Evaluation</h2><p>In our new model of evaluation, these places in which values can be stored will be maintained in structures called <em>environments</em>.</p>
+<p>An environment is a sequence of <em>frames</em>. Each frame is a table (possibly empty) of bindings, which associate <em>variable names</em> with their corresponding <em>values</em>. (A single frame may contain at most one binding for any variable, no more than two variables use same name). Each frame also has a pointer to its enclosing environment, unless the frame is considered to be <em>global</em>. The <em>value of a variable</em> with respect to an environment is the value given by the binding of the variable in the first frame in the environment that contains a binding for that variable. If no frame in the sequence specifies a binding for the variable, then the variable is said to be <em>unbound</em> in the environment.</p>
+<p>The environment is crucial to the evaluation process, because it determines the <em>context</em> in which an expression should be evaluated.</p>
+<p>Rather, an expression acquires a meaning only with respect to some environment in which it is evaluated. Thus, in our model of evaluation we will always speak of evaluating an expression with respect to some environment.</p>
+<h3 id="the-rules-for-evaluation"><a href="#the-rules-for-evaluation" class="headerlink" title="The Rules for Evaluation"></a>The Rules for Evaluation</h3><p>In the environment model of evaluation, a procedure is always a pair consisting of some code and a pointer to an environment.</p>
+<p>Procedures are created in one way only: by evaluating a λ-expression. This produces a procedure whose code is obtained from the text of the λ-expression and whose environment is the environment in which the λ-expression was evaluated to produce the procedure.</p>
+<pre class="line-numbers language-none"><code class="language-none">(define (square x)
+  (* x x))
+
+&#x2F;&#x2F; syntax sugar, equivalent λ-expression
+(define square
+  (lambda (x) (* x x)))<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>The environment model of procedure application can be summarized by two rules:</p>
+<ol>
+<li><p>A procedure object is applied to a set of arguments by constructing a frame, binding the formal parameters of the procedure to the arguments of the call, and then evaluating the body of the procedure in the context of the new environment constructed. The new frame has as its enclosing environment the environment part of the procedure object being applied.</p>
+</li>
+<li><p>A procedure is created by evaluating a λ-expression relative to a given environment. The resulting procedure object is a pair consisting of the text of the λ-expression and a pointer to the environment in which the procedure was created.</p>
+</li>
+</ol>
+<h3 id="internal-definitions"><a href="#internal-definitions" class="headerlink" title="Internal Definitions"></a>Internal Definitions</h3><p>Environment model helps us to understanding internal definitions inside procedures.</p>
+<p>The environment model thus explains the two key properties that make local procedure definitions a useful technique for modularizing programs:</p>
+<ol>
+<li><p>The names of the local procedures do not interfere with names external to the enclosing procedure, because the local procedure names will be bound in the frame that the procedure creates when it is run, rather than being bound in the global environment.</p>
+</li>
+<li><p>The local procedures can access the arguments of the enclosing procedure, simply by using parameter names as free variables. This is because the body of the local procedure is evaluated in an environment that is subordinate to the evaluation environment for the enclosing procedure.</p>
+</li>
+</ol>
+<h2 id="modeling-with-mutable-data"><a href="#modeling-with-mutable-data" class="headerlink" title="Modeling with Mutable Data"></a>Modeling with Mutable Data</h2><p>In order to model compound objects with changing state, we will design data abstractions to include, in addition to selectors and constructors, operations called <em>mutators</em>, which modify data objects.</p>
+<p>Data objects for which mutators are definded are known as <em>mutable data</em>.</p>
+<h3 id="sharing-and-identity"><a href="#sharing-and-identity" class="headerlink" title="Sharing and identity"></a>Sharing and identity</h3><p>One object might be <em>shared</em> among different data objects.</p>
+<p>Sharing can be dangerous since modifications made to structures will also affect other structures that happen to share the modified parts.</p>
+<blockquote>
+<p>Data consistency, Mutation Exclusive,</p>
+</blockquote>
+<h3 id="mutation-is-just-assignment"><a href="#mutation-is-just-assignment" class="headerlink" title="Mutation is just assignment"></a>Mutation is just assignment</h3><p>We can implement mutable data objects as procedures using assignment and local state.</p>
+<h3 id="representing-queues"><a href="#representing-queues" class="headerlink" title="Representing Queues"></a>Representing Queues</h3><p>A <em>queue</em> is a sequence in which items are inserted at one end (called the <em>rear</em> of the queue) and deleted from the other end (the <em>front</em>).</p>
+<p>Because items are always removed in the order in which they are inserted, a queue is sometimes called a <em>FIFO (first in, first out)</em> buffer.</p>
+<p>In terms of data abstraction, we can regard a queue as defined by the following set of operations:</p>
+<ul>
+<li><p>a constructor: (make-queue) returns an empty queue (a queue containing no items).</p>
+</li>
+<li><p>two selectors:</p>
+<ul>
+<li><code>(empty-queue? ⟨queue⟩)</code> tests if the queue is empty.</li>
+<li><code>(front-queue ⟨queue⟩)</code> returns the object at the front of the queue, signaling an error if the queue is empty; it does not modify the queue.</li>
+</ul>
+</li>
+<li><p>two mutators:</p>
+<ul>
+<li><p><code>(insert-queue! ⟨queue⟩ ⟨item⟩)</code> inserts the item at the rear of the queue and returns the modified queue as its value.</p>
+</li>
+<li><p><code>(delete-queue! ⟨queue⟩)</code> removes the item at the front of the queue and returns the modified queue as its value, signaling an error if the queue is empty before the deletion.</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="propagation-of-constraints"><a href="#propagation-of-constraints" class="headerlink" title="Propagation of Constraints"></a>Propagation of Constraints</h3><blockquote>
+<p>It’s a big issue in computer science.</p>
+</blockquote>
+<p>Computer programs are traditionally organized as one-directional computations, which perform operations on prespecified arguments to produce desired outputs.</p>
+<p>On the other hand, we often model systems in terms of relations among quantities.</p>
+<p>We sketch the design of a language that enables us to work in terms of relations themselves. The primitive elements of the language are <em>primitive constraints</em>, which state that certain relations hold between quantities.</p>
+<p>The language provides a means of combining primitive constraints in order to express more complex relations. We combine constraints by constructing <em>constraint networks</em>, in which constraints are joined by <em>connectors</em>. A connector is an object that <em>holds</em> a value that may participate in one or more constraints.</p>
+<p>Computation by such a network proceeds as follows: When a connector is given a value (by the user or by a constraint box to which it is linked), it awakens all of its associated constraints (except for the constraint that just awakened it) to inform them that it has a value. Each awakened constraint box then polls its connectors to see if there is enough information to determine a value for a connector. If so, the box sets that connector, which then awakens all of its associated constraints, and so on.</p>
+<h3 id="implementing-the-constraint-system"><a href="#implementing-the-constraint-system" class="headerlink" title="Implementing the constraint system"></a>Implementing the constraint system</h3><p>The constraint system is implemented via procedural objects with local state. Although the primitive objects of the constraint system are somewhat more complex, the overall system is simpler, since there is no concern about agendas and logic delays.</p>
+<p>The basic operations on connectors are the following:</p>
+<ul>
+<li><p><code>(has-value? ⟨connector⟩)</code> tells whether the connector has a value.</p>
+</li>
+<li><p><code>(get-value ⟨connector⟩)</code> returns the connector’s current value.</p>
+</li>
+<li><p><code>(set-value! ⟨connector⟩ ⟨new-value⟩ ⟨informant⟩)</code> indicates that the informant is requesting the connector to set its value to the new value.</p>
+</li>
+<li><p><code>(forget-value! ⟨connector⟩ ⟨retractor⟩)</code> tells the connector that the retractor is requesting it to forget its value.</p>
+</li>
+<li><p><code>(connect ⟨connector⟩ ⟨new-constraint⟩)</code> tells the connector to participate in the new constraint.</p>
+</li>
+</ul>
+<p>The connectors communicate with the constraints by means of the procedures <code>inform-about-value</code>, which tells the given constraint that the connector has a value, and <code>inform-about-no-value</code>, which tells the constraint that the connector has lost its value.</p>
+<h3 id="representing-connectors"><a href="#representing-connectors" class="headerlink" title="Representing connectors"></a>Representing connectors</h3><p>A connector is represented as a procedural object with local state variables <em>value</em>, the current value of the connector; <em>informant</em>, the object that set the connector’s value; and <em>constraints</em>, a list of the constraints in which the connector participates.</p>
+<h2 id="concurrency-time-is-of-the-essence"><a href="#concurrency-time-is-of-the-essence" class="headerlink" title="Concurrency: Time Is of the Essence"></a>Concurrency: Time Is of the Essence</h2><p>The central issue lurking beneath the complexity of state, sameness, and change is that by introducing assignment we are forced to admit <em>time</em> into our computational models. The result of evaluating an expression depends not only on the expression itself, but also on whether the evaluation occurs before or after these assignment moments. Building models in terms of computational objects with local state forces us to confront time as an essential concept in programming.</p>
+<blockquote>
+<p>Before we introduced assignment, all our programs were time-agnostic, in the sense that any expression that has a value always has the same value.</p>
+</blockquote>
+<p>In real world, objects do not change one at a time in sequence. Rather we perceive them as acting <em>concurrently</em> – all at once.</p>
+<p>So it is often natural to model systems as collections of computational processes that execute concurrently.</p>
+<p>Even if the programs are to be executed on a sequential computer, the practice of writing programs as if they were to be executed concurrently forces the programmer to avoid inessential timing constraints and thus makes programs more modular.</p>
+<p>In addition to making programs more modular, concurrent computation can provide a speed advantage over sequential computation.</p>
+<h3 id="the-nature-of-time-in-concurrent-systems"><a href="#the-nature-of-time-in-concurrent-systems" class="headerlink" title="The Nature of Time in Concurrent Systems"></a>The Nature of Time in Concurrent Systems</h3><p>Several processes may share a common state variable. It’s more complicated when more than one process may be trying to manipulate the shared state at the same time.</p>
+<h4 id="correct-behavior-of-concurrent-programs"><a href="#correct-behavior-of-concurrent-programs" class="headerlink" title="Correct behavior of concurrent programs"></a>Correct behavior of concurrent programs</h4><p>With concurrent processes we must be especially careful about assignments, because we may not be able to control the order of the assignments made by the different processes. To make concurrent programs behave correctly, we may have to place some restrictions on concurrent execution.</p>
+<p>One possible restriction on concurrency would stipulate that no two operations that change any shared state variables can occur at the same time.</p>
+<p>A less stringent restriction on concurrency would ensure that a concurrent system produces the same result as if the processes had run sequentially in some order. There are two important aspects to this requirement. First, it does not require the processes to actually run sequentially, but only to produce results that are the same as if they had run sequentially. Second, there may be more than one possible <em>correct</em> result produced by a concurrent program, because we require only that the result be the same as for <em>some</em> sequential order.</p>
+<h3 id="mechanisms-for-controlling-concurrency"><a href="#mechanisms-for-controlling-concurrency" class="headerlink" title="Mechanisms for Controlling Concurrency"></a>Mechanisms for Controlling Concurrency</h3><p>A more practical approach to the design of concurrent systems is to devise general mechanisms that allow us to constrain the interleaving of concurrent processes so that we can be sure that the program behavior is correct.</p>
+<h4 id="serializing-access-to-shared-state"><a href="#serializing-access-to-shared-state" class="headerlink" title="Serializing access to shared state"></a>Serializing access to shared state</h4><p>Serialization implements the following idea: Processes will execute concurrently, but there will be certain collections of procedures that cannot be executed concurrently. More precisely, serialization creates distinguished sets of procedures such that only one execution of a procedure in each serialized set is permitted to happen at a time. If some procedure in the set is being executed, then a process that attempts to execute any procedure in the set will be forced to wait until the first execution has finished.</p>
+<h4 id="complexity-of-using-multiple-shared-resources"><a href="#complexity-of-using-multiple-shared-resources" class="headerlink" title="Complexity of using multiple shared resources"></a>Complexity of using multiple shared resources</h4><p>Serializers provide a powerful abstraction that helps isolate the complexities of concurrent programs so that they can be dealt with carefully and (hopefully) correctly. However, while using serializers is relatively straightforward when there is only a single shared resource, concurrent programming can be treacherously difficult when there are multiple shared resources.</p>
+<h4 id="implementing-serializers"><a href="#implementing-serializers" class="headerlink" title="Implementing serializers"></a>Implementing serializers</h4><p>We implement serializers in terms of a more primitive synchronization mechanism called a <em>mutex</em>.</p>
+<p>A mutex is an object that supports two operations: the mutex can be <em>acquired</em>, and the mutex can be <em>released</em>.</p>
+<p>Once a mutex has been acquired, no other acquire operations on that mutex may proceed until the mutex is released.</p>
+<p>The mutex is a mutable object that can hold teh value true or false. When the value is false, the mutex is available to be acquired. When the value is true, the mutex is unavailable, and any process that attempts to acquire the mutex must wait.</p>
+<h2 id="streams"><a href="#streams" class="headerlink" title="Streams"></a>Streams</h2><p>From an abstract point of view, a <em>stream</em> is simply a sequence of data objects.</p>
+<p>Stream processing lets us model systems that have state without ever using assignment or mutable data.</p>
+<h3 id="streams-are-delayed-lists"><a href="#streams-are-delayed-lists" class="headerlink" title="Streams Are Delayed Lists"></a>Streams Are Delayed Lists</h3><p>Streams are a clever idea that allows one to use sequence manipulations without incurring the costs of manipulating sequences as lists. With streams we can achieve the best of both worlds: We can formulate programs elegantly as sequence manipulations, while attaining the efficiency of incremental computation.</p>
+<p>The basic idea is to arrange to construct a stream only partially, and to pass the partial construction to the program that consumes the stream. If the consumer attempts to access a part of the stream that has not yet been constructed, the stream will automatically construct just enough more of itself to produce the required part, thus preserving the illusion that the entire stream exists.</p>
+<blockquote>
+<p>Generator is one implementation of streams.</p>
+</blockquote>
+<p>The implementation of streams will be based on a special form called <em>delay</em>. Evaluating <code>(delay ⟨exp⟩)</code> does not evaluate the expression <code>⟨exp⟩</code>, but rather returns a so-called <em>delayed object</em>, which we can think of as a <em>promise</em> to evaluate <code>⟨exp⟩</code> at some future time. As a companion to delay, there is a procedure called <em>force</em> that takes a delayed object as argument and performs the evaluation—in effect, forcing the <em>delay</em> to fulfill its promise.</p>
+<p>In general, we can think of delayed evaluation as <em>demand-driven</em> programming, whereby each stage in the stream process is activated only enough to satisfy the next stage. What we have done is to decouple the actual order of events in the computation from the apparent structure of our procedures. We write procedures as if the streams existed <em>all at once</em> when, in reality, the computation is performed incrementally, as in traditional programming styles.</p>
+<h3 id="infinite-streams"><a href="#infinite-streams" class="headerlink" title="Infinite Streams"></a>Infinite Streams</h3><p>We can user streams to represent sequences that are infinitely long. But in any given time we can examine only a finite portion of it.</p>
+<h4 id="defining-streams-implicitly"><a href="#defining-streams-implicitly" class="headerlink" title="Defining streams implicitly"></a>Defining streams implicitly</h4><p>An alternative way to specify streams is to take advantage of delayed evaluation to define streams implicitly.</p>
+<h3 id="exploiting-the-stream-paradigm"><a href="#exploiting-the-stream-paradigm" class="headerlink" title="Exploiting the Stream Paradigm"></a>Exploiting the Stream Paradigm</h3><p>The stream approach can be illuminating because it allows us to build systems with different module boundaries than systems organized around assignment to state variables. This makes it convenient to combine and compare components of state from different moments.</p>
+<blockquote>
+<p>For example, we can think of an entire time series/signal as a focus of interest, rather than the values of the state variables at individual moments.</p>
+</blockquote>
+<p>To handle infinite streams, we need to devise an order of combination that ensures that every element will eventually be reached if we let the program run long enough.</p>
+<h3 id="streams-and-delayed-evaluation"><a href="#streams-and-delayed-evaluation" class="headerlink" title="Streams and Delayed Evaluation"></a>Streams and Delayed Evaluation</h3><p>In general, <em>delay</em> is crucial for using streams to model signal-processing systems that contain loops. Without <em>delay</em>, our models would have to be formulated so that the inputs to any signal-processing component would be fully evaluated before the output could be produced. This would outlaw loops.</p>
+<h3 id="modularity-of-functional-programs-and-modularity-of-objects"><a href="#modularity-of-functional-programs-and-modularity-of-objects" class="headerlink" title="Modularity of Functional Programs and Modularity of Objects"></a>Modularity of Functional Programs and Modularity of Objects</h3><p>One of the major benefits of introducing assignment is that we can increase the modularity of the systems by encapsulating, or <em>hiding</em>, parts of the state of a large system within local variables. Stream models can provide an equivalent modularity without the use of assignment.</p>
+<h4 id="a-functional-programming-view-of-time"><a href="#a-functional-programming-view-of-time" class="headerlink" title="A functional-programming view of time"></a>A functional-programming view of time</h4><p>We introduced assignment and mutable objects to provide a mechanism for modular construction of programs that model systems with state. We constructed computational objects with local state variables and used assignment to modify these variables. We modeled the temporal behavior of the objects in the world by the temporal behavior of the corresponding computational objects.</p>
+<p>Now we have seen that streams provide an alternative way to model objects with local state. We can model a changing quantity, such as the local state of some object, using a stream that represents the time history of successive states. In essence, we represent time explicitly, using streams, so that we decouple time in our simulated world from the sequence of events that take place during evaluation. Indeed, because of the presence of delay there may be little relation between simulated time in the model and the order of events during the evaluation.</p>
+<p>From the point of view of one part of a complex process, the other parts appear to change with time. They have hidden time-varying local state. If we wish to write programs that model this kind of natural decomposition in our world (as we see it from our viewpoint as a part of that world) with structures in our computer, we make computational objects that are not functional—they must change with time. We model state with local state variables, and we model the changes of state with assignments to those variables. By doing this we make the time of execution of a computation model time in the world that we are part of, and thus we get “objects” in our computer.</p>
+<p>Modeling with mutable objects raise thorny problems of constraining the order of events and of synchronizing multiple processes. The possibility of avoiding these problems has stimulated the development of <em>functional programming</em> languages, which do not include any provision for assignment or mutable data.</p>
+<blockquote>
+<p>The functional approach is extremely attractive for dealing with concurrent systems.</p>
+</blockquote>
+<p>There are some time-related problems creeping into functional models as well. One particularly troublesome area arises when we wish to design interactive systems, especially ones that model interactions between independent entities. The trouble comes with the notion of <em>merge</em>. Such a merge is implemented to interleave these inputs in some way that is constrained by <em>real time</em> as perceived by mutations. Technically, <em>merge</em> is a relation rather than a function.</p>
+<p>The need to introduce explicit synchronization to ensure a <em>correct</em> order of events in concurrent processing of objects with state. Thus, in an attempt to support the functional style, the need to merge inputs from different agents reintroduces the same problems that functional style was meant to eliminate.</p>
+<h2 id="quick-contents"><a href="#quick-contents" class="headerlink" title="Quick Contents"></a>Quick Contents</h2><ol>
+<li><p><a href="/sicp/01-building-abstractions-with-procedures.html">Building Abstractions with Procedures</a></p>
+</li>
+<li><p><a href="/sicp/02-building-abstractions-with-data.html">Building Abstractions with Data</a></p>
+</li>
+<li><p><a href="/sicp/03-modularity-objects-state.html">Modularity, Objects, and State</a></p>
+</li>
+<li><p><a href="/sicp/04-metalinguistic-abstraction.html">Metalinguistic Abstraction</a></p>
+</li>
+<li><p><a href="/sicp/05-computing-with-register-machines.html">Computing with Register Machines</a></p>
+</li>
+</ol>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

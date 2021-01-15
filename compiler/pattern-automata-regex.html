@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="模式pattern是具有某个可识别属性的对象组成的集合。与模式相关的两个基本问题是它们的定义difinition与识别recoginition。 围绕模式的定义和识别建立起的庞大的知识体系，称为“自动机理论 automata theory”或“语言理论 language theory”. 状态机和自动机用来查找模式的程序通常有着特殊的结构，可以在代码中确定某些位置，在这些位置可以得知与程序寻找模式">
+<meta property="og:type" content="website">
+<meta property="og:title" content="模式、自动机、正则表达式">
+<meta property="og:url" content="https://akatquas.github.io/compiler/pattern-automata-regex.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="模式pattern是具有某个可识别属性的对象组成的集合。与模式相关的两个基本问题是它们的定义difinition与识别recoginition。 围绕模式的定义和识别建立起的庞大的知识体系，称为“自动机理论 automata theory”或“语言理论 language theory”. 状态机和自动机用来查找模式的程序通常有着特殊的结构，可以在代码中确定某些位置，在这些位置可以得知与程序寻找模式">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://akatquas.github.io/compiler/img/automachine.png">
+<meta property="og:image" content="https://akatquas.github.io/compiler/img/states-entered-by-the-nondeterministic-automaton.png">
+<meta property="og:image" content="https://akatquas.github.io/compiler/img/equivalence-of-automata.png">
+<meta property="og:image" content="https://akatquas.github.io/compiler/img/abstract-equivalence-of-automata.png">
+<meta property="og:image" content="https://akatquas.github.io/compiler/img/automata-with-empty-char.png">
+<meta property="og:image" content="https://akatquas.github.io/compiler/img/automatas-when-n==0.png">
+<meta property="og:image" content="https://akatquas.github.io/compiler/img/automatas-when-n==n+1.png">
+<meta property="og:image" content="https://akatquas.github.io/compiler/img/eliminate-state-u.png">
+<meta property="og:image" content="https://akatquas.github.io/compiler/img/simplify-automata-to-regex.png">
+<meta property="article:published_time" content="2021-01-15T10:21:08.370Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.370Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="compiler">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://akatquas.github.io/compiler/img/automachine.png">
+
+
+<link rel="canonical" href="https://akatquas.github.io/compiler/pattern-automata-regex.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>模式、自动机、正则表达式 | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%8A%B6%E6%80%81%E6%9C%BA%E5%92%8C%E8%87%AA%E5%8A%A8%E6%9C%BA"><span class="nav-text">状态机和自动机</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8A%B6%E6%80%81%E6%9C%BA%E7%9A%84%E5%9B%BE%E8%A1%A8%E7%A4%BA"><span class="nav-text">状态机的图表示</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A1%AE%E5%AE%9A%E8%87%AA%E5%8A%A8%E6%9C%BA%E5%92%8C%E9%9D%9E%E7%A1%AE%E5%AE%9A%E8%87%AA%E5%8A%A8%E6%9C%BA"><span class="nav-text">确定自动机和非确定自动机</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A1%AE%E5%AE%9A%E8%87%AA%E5%8A%A8%E6%9C%BA"><span class="nav-text">确定自动机</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9D%9E%E7%A1%AE%E5%AE%9A%E8%87%AA%E5%8A%A8%E6%9C%BA"><span class="nav-text">非确定自动机</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%9D%9E%E7%A1%AE%E5%AE%9A%E8%87%AA%E5%8A%A8%E6%9C%BA%E7%9A%84%E6%8E%A5%E5%8F%97"><span class="nav-text">非确定自动机的接受</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8E%E4%B8%8D%E7%A1%AE%E5%AE%9A%E5%88%B0%E7%A1%AE%E5%AE%9A"><span class="nav-text">从不确定到确定</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%90%E9%9B%86%E6%9E%84%E9%80%A0"><span class="nav-text">子集构造</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%90%E9%9B%86%E6%9E%84%E9%80%A0%E8%B5%B7%E6%95%88%E7%9A%84%E5%8E%9F%E5%9B%A0"><span class="nav-text">子集构造起效的原因</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="nav-text">正则表达式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#regex-%E7%9A%84%E6%93%8D%E4%BD%9C%E6%95%B0"><span class="nav-text">regex 的操作数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#regex-%E7%9A%84%E8%BF%90%E7%AE%97"><span class="nav-text">regex 的运算</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E4%B8%8E%E8%87%AA%E5%8A%A8%E6%9C%BA%E4%BA%92%E7%9B%B8%E8%BD%AC%E6%8D%A2"><span class="nav-text">正则表达式与自动机互相转换</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F-gt-%E8%87%AA%E5%8A%A8%E6%9C%BA"><span class="nav-text">正则表达式 -&gt; 自动机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%8A%A8%E6%9C%BA-gt-%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="nav-text">自动机 -&gt; 正则表达式</span></a></li></ol></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">模式、自动机、正则表达式
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <p>模式<code>pattern</code>是具有某个可识别属性的对象组成的集合。与模式相关的两个基本问题是它们的定义<code>difinition</code>与识别<code>recoginition</code>。</p>
+<p>围绕模式的定义和识别建立起的庞大的知识体系，称为“自动机理论 automata theory”或“语言理论 language theory”.</p>
+<h1 id="状态机和自动机"><a href="#状态机和自动机" class="headerlink" title="状态机和自动机"></a>状态机和自动机</h1><p>用来查找模式的程序通常有着特殊的结构，可以在代码中确定某些位置，在这些位置可以得知与程序寻找模式实例的过程有关的特殊信息。这些位置称为状态 。</p>
+<p>程序的整体行为可以视作程序随着读入输入从一种状态转移到另一种状态。</p>
+<h2 id="状态机的图表示"><a href="#状态机的图表示" class="headerlink" title="状态机的图表示"></a>状态机的图表示</h2><p>表示程序状态的图都是有向图，他们的弧都是用字符集标记的。图中的节点表示该程序的各个状态。</p>
+<p>当程序在<code>状态s</code>时，刚好还有当符合<code>特定情况C</code>下，才能进行到<code>状态t</code>，于是存在从<code>状态s</code>到<code>状态t</code>的标号为<code>情况C</code>的弧，这样的弧称作<em>转换</em>。</p>
+<p>还会给某些节点标记<em>接受状态</em>，表示当达到这些状态之一时，就找到了模式并“接受”它。按惯例，接受状态用双层圆圈表示。此外，节点之一会被指定为起始状态，即模式识别开始的所处状态。用一条没有起始节点的弧来表示起始状态。例如：</p>
+<blockquote>
+<div style="text-align: center">
+<img data-src="./img/automachine.png"/>
+</div>
+</blockquote>
+<p>上述的表示图称作<em>有限自动机</em>。</p>
+<blockquote>
+<p>自动机与其程序之间的区别</p>
+<p>自动机是种抽象。通过确定的从起始状态道某个应用相应序列标记的接受状态之间是否存在路径，自动机呈现了一种对任意输入字符序列的接受\拒绝决定。</p>
+<p>由自动机创建的程序能以多种方式使用这种接受\拒绝决定。</p>
+</blockquote>
+<h2 id="确定自动机和非确定自动机"><a href="#确定自动机和非确定自动机" class="headerlink" title="确定自动机和非确定自动机"></a>确定自动机和非确定自动机</h2><p>使用自动机进行的最基本的操作之一是接受一系列的符号 <em>a<sub>1</sub>a<sub>2</sub>a<sub>3</sub>…a<sub>k</sub>_，并从起始状态起循着一条由标号依次为这些符号的弧组成的路径行进。也就是对 _i = 1, 2, 3, …, k</em> 来说，<em>a<sub>i</sub></em> 都是集合<em>S<sub>i</sub></em> 作为路径上第 <em>i</em> 条弧标号的成员。可以说这一路径的标号为 <em>a<sub>1</sub>a<sub>2</sub>a<sub>3</sub>…a<sub>k</sub></em> ，当然它也可能有其他标号，因为给路径上的弧提供标号的各集合 <em>S<sub>i</sub></em> 可能各自含有很多字符。</p>
+<blockquote>
+<p>自动机的输入可能不仅仅是 <em>“字母和数字”</em> 这种明确的字符串序列。还有可能是从比 ASCII 码字符集更广泛的集合中选出。 因此有时候称这些输入为 _“符号 token”_，而非 _“字符”_。</p>
+</blockquote>
+<h3 id="确定自动机"><a href="#确定自动机" class="headerlink" title="确定自动机"></a>确定自动机</h3><p>对于任意状态 <em>s</em> 和任意输入字符 <em>x</em> 来说，至多有一种从状态 <em>s</em> 出发的转换的标号中含有 _x_，这样的自动机称为<em>确定自动机</em>。</p>
+<p>为给定的输入序列模拟确定自动机是很简单的。在任意状态 <em>s</em> 中，给定下一个输入字符 <em>x_，考虑从 _s</em> 出发的每种转换的标号。如果找到标号含 <em>x</em> 的转换，那么该转换久指向适当的下一个状态。如果没有含有 <em>x</em> 的转换，那么自动机就“司机”，而且不能再继续处理输入。</p>
+<p>将确定自动机转变为程序很容易的。为每个状态编写一段代码。对应状态 <em>s</em> 的代码会检查它的输入，并决定应该遵循从 <em>s</em> 出发的哪种转换。如果选定了从状态 <em>s</em> 到状态 <em>t_，那么必须安排从表示状态 _t</em> 的代码接着表示表示状态 <em>s</em> 的代码执行，可能是通过 <code>goto</code> 来实现的。</p>
+<pre class="line-numbers language-C" data-language="C"><code class="language-C"># 例如
+void bounce()
+&#123;
+    char x;
+
+a:  putchar(&#39;0&#39;);
+    x &#x3D; getchar();
+    if ( x &#x3D;&#x3D; &#39;0&#39; ) goto a;
+    if ( x &#x3D;&#x3D; &#39;1&#39; ) goto b;
+    goto finis;
+
+b:  putchar(&#39;0&#39;);
+    x &#x3D; getchar();
+    if ( x &#x3D;&#x3D; &#39;0&#39; ) goto a;
+    if ( x &#x3D;&#x3D; &#39;1&#39; ) goto c;
+    goto finis;
+
+c:  putchar(&#39;1&#39;);
+    x &#x3D; getchar();
+    if ( x &#x3D;&#x3D; &#39;0&#39; ) goto d;
+    if ( x &#x3D;&#x3D; &#39;1&#39; ) goto c;
+    goto finis;
+
+b:  putchar(&#39;1&#39;);
+    x &#x3D; getchar();
+    if ( x &#x3D;&#x3D; &#39;0&#39; ) goto a;
+    if ( x &#x3D;&#x3D; &#39;1&#39; ) goto c;
+    goto finis;
+
+finis:  ;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="非确定自动机"><a href="#非确定自动机" class="headerlink" title="非确定自动机"></a>非确定自动机</h3><p><em>非确定自动机</em> 可以从具有某一状态出发的包含相同符号的<em>两个</em>或<em>多个</em>转换，但这不是必须的。</p>
+<blockquote>
+<p>严格讲，<em>确定自动机</em> 是 <em>非确定自动机</em> 的一种，它只是刚好没有针对同一符号的多种转换。</p>
+</blockquote>
+<p>非确定自动机无法直接用程序实现。不过可以将任意非确定自动机转换成接受相同符号集合的确定自动机。</p>
+<h4 id="非确定自动机的接受"><a href="#非确定自动机的接受" class="headerlink" title="非确定自动机的接受"></a>非确定自动机的接受</h4><p>试图模拟针对符号序列 <em>a<sub>1</sub>a<sub>2</sub>a<sub>3</sub>…a<sub>k</sub></em> 的非确定自动机时，可能发现同一个符号时多条路径的标号。习惯上讲，如果至少有一条由输入编辑的路径可以通向接受状态，就可以说非确定自动机接受这一输入符号序列。以接受状态结尾的那一条路径，要比任意数量以非接受状态结尾的路径更重要。</p>
+<blockquote>
+<p>认为不确定性让自动机可以“猜测”是种看待不确定性的实用方式。如果我们不知道在某给定状态中要对某给定的输入符号做什么，就可以多下一个状态做出若干选择。因为由带向接受状态的字符串标记的任意路径会被解释为接受，所以非确定自动机其实被赋予了进行一次正确猜测的信用，而不管它还会造成多少次错误的猜测。</p>
+</blockquote>
+<p>一种含有 <em>n</em> 种状态的非确定自动机有可能只能转换成含 <em>2<sup>n</sup></em> 个状态的确定自动机。因此，对于同一个问题而言，设计非确定自动机可能要比设计确定自动机简单的多。</p>
+<h2 id="从不确定到确定"><a href="#从不确定到确定" class="headerlink" title="从不确定到确定"></a>从不确定到确定</h2><p>事实上，每一个非确定自动机都可以被确定自动机替代。在执行某些任务时，考虑非确定自动机有时更加简单。但是很难依据非确定自动机来编写程序，所以找到一种将不确定自动机变形为等价的确定自动机的算法是很重要的。</p>
+<p>严格地讲，假设 <em>A</em> 和 <em>B</em> 是两个自动机，如果他们接受相同的输入字符串集合，就说他们时等价的。换句话，对于任意符号序， <em>a<sub>1</sub>a<sub>2</sub>a<sub>3</sub>…a<sub>k</sub></em> 下面两个条件的成立表示了自动机之间的等价。</p>
+<ol>
+<li><p>如果从 <em>A</em> 的起始状态到 <em>A</em> 的某个接受状态存在 <em>a<sub>1</sub>a<sub>2</sub>a<sub>3</sub>…a<sub>k</sub></em> 标记的路径，那么从 <em>B</em> 的起始状态到 <em>B</em> 的某个接受状态也存在以 <em>a<sub>1</sub>a<sub>2</sub>a<sub>3</sub>…a<sub>k</sub></em> 标记的路径。</p>
+</li>
+<li><p>如果从 <em>B</em> 的起始状态到 <em>B</em> 的某个接受状态存在 <em>a<sub>1</sub>a<sub>2</sub>a<sub>3</sub>…a<sub>k</sub></em> 标记的路径，那么从 <em>A</em> 的起始状态到 <em>A</em> 的某个接受状态也存在以 <em>a<sub>1</sub>a<sub>2</sub>a<sub>3</sub>…a<sub>k</sub></em> 标记的路径。</p>
+</li>
+</ol>
+<h3 id="子集构造"><a href="#子集构造" class="headerlink" title="子集构造"></a>子集构造</h3><p>如何通过构造等价的确定自动机来“消除自动机的不确定性”。这一技巧叫做 <em>子集构造</em> 。</p>
+<p>下图模拟了处理特殊输入的非确定自动机可能出现的路径。因此，在任何给定的时间，非确定自动机都在某一状态集合中，而且这些状态都出现在模拟图的同一列中。也就是说，在读入序列 <em>a<sub>1</sub>a<sub>2</sub>a<sub>3</sub>…a<sub>k</sub></em> 之后，非确定自动机就“在”那些从起始状态出发沿着标记有 <em>a<sub>1</sub>a<sub>2</sub>a<sub>3</sub>…a<sub>k</sub></em> 的路径可以到达的状态中。</p>
+<blockquote>
+<div style="text-align: center">
+<img data-src="./img/states-entered-by-the-nondeterministic-automaton.png"/>
+</div>
+</blockquote>
+<p><strong>依据</strong>。如果非确定自动机 <em>N</em> 的起始状态是 <em>s<sub>0</sub></em> 那么确定自动机 <em>D</em> 的起始状态是 <em>{ s<sub>0</sub> }_，也就是只含 _s<sub>0</sub></em> 这一个元素的集合。</p>
+<p><strong>归纳</strong>。假设已经确定了 <em>N</em> 的状态集 <em>S</em> 是 <em>D</em> 的一个状态。依次考虑每个可能的输入字符 <em>x_。 对某个给定的 _x</em> ,设 <em>T</em> 是 <em>N</em> 的状态 <em>t</em> 构成的集合，其中状态 <em>t</em> 满足对 <em>S</em> 中对某个状态 <em>s</em> 而言，存在标号含 <em>x</em> 的从 <em>s</em> 到 <em>t</em> 到转换。那么集合 <em>T</em> 就是 <em>D</em> 的一个状态，而且存在针对输入 <em>x</em> 的从 <em>S</em> 到 <em>T</em> 的转换。</p>
+<p><em>D</em> 的接受状态是 <em>N</em> 的状态集中至少包含 <em>N</em> 的一个接受状态。</p>
+<p>子集构造时相当不好理解的，特别是确定自动机的状态可以是非确定自动机状态集的思路。</p>
+<blockquote>
+<div style="text-align: center">
+<img data-src="./img/equivalence-of-automata.png"/>
+</div>
+</blockquote>
+<h3 id="子集构造起效的原因"><a href="#子集构造起效的原因" class="headerlink" title="子集构造起效的原因"></a>子集构造起效的原因</h3><p>显然，如果 <em>D</em> 时利用子集构造从非确定自动机 <em>N</em> 构建的，那么 <em>D</em> 就是确定自动机。原因在于，对于每个输入符号 <em>x</em> 和 <em>D</em> 的每个状态 <em>S</em> 而言，我们定义了 <em>D</em> 的某特定状态 <em>T_，它满足从 _S</em> 到 <em>T</em> 的转换的标号中包含了 _x_。</p>
+<p>为了检验 <em>N</em> 和 <em>D</em> 是否等价，需要知道，对于任意符号序列， <em>a<sub>1</sub>a<sub>2</sub>a<sub>3</sub>…a<sub>k</sub>_， 当且仅当 _N</em> 接受 <em>a<sub>1</sub>a<sub>2</sub>a<sub>3</sub>…a<sub>k</sub></em> 时，在下列情况下，自动机 <em>D</em> 达到到状态 <em>S</em> 时一种接受状态。</p>
+<ol>
+<li>从起始状态开始</li>
+<li>并且沿着标记为 <em>a<sub>1</sub>a<sub>2</sub>a<sub>3</sub>…a<sub>k</sub></em> 的路径行进。</li>
+</ol>
+<p>请记住，当且仅当从 <em>N</em> 的其实状态有一条标记为 <em>a<sub>1</sub>a<sub>2</sub>a<sub>3</sub>…a<sub>k</sub></em> 的路径能到达 <em>N</em> 到某个接受状态时， <em>N</em> 才会接受<em>a<sub>1</sub>a<sub>2</sub>a<sub>3</sub>…a<sub>k</sub></em> 。</p>
+<p>如果 <em>D</em> 和 <em>N</em> 是等价到，需要满足下面到关系。</p>
+<blockquote>
+<div style="text-align: center">
+<img data-src="./img/abstract-equivalence-of-automata.png"/>
+</div>
+</blockquote>
+<h1 id="正则表达式"><a href="#正则表达式" class="headerlink" title="正则表达式"></a>正则表达式</h1><p>自动机定义了模式，即表示自动机的图中，作为从其实状态到某个接受状态的路径标号的字符串组成的集合。有趣的是，可以用正则表达式代数表示的模式组成的集合，刚好与可以用自动机描述的模式组成的集合相同。</p>
+<h2 id="regex-的操作数"><a href="#regex-的操作数" class="headerlink" title="regex 的操作数"></a>regex 的操作数</h2><p>在 regex 中，原子操作数是以下几种：</p>
+<ul>
+<li>字符</li>
+<li>є 符号</li>
+<li>∅ 符号</li>
+<li>由正则表达式定义的任意模式的变量</li>
+</ul>
+<p>对于正则表达式来说，每个表达式的值都是由通常被称为<em>语言</em>的字符串集合组成的模式。由正则表达式 E 表示的语言被称为<code>L(E)</code>。定义如下：</p>
+<ol>
+<li><p><code>x</code>是任意字符，语言<code>L(x) = &#123;x&#125;</code>，包含一个字符串的集合，长度为 1，且字符串中唯一的位置被字符<code>x</code>占据。</p>
+</li>
+<li><p><code>L(є) = &#123;є&#125;</code>，作为正则表达式的特殊字符<code>є</code>表示只含一个空字符串（长度为 0 的字符串）的字符串集合。</p>
+</li>
+<li><p><code>L(∅) = &#123;∅&#125;</code>，作为正则表达式的特殊字符<code>∅</code>表示字符串集合为空。</p>
+</li>
+</ol>
+<h2 id="regex-的运算"><a href="#regex-的运算" class="headerlink" title="regex 的运算"></a>regex 的运算</h2><p>运算符共有 3 种。可以用括号分组。</p>
+<p><em>并</em>: 如果 R 和 S 为两个正则表达式，那么<code>R|S</code>表示 R 和 S 所表示的语言取并。即<code>L(R|S) = L(R) ∪ L(S)</code></p>
+<p>_串接_：<code>RS</code>表示语言<code>L(RS)</code>是通过按次序取第一个字符串串接第二个字符串而形成的。</p>
+<p>_闭包_：也称<em>克林闭包（Kleene closure）</em>，是一个一元的后缀运算符。闭包用星号表示，<code>*</code>，所以<code>R*</code>是正则表达式 R 的闭包。闭包运算符有最高的优先级，所以通常要在 R 的两侧放上括号，写为<code>(R)*</code>。闭包运算符的作用表示“R 中的字符串没有出现或多次出现”。非正式的，<code>R* = є|R|RR|RRR|...</code></p>
+<p>运算优先级：闭包 -&gt; 串接 -&gt; 并。</p>
+<h1 id="正则表达式与自动机互相转换"><a href="#正则表达式与自动机互相转换" class="headerlink" title="正则表达式与自动机互相转换"></a>正则表达式与自动机互相转换</h1><p>存在某种方式可以把人意正则表达式转换成非确定自动机，接着就可以利用子集构造将得到的非确定自动机转换成等价的确定自动机。</p>
+<p>同样的，也能把任意的自动机转换成相应的正则表达式。其中正则表达式的语言刚好是自动机接受的字符串集合。</p>
+<p>不过，从直觉上来看，自动机不会数数，即它不太能确切的记住已经看到了多少个符号。</p>
+<h2 id="正则表达式-gt-自动机"><a href="#正则表达式-gt-自动机" class="headerlink" title="正则表达式 -&gt; 自动机"></a>正则表达式 -&gt; 自动机</h2><p>要完成 3 件事情。</p>
+<ol>
+<li><p>引入具有 є 转换的自动机，也就是具有标号为 є 的弧的自动机。</p>
+</li>
+<li><p>把任意正则表达式转换成定义同一语言的具有 є 转换的自动机。</p>
+</li>
+<li><p>把任意具有 є 转换的自动机转换成接受同一语言的不含 є 转换的自动机。</p>
+</li>
+</ol>
+<p>具有 є 转换的自动机中空字符串 є 在字符串中是不可见的，但是可以在路径中假装添加 є 进去。因此沿着有 є 路径的被接受的字符串，最后删除掉 є ，就得到了“真实”的字符串。</p>
+<blockquote>
+<div style="text-align: center">
+<img data-src="./img/automata-with-empty-char.png"/>
+</div>
+</blockquote>
+<p>从正则表达式到具有 є 转换的自动机可以用归纳法进行证明转换的可行性。</p>
+<p><strong>命题 _S(n)_。</strong>如果 <em>R</em> 是含 <em>n</em> 个运算符，而且不含变量作为原子操作数的正则表达式，那么存在具有 є 转换的自动机 <em>A_，只接受 _L(R)</em> 中的字符串。此外， <em>A</em> 满足如下所有条件：</p>
+<ol>
+<li><p>只有一个接受状态</p>
+</li>
+<li><p>没有弧通向它的起始状态</p>
+</li>
+<li><p>没有弧从它的接受状态出发</p>
+</li>
+</ol>
+<p><strong>依据。</strong>对于 <em>n=0</em> 的情形， R 一定只含一个原子操作数，该操作数可能是 ∅， є， 或只含一个字符的<strong>x</strong>正则表达式，则可以构造如下的双状态自动机。</p>
+<blockquote>
+<div style="text-align: center">
+<img data-src="./img/automatas-when-n==0.png"/>
+</div>
+</blockquote>
+<p><strong>归纳。</strong>假设对于 _i&lt;=n_， _S(i)_ 均成立。那么对于含有 _n+1_ 个运算符的正则表达式 _R_，可以将注意力放在“最外侧”的运算符。 _R_ 可以表示为 _R<sub>1</sub>|R<sub>2</sub>_、或者 _R<sub>1</sub>R<sub>2</sub>_，或者是 R<sub>1</sub><sup>*</sup>。</p>
+<p>易知，<em>R<sub>1</sub>，R<sub>2</sub></em> 都不可能含有 <em>n</em> 个以上的运算符，因为分解后的表达式中还有一个运算符，不属于他们之中。</p>
+<p>于是可以通过 <em>R<sub>1</sub>，R<sub>2</sub></em> 所满足的初始状态和接受状态，进行二次构造一个自动机，就能证明 <em>n+1</em> 时，命题依然成立，而这种构造是相当简单的。</p>
+<blockquote>
+<div style="text-align: center">
+<img data-src="./img/automatas-when-n==n+1.png"/>
+</div>
+</blockquote>
+<p>从具有 є 转换的自动机到没有转换 є 的自动机也是很容易的。原因是在具有转换的某个自动机的任意状态 <em>s_，其实也是从状态 _s</em> 沿着由标记为 є 的弧形成的路径可以到达的任意状态，不管什么字符串标记了到达 <em>s</em> 状态所经过的路径，同样的字符串都是可以用任意个 є 转换扩展过的路径标号。</p>
+<p>下面开始分析如何将自动机转换为正则表达式。转换过程涉及从自动机中一个一个地删除状态，然后把弧上的标号由最初的字符串集合替换为更复杂的正则表达式。一开始，如果弧上的标号是 { x<sub>1</sub>, x<sub>2</sub>, … , x<sub>n</sub> }，就可以把这些标号替换为正则表达式 x<sub>1</sub>|x<sub>2</sub>| … | x<sub>n</sub>，该正则表达式从本质上讲表示的相同的符号集合，虽然严格地讲，正则表示表达式表示的是长度为 1 的字符串。</p>
+<p>一般而言，可以讲路径的标号是为路径沿线上正则表达式的串接，或是看作这些表达式的串接定义的语言。亦即，如果路径的弧使用正则表达式 R<sub>1</sub>, R<sub>2</sub>, …, R<sub>n</sub> 按此次序标记道，则当且仅当字符串 w 在语言 L(R<sub>1</sub> R<sub>2</sub> … R<sub>n</sub>) 中时有该路径被标记为 w 。</p>
+<h2 id="自动机-gt-正则表达式"><a href="#自动机-gt-正则表达式" class="headerlink" title="自动机 -&gt; 正则表达式"></a>自动机 -&gt; 正则表达式</h2><p>从自动机到正则表达式的转化，关键步骤是状态的消除。</p>
+<p>比如希望消除状态 <em>u</em> ，必须保留弧的正则表达式标号，从而使剩余状态中两两之间的路径标号集合不发生改变。</p>
+<blockquote>
+<div style="text-align: center">
+<img data-src="./img/eliminate-state-u.png"/>
+</div>
+</blockquote>
+<p>如上图所示，状态 <em>u</em> 的前导状态分别是 <em>s<sub>1</sub>, s<sub>2</sub>, …, s<sub>n</sub>_， 而后继状态分别是 _t<sub>1</sub>, t<sub>2</sub>, …, t<sub>m</sub></em> 。这些 <em>s</em> 和 <em>t</em> 是不相交的状态集，但是可能存在一些相同的状态。</p>
+<p>考虑如果 <em>u</em> 是它本身的后继，就要用标记为 U 的弧来表示这个事实。如果 <em>u</em> 没有这样的自环，则引入一个标号为 ∅ 的弧，意为空语言的弧。另外，对于从 <em>s<sub>i</sub></em> 到 <em>t<sub>j</sub></em> 假设存在相应的弧，且由某个正则表达式 <em>R<sub>ij</sub></em> 标记，如果事实不存在 <em>s<sub>i</sub> → t<sub>j</sub></em> 弧，则将其赋予标号为 ∅ 即可。</p>
+<p>在消除状态 <em>u</em> 之前，标记了从 <em>s<sub>i</sub></em> 到 <em>u</em> 然后从 <em>u</em> 到 <em>t<sub>j</sub></em> 的路径，可以正则表达式 <em>S<sub>i</sub>U*T<sub>j</sub></em> 来表示。亦即 <em>L(S<sub>i</sub>)</em> 能满足从状态 <em>s<sub>i</sub></em> 变换到 <em>u</em> , <em>L(U*)</em> 能满足从 <em>u</em> 到 状态 <em>u_，沿着自环 0 次、1 次或多次。最后 _L(T<sub>j</sub>)</em> 能满足从状态 <em>u</em> 变换到状态 _t<sub>j</sub>_。</p>
+<p>因此消除状态 <em>u</em> 和所有进出 <em>u</em> 的弧之后，必须把弧 <em>s<sub>i</sub> → t<sub>j</sub></em> 的标号由 <em>R<sub>ij</sub></em> 替换为 <em>R<sub>ij</sub> | S<sub>i</sub>U*T<sub>j</sub>_。于是对于出现 ∅ 的情况，无论时 _U*= ∅*= є_， 或者时 _R<sub>ij</sub>= ∅</em>,最后到表达式化简之后一定成立。</p>
+<blockquote>
+<p>自动机到完全简化</p>
+</blockquote>
+<p>要得到只表示所有由自动机 A 接受到字符串正则表达式，就要一次考虑 A 的各接受状态。借助上面到方式进行反复消除，直到只剩 <em>s</em> 和 <em>t</em> 两个状态。如下左图。</p>
+<blockquote>
+<div style="text-align: center">
+<img data-src="./img/simplify-automata-to-regex.png"/>
+</div>
+</blockquote>
+<p>上左图中展示了所有 4 条可能的弧，每一条都以一个正则表达式作为其标号。如果弧不存在，标号则记为 ∅。</p>
+<p>直观的，第一次可以由 <em>L(S*U)</em> 的路径到达状态 <em>t_，然后从 _t</em> 到最终的 <em>t</em> 可能存在的路径为 *(T|VS*U)*<em>。于是合并起来，从状态 <em>s</em> 到状态 <em>t</em> 的字符串集合对应的正则表达式为 <em>S\</em>U(T|VS\</em>U)** 。</p>
+<p>存在一种特殊情况，即最后只剩下一种状态，就可以选择 *S**作为接受的正则表达式。</p>
+<p><strong>总结自动机转换成等价正则表达式。</strong> 对于每个接受状态 <em>t</em> 而言，从自动机 <em>A</em> 开始，消除各种 状态，直到剩下状态 <em>s</em> 和 <em>t_。对于每个接受状态 _t</em> 来说，都要从全新的原自动机 <em>A</em> 开始处理。</p>
+<p>如果 <em>s!=t_，就使用上面简化的前一种方式取得相应的字符串集合的正则表达式，如果 _s==t_，就可以使用上面简化到第二种方式。最后，为对应每个接受状态 _t</em> 的正则表达式去并。 最后就能得到等价的刚好被 <em>A</em> 接受到字符串集合。</p>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

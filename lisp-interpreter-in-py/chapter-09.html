@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="Here is what we’re going to go through:  How to parse and interpret a Pascal program definiton How to parse and interpret compound statements How to parse and interpret assignment statements, includin">
+<meta property="og:type" content="website">
+<meta property="og:title" content="09">
+<meta property="og:url" content="https://akatquas.github.io/lisp-interpreter-in-py/chapter-09.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="Here is what we’re going to go through:  How to parse and interpret a Pascal program definiton How to parse and interpret compound statements How to parse and interpret assignment statements, includin">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://akatquas.github.io/lisp-interpreter-in-py/imgs/lsbasi_part9_syntax_diagram.png">
+<meta property="og:image" content="https://akatquas.github.io/lisp-interpreter-in-py/imgs/lsbasi_part9_lexer.png">
+<meta property="og:image" content="https://akatquas.github.io/lisp-interpreter-in-py/imgs/lsbasi_part9_parser.png">
+<meta property="og:image" content="https://akatquas.github.io/lisp-interpreter-in-py/imgs/lsbasi_part9_interpreter.png">
+<meta property="og:image" content="https://akatquas.github.io/lisp-interpreter-in-py/imgs/lsbasi_part9_ast_st01.png">
+<meta property="og:image" content="https://akatquas.github.io/lisp-interpreter-in-py/imgs/lsbasi_part9_ast_only_st02.png">
+<meta property="og:image" content="https://akatquas.github.io/lisp-interpreter-in-py/imgs/lsbasi_part9_ast_st02.png">
+<meta property="og:image" content="https://akatquas.github.io/lisp-interpreter-in-py/imgs/lsbasi_part9_hacks.png">
+<meta property="article:published_time" content="2021-01-15T10:21:08.394Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.394Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="lisp">
+<meta property="article:tag" content="interpreter">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://akatquas.github.io/lisp-interpreter-in-py/imgs/lsbasi_part9_syntax_diagram.png">
+
+
+<link rel="canonical" href="https://akatquas.github.io/lisp-interpreter-in-py/chapter-09.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>09 | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#quick-reference"><span class="nav-text">Quick Reference</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">09
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <p>Here is what we’re going to go through:</p>
+<ol>
+<li>How to parse and interpret a Pascal program definiton</li>
+<li>How to parse and interpret compound statements</li>
+<li>How to parse and interpret assignment statements, including variables</li>
+<li>A bit about symbol tables and how to store and lookup variables.</li>
+</ol>
+<p>The following sample Pascal-like program to introduce new concepts:</p>
+<pre><code># Pascal-like
+BEGIN
+    BEGIN
+        number := 2;
+        a := number;
+        b := 10 * a + 10 * number / 4;
+        c := a - - b
+    END;
+    x := 11;
+END.</code></pre>
+<p>Let’s dive in and look at syntax diagrams for new language constructs and their corresponding grammar rules.</p>
+<img data-src="./imgs/lsbasi_part9_syntax_diagram.png" alt="" />
+
+<ol>
+<li><p>A Pascal <em>program</em> consists of a <em>compound statement</em> that ends with a dot. Here is an example of a program (this is not a complete program definition, and we’ll extend it later in the series):</p>
+<pre><code> BEGIN END.</code></pre>
+</li>
+<li><p>A <em>compound statement</em> is a block marked with <code>BEGIN</code> and <code>END</code> that can contain a list (possibly empty) of statements including other compound statements. Every statement inside the compound statement, except for the last one, must terminate with a semicolon. The last statement in the block may or may not have a terminating semicolon:</p>
+<pre><code> BEGIN END
+ BEGIN a := 5; x := 11 END
+ BEGIN a := 5; x := 11; END
+ BEGIN BEGIN a := 5 END; x := 11 END</code></pre>
+</li>
+<li><p> A <em>statement list</em> is a list of zero or more statements inside a compound statement.</p>
+</li>
+<li><p> A <em>statement</em> can be a <em>compound statement</em>, an <em>assignment statement</em>, or it can be an <em>empty statement</em>.</p>
+</li>
+<li><p>An <em>assignment statement</em> is a variable followed by an ASSIGN token <code>:=</code>, followed by an expression.</p>
+<pre><code> a := 11
+ b := a + 9 - 5 * 2</code></pre>
+</li>
+<li><p>A <em>variable</em> is an identifier. We use the ID token for variables. The value of the token will be a variable’s name like <code>a</code>, <code>number</code> and so on.</p>
+<pre><code> BEGIN a := 11; b := a + 9; END</code></pre>
+</li>
+<li><p> An <em>empty statement</em> represents a grammar rule with no further productions. We use the <em>empty_statement_ grammar rule to indicate the end of the _statement_list</em> in the parser and also to allow for empty compound statement as in <code>BEGIN END</code>.</p>
+</li>
+<li><p> The <em>factor</em> rule is updated to handle variables.</p>
+</li>
+</ol>
+<p>Now let’s take a looke at our complete grammar:</p>
+<pre class="line-numbers language-none"><code class="language-none">program : compound_statement DOT
+
+compound_statement : BEGIN statement_list END
+
+statement_list : statement
+                | statement SEMI statement_list
+
+statement : compound_statement
+            | assignment_statement
+            | empty
+
+assignment_statement : variable ASSIGN expr
+
+empty :
+
+expr: term ((PLUS | MINUS) term)*
+
+term: factor ((MUL | DIV) factor)*
+
+factor : PLUS factor
+        | MINUS factor
+        | INTEGER
+        | LPAREN expr RPAREN
+        | variable
+
+variable: ID<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>You probably noticed that we don’t use the star ‘*’ symbol in the <em>compound_statement</em> rule to represent zero or more repetitions, but instead explicitly specified the <em>statement_list\</em> rule. This is another way to represent the ‘zero or more’ operation, and it will come in handy when we look at parser generators like <a target="_blank" rel="noopener" href="http://www.dabeaz.com/ply/">PLY</a>, later in the series. We’ll also split the “(PLUS | MINUS) factor” sub-rule into two separate rules.</p>
+<p>In order to support the updated grammar, we need to make a number of changes to our lexer, parser, and interpreter. Let’s go over those changes one by one.</p>
+<p>Here is the summary of the changes in our lexer:</p>
+<img data-src="./imgs/lsbasi_part9_lexer.png" alt="" />
+
+<ol>
+<li><p>To support a Pascal program’s definition, compound statements, assignment statements, and variables, our lexer needs to return new tokens:</p>
+<ul>
+<li>BEGIN (to mark the beginning of a compound statement)</li>
+<li>END (to mark the end of the compound statement)</li>
+<li>DOT (a token for a dot character ‘.’ required by a Pascal program’s definition)</li>
+<li>ASSIGN (a token for a two character sequence ‘:=’). In Pascal, an assignment operator is different than in many other languages like C, Python, Java, Rust, or Go, where you would use single character ‘=’ to indicate assignment</li>
+<li>SEMI (a token for a semicolon character ‘;’ that is used to mark the end of a statement inside a compound statement)</li>
+<li>ID (A token for a valid identifier. Identifiers start with an alphabetical character followed by any number of alphanumerical characters)</li>
+</ul>
+</li>
+<li><p>Sometimes, in order to be able to differentiate between different tokens that start with the same character, (‘:’ vs ‘:=’ or ‘==’ vs ‘=&gt;’ ) we need to peek into the input buffer without actually consuming the next character. For this particular purpose, We introduced a <em>peek</em> method that will help us tokenize assignment statements. The method is not strictly required, but it will also make the <em>get_next_token</em> method a bit cleaner if we introduce it earlier in the series. All it does is return the next character from the text buffer without incrementing the <em>self.pos</em> variable. Here is the method itself:</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">peek</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    peek_pos <span class="token operator">=</span> self<span class="token punctuation">.</span>pos <span class="token operator">+</span> <span class="token number">1</span>
+    <span class="token keyword">if</span> peek_pos <span class="token operator">></span> <span class="token builtin">len</span><span class="token punctuation">(</span>self<span class="token punctuation">.</span>text<span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">:</span>
+        <span class="token keyword">return</span> <span class="token boolean">None</span>
+    <span class="token keyword">else</span><span class="token punctuation">:</span>
+        <span class="token keyword">return</span> self<span class="token punctuation">.</span>text<span class="token punctuation">[</span>peek_pos<span class="token punctuation">]</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></li>
+<li><p>Because Pascal variables and reserved keywords are both identifiers, we will combine their handling into one method called <em>_id</em>. The way it works is that the lexer consumes a sequence of alphanumerical characters and then checks if the character sequence is a reserved word. If it is, it returns a pre-constructed token for that reserved keyword. And if it’s not a reserved keyword, it returns a new ID token whose value is the character string (lexeme).</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">RESERVED_KEYWORDS <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+    <span class="token string">'BEGIN'</span><span class="token punctuation">:</span> Token<span class="token punctuation">(</span><span class="token string">'BEGIN'</span><span class="token punctuation">,</span> <span class="token string">'BEGIN'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token string">'END'</span><span class="token punctuation">:</span> Token<span class="token punctuation">(</span><span class="token string">'END'</span><span class="token punctuation">,</span> <span class="token string">'END'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">def</span> <span class="token function">_id</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token triple-quoted-string string">""" Handle indentifiers and reserved keywords """</span>
+    result <span class="token operator">=</span> <span class="token string">''</span>
+    <span class="token keyword">while</span> self<span class="token punctuation">.</span>current_char <span class="token keyword">is</span> <span class="token keyword">not</span> <span class="token boolean">None</span> <span class="token keyword">and</span> self<span class="token punctuation">.</span>current_char<span class="token punctuation">.</span>isalnum<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        result <span class="token operator">+=</span> self<span class="token punctuation">.</span>current_char
+        self<span class="token punctuation">.</span>advance<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    token <span class="token operator">=</span> RESERVED_KEYWORDS<span class="token punctuation">.</span>get<span class="token punctuation">(</span>result<span class="token punctuation">,</span> Token<span class="token punctuation">(</span>ID<span class="token punctuation">,</span> result<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> token<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></li>
+<li><p>And now let’s take a look at the changes in the main lexer method <em>get_next_token</em>:</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">get_next_token</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">while</span> self<span class="token punctuation">.</span>current_char <span class="token keyword">is</span> <span class="token keyword">not</span> <span class="token boolean">None</span><span class="token punctuation">:</span>
+        <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+        <span class="token keyword">if</span> self<span class="token punctuation">.</span>current_char<span class="token punctuation">.</span>isalpha<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+            <span class="token keyword">return</span> self<span class="token punctuation">.</span>_id<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+        <span class="token keyword">if</span> self<span class="token punctuation">.</span>current_char <span class="token operator">==</span> <span class="token string">':'</span> <span class="token keyword">and</span> self<span class="token punctuation">.</span>peek<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token string">'='</span><span class="token punctuation">:</span>
+            self<span class="token punctuation">.</span>advance<span class="token punctuation">(</span><span class="token punctuation">)</span>
+            self<span class="token punctuation">.</span>advance<span class="token punctuation">(</span><span class="token punctuation">)</span>
+            <span class="token keyword">return</span> Token<span class="token punctuation">(</span>ASSIGN<span class="token punctuation">,</span> <span class="token string">':='</span><span class="token punctuation">)</span>
+
+        <span class="token keyword">if</span> self<span class="token punctuation">.</span>current_char <span class="token operator">==</span> <span class="token string">';'</span><span class="token punctuation">:</span>
+            self<span class="token punctuation">.</span>advance<span class="token punctuation">(</span><span class="token punctuation">)</span>
+            <span class="token keyword">return</span> Token<span class="token punctuation">(</span>SEMI<span class="token punctuation">,</span> <span class="token string">';'</span><span class="token punctuation">)</span>
+
+        <span class="token keyword">if</span> self<span class="token punctuation">.</span>current_char <span class="token operator">==</span> <span class="token string">'.'</span><span class="token punctuation">:</span>
+            self<span class="token punctuation">.</span>advance<span class="token punctuation">(</span><span class="token punctuation">)</span>
+            <span class="token keyword">return</span> Token<span class="token punctuation">(</span>DOT<span class="token punctuation">,</span> <span class="token string">'.'</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></li>
+</ol>
+<p><strong>Appendix</strong></p>
+<p>And the complete code:</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token triple-quoted-string string">""" SPI - Simple Pascal Interpreter. Part 9."""</span>
+
+<span class="token comment">###############################################################################</span>
+<span class="token comment">#                                                                             #</span>
+<span class="token comment">#  LEXER                                                                      #</span>
+<span class="token comment">#                                                                             #</span>
+<span class="token comment">###############################################################################</span>
+
+<span class="token comment"># Token types</span>
+<span class="token comment">#</span>
+<span class="token comment"># EOF (end-of-file) token is used to indicate that</span>
+<span class="token comment"># there is no more input left for lexical analysis</span>
+
+<span class="token punctuation">(</span>INTEGER<span class="token punctuation">,</span> PLUS<span class="token punctuation">,</span> MINUS<span class="token punctuation">,</span> MUL<span class="token punctuation">,</span> DIV<span class="token punctuation">,</span> LPAREN<span class="token punctuation">,</span> RPAREN<span class="token punctuation">,</span> ID<span class="token punctuation">,</span> ASSIGN<span class="token punctuation">,</span>
+ BEGIN<span class="token punctuation">,</span> END<span class="token punctuation">,</span> SEMI<span class="token punctuation">,</span> DOT<span class="token punctuation">,</span> EOF<span class="token punctuation">)</span> <span class="token operator">=</span> <span class="token punctuation">(</span>
+    <span class="token string">'INTEGER'</span><span class="token punctuation">,</span> <span class="token string">'PLUS'</span><span class="token punctuation">,</span> <span class="token string">'MINUS'</span><span class="token punctuation">,</span> <span class="token string">'MUL'</span><span class="token punctuation">,</span> <span class="token string">'DIV'</span><span class="token punctuation">,</span> <span class="token string">'('</span><span class="token punctuation">,</span> <span class="token string">')'</span><span class="token punctuation">,</span> <span class="token string">'ID'</span><span class="token punctuation">,</span> <span class="token string">'ASSIGN'</span><span class="token punctuation">,</span>
+    <span class="token string">'BEGIN'</span><span class="token punctuation">,</span> <span class="token string">'END'</span><span class="token punctuation">,</span> <span class="token string">'SEMI'</span><span class="token punctuation">,</span> <span class="token string">'DOT'</span><span class="token punctuation">,</span> <span class="token string">'EOF'</span>
+<span class="token punctuation">)</span>
+
+
+<span class="token keyword">class</span> <span class="token class-name">Token</span><span class="token punctuation">(</span><span class="token builtin">object</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> <span class="token builtin">type</span><span class="token punctuation">,</span> value<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span><span class="token builtin">type</span> <span class="token operator">=</span> <span class="token builtin">type</span>
+        self<span class="token punctuation">.</span>value <span class="token operator">=</span> value
+
+    <span class="token keyword">def</span> <span class="token function">__str__</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">"""String representation of the class instance.
+        Examples:
+            Token(INTEGER, 3)
+            Token(PLUS, '+')
+            Token(MUL, '*')
+        """</span>
+        <span class="token keyword">return</span> <span class="token string">'Token(&#123;type&#125;, &#123;value&#125;)'</span><span class="token punctuation">.</span><span class="token builtin">format</span><span class="token punctuation">(</span>
+            <span class="token builtin">type</span><span class="token operator">=</span>self<span class="token punctuation">.</span><span class="token builtin">type</span><span class="token punctuation">,</span>
+            value<span class="token operator">=</span><span class="token builtin">repr</span><span class="token punctuation">(</span>self<span class="token punctuation">.</span>value<span class="token punctuation">)</span>
+        <span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">__repr__</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">return</span> self<span class="token punctuation">.</span>__str__<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+
+RESERVED_KEYWORDS <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+    <span class="token string">'BEGIN'</span><span class="token punctuation">:</span> Token<span class="token punctuation">(</span><span class="token string">'BEGIN'</span><span class="token punctuation">,</span> <span class="token string">'BEGIN'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token string">'END'</span><span class="token punctuation">:</span> Token<span class="token punctuation">(</span><span class="token string">'END'</span><span class="token punctuation">,</span> <span class="token string">'END'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+<span class="token punctuation">&#125;</span>
+
+
+<span class="token keyword">class</span> <span class="token class-name">Lexer</span><span class="token punctuation">(</span><span class="token builtin">object</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> text<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token comment"># client string input, e.g. "4 + 2 * 3 - 6 / 2"</span>
+        self<span class="token punctuation">.</span>text <span class="token operator">=</span> text
+        <span class="token comment"># self.pos is an index into self.text</span>
+        self<span class="token punctuation">.</span>pos <span class="token operator">=</span> <span class="token number">0</span>
+        self<span class="token punctuation">.</span>current_char <span class="token operator">=</span> self<span class="token punctuation">.</span>text<span class="token punctuation">[</span>self<span class="token punctuation">.</span>pos<span class="token punctuation">]</span>
+
+    <span class="token keyword">def</span> <span class="token function">error</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">raise</span> Exception<span class="token punctuation">(</span><span class="token string">'Invalid character'</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">advance</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">"""Advance the `pos` pointer and set the `current_char` variable."""</span>
+        self<span class="token punctuation">.</span>pos <span class="token operator">+=</span> <span class="token number">1</span>
+        <span class="token keyword">if</span> self<span class="token punctuation">.</span>pos <span class="token operator">></span> <span class="token builtin">len</span><span class="token punctuation">(</span>self<span class="token punctuation">.</span>text<span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">:</span>
+            self<span class="token punctuation">.</span>current_char <span class="token operator">=</span> <span class="token boolean">None</span>  <span class="token comment"># Indicates end of input</span>
+        <span class="token keyword">else</span><span class="token punctuation">:</span>
+            self<span class="token punctuation">.</span>current_char <span class="token operator">=</span> self<span class="token punctuation">.</span>text<span class="token punctuation">[</span>self<span class="token punctuation">.</span>pos<span class="token punctuation">]</span>
+
+    <span class="token keyword">def</span> <span class="token function">peek</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        peek_pos <span class="token operator">=</span> self<span class="token punctuation">.</span>pos <span class="token operator">+</span> <span class="token number">1</span>
+        <span class="token keyword">if</span> peek_pos <span class="token operator">></span> <span class="token builtin">len</span><span class="token punctuation">(</span>self<span class="token punctuation">.</span>text<span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">:</span>
+            <span class="token keyword">return</span> <span class="token boolean">None</span>
+        <span class="token keyword">else</span><span class="token punctuation">:</span>
+            <span class="token keyword">return</span> self<span class="token punctuation">.</span>text<span class="token punctuation">[</span>peek_pos<span class="token punctuation">]</span>
+
+    <span class="token keyword">def</span> <span class="token function">skip_whitespace</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">while</span> self<span class="token punctuation">.</span>current_char <span class="token keyword">is</span> <span class="token keyword">not</span> <span class="token boolean">None</span> <span class="token keyword">and</span> self<span class="token punctuation">.</span>current_char<span class="token punctuation">.</span>isspace<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+            self<span class="token punctuation">.</span>advance<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">integer</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">"""Return a (multidigit) integer consumed from the input."""</span>
+        result <span class="token operator">=</span> <span class="token string">''</span>
+        <span class="token keyword">while</span> self<span class="token punctuation">.</span>current_char <span class="token keyword">is</span> <span class="token keyword">not</span> <span class="token boolean">None</span> <span class="token keyword">and</span> self<span class="token punctuation">.</span>current_char<span class="token punctuation">.</span>isdigit<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+            result <span class="token operator">+=</span> self<span class="token punctuation">.</span>current_char
+            self<span class="token punctuation">.</span>advance<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span> <span class="token builtin">int</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">_id</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">"""Handle identifiers and reserved keywords"""</span>
+        result <span class="token operator">=</span> <span class="token string">''</span>
+        <span class="token keyword">while</span> self<span class="token punctuation">.</span>current_char <span class="token keyword">is</span> <span class="token keyword">not</span> <span class="token boolean">None</span> <span class="token keyword">and</span> self<span class="token punctuation">.</span>current_char<span class="token punctuation">.</span>isalnum<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+            result <span class="token operator">+=</span> self<span class="token punctuation">.</span>current_char
+            self<span class="token punctuation">.</span>advance<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+        token <span class="token operator">=</span> RESERVED_KEYWORDS<span class="token punctuation">.</span>get<span class="token punctuation">(</span>result<span class="token punctuation">,</span> Token<span class="token punctuation">(</span>ID<span class="token punctuation">,</span> result<span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span> token
+
+    <span class="token keyword">def</span> <span class="token function">get_next_token</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">"""Lexical analyzer (also known as scanner or tokenizer)
+        This method is responsible for breaking a sentence
+        apart into tokens. One token at a time.
+        """</span>
+        <span class="token keyword">while</span> self<span class="token punctuation">.</span>current_char <span class="token keyword">is</span> <span class="token keyword">not</span> <span class="token boolean">None</span><span class="token punctuation">:</span>
+
+            <span class="token keyword">if</span> self<span class="token punctuation">.</span>current_char<span class="token punctuation">.</span>isspace<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+                self<span class="token punctuation">.</span>skip_whitespace<span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token keyword">continue</span>
+
+            <span class="token keyword">if</span> self<span class="token punctuation">.</span>current_char<span class="token punctuation">.</span>isalpha<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+                <span class="token keyword">return</span> self<span class="token punctuation">.</span>_id<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+            <span class="token keyword">if</span> self<span class="token punctuation">.</span>current_char<span class="token punctuation">.</span>isdigit<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+                <span class="token keyword">return</span> Token<span class="token punctuation">(</span>INTEGER<span class="token punctuation">,</span> self<span class="token punctuation">.</span>integer<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+            <span class="token keyword">if</span> self<span class="token punctuation">.</span>current_char <span class="token operator">==</span> <span class="token string">':'</span> <span class="token keyword">and</span> self<span class="token punctuation">.</span>peek<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token string">'='</span><span class="token punctuation">:</span>
+                self<span class="token punctuation">.</span>advance<span class="token punctuation">(</span><span class="token punctuation">)</span>
+                self<span class="token punctuation">.</span>advance<span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token keyword">return</span> Token<span class="token punctuation">(</span>ASSIGN<span class="token punctuation">,</span> <span class="token string">':='</span><span class="token punctuation">)</span>
+
+            <span class="token keyword">if</span> self<span class="token punctuation">.</span>current_char <span class="token operator">==</span> <span class="token string">';'</span><span class="token punctuation">:</span>
+                self<span class="token punctuation">.</span>advance<span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token keyword">return</span> Token<span class="token punctuation">(</span>SEMI<span class="token punctuation">,</span> <span class="token string">';'</span><span class="token punctuation">)</span>
+
+            <span class="token keyword">if</span> self<span class="token punctuation">.</span>current_char <span class="token operator">==</span> <span class="token string">'+'</span><span class="token punctuation">:</span>
+                self<span class="token punctuation">.</span>advance<span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token keyword">return</span> Token<span class="token punctuation">(</span>PLUS<span class="token punctuation">,</span> <span class="token string">'+'</span><span class="token punctuation">)</span>
+
+            <span class="token keyword">if</span> self<span class="token punctuation">.</span>current_char <span class="token operator">==</span> <span class="token string">'-'</span><span class="token punctuation">:</span>
+                self<span class="token punctuation">.</span>advance<span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token keyword">return</span> Token<span class="token punctuation">(</span>MINUS<span class="token punctuation">,</span> <span class="token string">'-'</span><span class="token punctuation">)</span>
+
+            <span class="token keyword">if</span> self<span class="token punctuation">.</span>current_char <span class="token operator">==</span> <span class="token string">'*'</span><span class="token punctuation">:</span>
+                self<span class="token punctuation">.</span>advance<span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token keyword">return</span> Token<span class="token punctuation">(</span>MUL<span class="token punctuation">,</span> <span class="token string">'*'</span><span class="token punctuation">)</span>
+
+            <span class="token keyword">if</span> self<span class="token punctuation">.</span>current_char <span class="token operator">==</span> <span class="token string">'/'</span><span class="token punctuation">:</span>
+                self<span class="token punctuation">.</span>advance<span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token keyword">return</span> Token<span class="token punctuation">(</span>DIV<span class="token punctuation">,</span> <span class="token string">'/'</span><span class="token punctuation">)</span>
+
+            <span class="token keyword">if</span> self<span class="token punctuation">.</span>current_char <span class="token operator">==</span> <span class="token string">'('</span><span class="token punctuation">:</span>
+                self<span class="token punctuation">.</span>advance<span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token keyword">return</span> Token<span class="token punctuation">(</span>LPAREN<span class="token punctuation">,</span> <span class="token string">'('</span><span class="token punctuation">)</span>
+
+            <span class="token keyword">if</span> self<span class="token punctuation">.</span>current_char <span class="token operator">==</span> <span class="token string">')'</span><span class="token punctuation">:</span>
+                self<span class="token punctuation">.</span>advance<span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token keyword">return</span> Token<span class="token punctuation">(</span>RPAREN<span class="token punctuation">,</span> <span class="token string">')'</span><span class="token punctuation">)</span>
+
+            <span class="token keyword">if</span> self<span class="token punctuation">.</span>current_char <span class="token operator">==</span> <span class="token string">'.'</span><span class="token punctuation">:</span>
+                self<span class="token punctuation">.</span>advance<span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token keyword">return</span> Token<span class="token punctuation">(</span>DOT<span class="token punctuation">,</span> <span class="token string">'.'</span><span class="token punctuation">)</span>
+
+            self<span class="token punctuation">.</span>error<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+        <span class="token keyword">return</span> Token<span class="token punctuation">(</span>EOF<span class="token punctuation">,</span> <span class="token boolean">None</span><span class="token punctuation">)</span>
+
+
+<span class="token comment">###############################################################################</span>
+<span class="token comment">#                                                                             #</span>
+<span class="token comment">#  PARSER                                                                     #</span>
+<span class="token comment">#                                                                             #</span>
+<span class="token comment">###############################################################################</span>
+
+<span class="token keyword">class</span> <span class="token class-name">AST</span><span class="token punctuation">(</span><span class="token builtin">object</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">pass</span>
+
+
+<span class="token keyword">class</span> <span class="token class-name">BinOp</span><span class="token punctuation">(</span>AST<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> left<span class="token punctuation">,</span> op<span class="token punctuation">,</span> right<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>left <span class="token operator">=</span> left
+        self<span class="token punctuation">.</span>token <span class="token operator">=</span> self<span class="token punctuation">.</span>op <span class="token operator">=</span> op
+        self<span class="token punctuation">.</span>right <span class="token operator">=</span> right
+
+
+<span class="token keyword">class</span> <span class="token class-name">Num</span><span class="token punctuation">(</span>AST<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> token<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>token <span class="token operator">=</span> token
+        self<span class="token punctuation">.</span>value <span class="token operator">=</span> token<span class="token punctuation">.</span>value
+
+
+<span class="token keyword">class</span> <span class="token class-name">UnaryOp</span><span class="token punctuation">(</span>AST<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> op<span class="token punctuation">,</span> expr<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>token <span class="token operator">=</span> self<span class="token punctuation">.</span>op <span class="token operator">=</span> op
+        self<span class="token punctuation">.</span>expr <span class="token operator">=</span> expr
+
+
+<span class="token keyword">class</span> <span class="token class-name">Compound</span><span class="token punctuation">(</span>AST<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>children <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+
+
+<span class="token keyword">class</span> <span class="token class-name">Assign</span><span class="token punctuation">(</span>AST<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> left<span class="token punctuation">,</span> op<span class="token punctuation">,</span> right<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>left <span class="token operator">=</span> left
+        self<span class="token punctuation">.</span>token <span class="token operator">=</span> self<span class="token punctuation">.</span>op <span class="token operator">=</span> op
+        self<span class="token punctuation">.</span>right <span class="token operator">=</span> right
+
+
+<span class="token keyword">class</span> <span class="token class-name">Var</span><span class="token punctuation">(</span>AST<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token triple-quoted-string string">""" The Var node is constructed out of ID token. """</span>
+
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> token<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>token <span class="token operator">=</span> token
+        self<span class="token punctuation">.</span>value <span class="token operator">=</span> token<span class="token punctuation">.</span>value
+
+
+<span class="token keyword">class</span> <span class="token class-name">NoOp</span><span class="token punctuation">(</span>AST<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">pass</span>
+
+
+<span class="token keyword">class</span> <span class="token class-name">Parser</span><span class="token punctuation">(</span><span class="token builtin">object</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> lexer<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>lexer <span class="token operator">=</span> lexer
+        <span class="token comment"># set current token to the first token taken from the input</span>
+        self<span class="token punctuation">.</span>current_token <span class="token operator">=</span> self<span class="token punctuation">.</span>lexer<span class="token punctuation">.</span>get_next_token<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">error</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">raise</span> Exception<span class="token punctuation">(</span><span class="token string">'Invalid syntax'</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">eat</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> token_type<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token comment"># compare the current token type with the passed token</span>
+        <span class="token comment"># type and if they match then "eat" the current token</span>
+        <span class="token comment"># and assign the next token to the self.current_token,</span>
+        <span class="token comment"># otherwise raise an exception.</span>
+        <span class="token keyword">if</span> self<span class="token punctuation">.</span>current_token<span class="token punctuation">.</span><span class="token builtin">type</span> <span class="token operator">==</span> token_type<span class="token punctuation">:</span>
+            self<span class="token punctuation">.</span>current_token <span class="token operator">=</span> self<span class="token punctuation">.</span>lexer<span class="token punctuation">.</span>get_next_token<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token keyword">else</span><span class="token punctuation">:</span>
+            self<span class="token punctuation">.</span>error<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">program</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">""" program : compound_statement DOT """</span>
+        node <span class="token operator">=</span> self<span class="token punctuation">.</span>compound_statement<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>eat<span class="token punctuation">(</span>DOT<span class="token punctuation">)</span>
+        <span class="token keyword">return</span> node
+
+    <span class="token keyword">def</span> <span class="token function">compound_statement</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">"""
+        compound_statement: BEGIN statement_list END
+        """</span>
+        self<span class="token punctuation">.</span>eat<span class="token punctuation">(</span>BEGIN<span class="token punctuation">)</span>
+        nodes <span class="token operator">=</span> self<span class="token punctuation">.</span>statement_list<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>eat<span class="token punctuation">(</span>END<span class="token punctuation">)</span>
+
+        root <span class="token operator">=</span> Compound<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token keyword">for</span> node <span class="token keyword">in</span> nodes<span class="token punctuation">:</span>
+            root<span class="token punctuation">.</span>children<span class="token punctuation">.</span>append<span class="token punctuation">(</span>node<span class="token punctuation">)</span>
+
+        <span class="token keyword">return</span> root
+
+    <span class="token keyword">def</span> <span class="token function">statement_list</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">"""
+        statement_list : statement
+                       | statement SEMI statement_list
+        """</span>
+        node <span class="token operator">=</span> self<span class="token punctuation">.</span>statement<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+        results <span class="token operator">=</span> <span class="token punctuation">[</span>node<span class="token punctuation">]</span>
+
+        <span class="token keyword">while</span> self<span class="token punctuation">.</span>current_token<span class="token punctuation">.</span><span class="token builtin">type</span> <span class="token operator">==</span> SEMI<span class="token punctuation">:</span>
+            self<span class="token punctuation">.</span>eat<span class="token punctuation">(</span>SEMI<span class="token punctuation">)</span>
+            results<span class="token punctuation">.</span>append<span class="token punctuation">(</span>self<span class="token punctuation">.</span>statement<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+        <span class="token keyword">if</span> self<span class="token punctuation">.</span>current_token<span class="token punctuation">.</span><span class="token builtin">type</span> <span class="token operator">==</span> ID<span class="token punctuation">:</span>
+            self<span class="token punctuation">.</span>error<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+        <span class="token keyword">return</span> results
+
+    <span class="token keyword">def</span> <span class="token function">statement</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">"""
+        statement : compound_statement
+            | assignment_statement
+            | empty
+        """</span>
+        <span class="token keyword">if</span> self<span class="token punctuation">.</span>current_token<span class="token punctuation">.</span><span class="token builtin">type</span> <span class="token operator">==</span> BEGIN<span class="token punctuation">:</span>
+            node <span class="token operator">=</span> self<span class="token punctuation">.</span>compound_statement<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token keyword">elif</span> self<span class="token punctuation">.</span>current_token<span class="token punctuation">.</span><span class="token builtin">type</span> <span class="token operator">==</span> ID<span class="token punctuation">:</span>
+            node <span class="token operator">=</span> self<span class="token punctuation">.</span>assignment_statement<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token keyword">else</span><span class="token punctuation">:</span>
+            node <span class="token operator">=</span> self<span class="token punctuation">.</span>empty<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+        <span class="token keyword">return</span> node
+
+    <span class="token keyword">def</span> <span class="token function">assignment_statement</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">"""
+        assignment_statement: variable ASSIGN expr
+        """</span>
+        left <span class="token operator">=</span> self<span class="token punctuation">.</span>variable<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        token <span class="token operator">=</span> self<span class="token punctuation">.</span>current_token
+        self<span class="token punctuation">.</span>eat<span class="token punctuation">(</span>ASSIGN<span class="token punctuation">)</span>
+        right <span class="token operator">=</span> self<span class="token punctuation">.</span>expr<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        node <span class="token operator">=</span> Assign<span class="token punctuation">(</span>left<span class="token punctuation">,</span> token<span class="token punctuation">,</span> right<span class="token punctuation">)</span>
+        <span class="token keyword">return</span> node
+
+    <span class="token keyword">def</span> <span class="token function">variable</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">"""
+        variable : ID
+        """</span>
+        node <span class="token operator">=</span> Var<span class="token punctuation">(</span>self<span class="token punctuation">.</span>current_token<span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>eat<span class="token punctuation">(</span>ID<span class="token punctuation">)</span>
+        <span class="token keyword">return</span> node
+
+    <span class="token keyword">def</span> <span class="token function">empty</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">""" An empty production"""</span>
+        <span class="token keyword">return</span> NoOp<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">expr</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">"""
+        expr : term ((PLUS | MINUS))*
+        """</span>
+
+        node <span class="token operator">=</span> self<span class="token punctuation">.</span>term<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token keyword">while</span> self<span class="token punctuation">.</span>current_token<span class="token punctuation">.</span><span class="token builtin">type</span> <span class="token keyword">in</span> <span class="token punctuation">(</span>PLUS<span class="token punctuation">,</span> MINUS<span class="token punctuation">)</span><span class="token punctuation">:</span>
+            token <span class="token operator">=</span> self<span class="token punctuation">.</span>current_token
+            <span class="token keyword">if</span> token<span class="token punctuation">.</span><span class="token builtin">type</span> <span class="token operator">==</span> PLUS<span class="token punctuation">:</span>
+                self<span class="token punctuation">.</span>eat<span class="token punctuation">(</span>PLUS<span class="token punctuation">)</span>
+            <span class="token keyword">elif</span> token<span class="token punctuation">.</span><span class="token builtin">type</span> <span class="token operator">==</span> MINUS<span class="token punctuation">:</span>
+                self<span class="token punctuation">.</span>eat<span class="token punctuation">(</span>MINUS<span class="token punctuation">)</span>
+
+            node <span class="token operator">=</span> BinOp<span class="token punctuation">(</span>left<span class="token operator">=</span>node<span class="token punctuation">,</span> op<span class="token operator">=</span>token<span class="token punctuation">,</span> right<span class="token operator">=</span>self<span class="token punctuation">.</span>term<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span> node
+
+    <span class="token keyword">def</span> <span class="token function">term</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">""" term : factor ((MUL | DIV) factor)* """</span>
+        node <span class="token operator">=</span> self<span class="token punctuation">.</span>factor<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+        <span class="token keyword">while</span> self<span class="token punctuation">.</span>current_token<span class="token punctuation">.</span><span class="token builtin">type</span> <span class="token keyword">in</span> <span class="token punctuation">(</span>MUL<span class="token punctuation">,</span> DIV<span class="token punctuation">)</span><span class="token punctuation">:</span>
+            token <span class="token operator">=</span> self<span class="token punctuation">.</span>current_token
+            <span class="token keyword">if</span> token<span class="token punctuation">.</span><span class="token builtin">type</span> <span class="token operator">==</span> MUL<span class="token punctuation">:</span>
+                self<span class="token punctuation">.</span>eat<span class="token punctuation">(</span>MUL<span class="token punctuation">)</span>
+            <span class="token keyword">elif</span> token<span class="token punctuation">.</span><span class="token builtin">type</span> <span class="token operator">==</span> DIV<span class="token punctuation">:</span>
+                self<span class="token punctuation">.</span>eat<span class="token punctuation">(</span>DIV<span class="token punctuation">)</span>
+
+            node <span class="token operator">=</span> BinOp<span class="token punctuation">(</span>left<span class="token operator">=</span>node<span class="token punctuation">,</span> op<span class="token operator">=</span>token<span class="token punctuation">,</span> right<span class="token operator">=</span>self<span class="token punctuation">.</span>factor<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+        <span class="token keyword">return</span> node
+
+    <span class="token keyword">def</span> <span class="token function">factor</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">""" factor : PLUS factor
+                   | MINUS factor
+                   | INTEGER
+                   | LPAREN expr RPAREN
+                   | variable
+        """</span>
+        token <span class="token operator">=</span> self<span class="token punctuation">.</span>current_token
+        <span class="token keyword">if</span> token<span class="token punctuation">.</span><span class="token builtin">type</span> <span class="token operator">==</span> PLUS<span class="token punctuation">:</span>
+            self<span class="token punctuation">.</span>eat<span class="token punctuation">(</span>PLUS<span class="token punctuation">)</span>
+            node <span class="token operator">=</span> UnaryOp<span class="token punctuation">(</span>token<span class="token punctuation">,</span> self<span class="token punctuation">.</span>factor<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token keyword">return</span> node
+        <span class="token keyword">elif</span> token<span class="token punctuation">.</span><span class="token builtin">type</span> <span class="token operator">==</span> MINUS<span class="token punctuation">:</span>
+            self<span class="token punctuation">.</span>eat<span class="token punctuation">(</span>MINUS<span class="token punctuation">)</span>
+            node <span class="token operator">=</span> UnaryOp<span class="token punctuation">(</span>token<span class="token punctuation">,</span> self<span class="token punctuation">.</span>factor<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token keyword">return</span> node
+        <span class="token keyword">elif</span> token<span class="token punctuation">.</span><span class="token builtin">type</span> <span class="token operator">==</span> INTEGER<span class="token punctuation">:</span>
+            self<span class="token punctuation">.</span>eat<span class="token punctuation">(</span>INTEGER<span class="token punctuation">)</span>
+            <span class="token keyword">return</span> Num<span class="token punctuation">(</span>token<span class="token punctuation">)</span>
+        <span class="token keyword">elif</span> token<span class="token punctuation">.</span><span class="token builtin">type</span> <span class="token operator">==</span> LPAREN<span class="token punctuation">:</span>
+            self<span class="token punctuation">.</span>eat<span class="token punctuation">(</span>LPAREN<span class="token punctuation">)</span>
+            node <span class="token operator">=</span> self<span class="token punctuation">.</span>expr<span class="token punctuation">(</span><span class="token punctuation">)</span>
+            self<span class="token punctuation">.</span>eat<span class="token punctuation">(</span>RPAREN<span class="token punctuation">)</span>
+            <span class="token keyword">return</span> node
+        <span class="token keyword">else</span><span class="token punctuation">:</span>
+            node <span class="token operator">=</span> self<span class="token punctuation">.</span>variable<span class="token punctuation">(</span><span class="token punctuation">)</span>
+            <span class="token keyword">return</span> node
+
+    <span class="token keyword">def</span> <span class="token function">parse</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">"""
+        program : compound_statement DOT
+        compound_statement : BEGIN statement_list END
+        statement_list : statement
+                       | statement SEMI statement_list
+        statement : compound_statement
+                  | assignment_statement
+                  | empty
+        assignment_statement : variable ASSIGN expr
+        empty :
+        expr: term ((PLUS | MINUS) term)*
+        term: factor ((MUL | DIV) factor)*
+        factor : PLUS factor
+               | MINUS factor
+               | INTEGER
+               | LPAREN expr RPAREN
+               | variable
+        variable: ID
+        """</span>
+        node <span class="token operator">=</span> self<span class="token punctuation">.</span>program<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token keyword">if</span> self<span class="token punctuation">.</span>current_token<span class="token punctuation">.</span><span class="token builtin">type</span> <span class="token operator">!=</span> EOF<span class="token punctuation">:</span>
+            self<span class="token punctuation">.</span>error<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+        <span class="token keyword">return</span> node
+
+
+<span class="token comment">###############################################################################</span>
+<span class="token comment">#                                                                             #</span>
+<span class="token comment">#  INTERPRETER                                                                #</span>
+<span class="token comment">#                                                                             #</span>
+<span class="token comment">###############################################################################</span>
+
+
+<span class="token keyword">class</span> <span class="token class-name">NodeVisitor</span><span class="token punctuation">(</span><span class="token builtin">object</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">visit</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> node<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        method_name <span class="token operator">=</span> <span class="token string">'visit_'</span> <span class="token operator">+</span> <span class="token builtin">type</span><span class="token punctuation">(</span>node<span class="token punctuation">)</span><span class="token punctuation">.</span>__name__
+        visitor <span class="token operator">=</span> <span class="token builtin">getattr</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> method_name<span class="token punctuation">,</span> self<span class="token punctuation">.</span>generic_visit<span class="token punctuation">)</span>
+        <span class="token keyword">return</span> visitor<span class="token punctuation">(</span>node<span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">generic_visit</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> node<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">raise</span> Exception<span class="token punctuation">(</span><span class="token string">'No visit_&#123;&#125; method'</span><span class="token punctuation">.</span><span class="token builtin">format</span><span class="token punctuation">(</span><span class="token builtin">type</span><span class="token punctuation">(</span>node<span class="token punctuation">)</span><span class="token punctuation">.</span>__name__<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+
+<span class="token keyword">class</span> <span class="token class-name">Interpreter</span><span class="token punctuation">(</span>NodeVisitor<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    GLOBAL_SCOPE <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> parser<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>parser <span class="token operator">=</span> parser
+
+    <span class="token keyword">def</span> <span class="token function">visit_BinOp</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> node<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">if</span> node<span class="token punctuation">.</span>op<span class="token punctuation">.</span><span class="token builtin">type</span> <span class="token operator">==</span> PLUS<span class="token punctuation">:</span>
+            <span class="token keyword">return</span> self<span class="token punctuation">.</span>visit<span class="token punctuation">(</span>node<span class="token punctuation">.</span>left<span class="token punctuation">)</span> <span class="token operator">+</span> self<span class="token punctuation">.</span>visit<span class="token punctuation">(</span>node<span class="token punctuation">.</span>right<span class="token punctuation">)</span>
+        <span class="token keyword">elif</span> node<span class="token punctuation">.</span>op<span class="token punctuation">.</span><span class="token builtin">type</span> <span class="token operator">==</span> MINUS<span class="token punctuation">:</span>
+            <span class="token keyword">return</span> self<span class="token punctuation">.</span>visit<span class="token punctuation">(</span>node<span class="token punctuation">.</span>left<span class="token punctuation">)</span> <span class="token operator">-</span> self<span class="token punctuation">.</span>visit<span class="token punctuation">(</span>node<span class="token punctuation">.</span>right<span class="token punctuation">)</span>
+        <span class="token keyword">elif</span> node<span class="token punctuation">.</span>op<span class="token punctuation">.</span><span class="token builtin">type</span> <span class="token operator">==</span> MUL<span class="token punctuation">:</span>
+            <span class="token keyword">return</span> self<span class="token punctuation">.</span>visit<span class="token punctuation">(</span>node<span class="token punctuation">.</span>left<span class="token punctuation">)</span> <span class="token operator">*</span> self<span class="token punctuation">.</span>visit<span class="token punctuation">(</span>node<span class="token punctuation">.</span>right<span class="token punctuation">)</span>
+        <span class="token keyword">elif</span> node<span class="token punctuation">.</span>op<span class="token punctuation">.</span><span class="token builtin">type</span> <span class="token operator">==</span> DIV<span class="token punctuation">:</span>
+            <span class="token keyword">return</span> self<span class="token punctuation">.</span>visit<span class="token punctuation">(</span>node<span class="token punctuation">.</span>left<span class="token punctuation">)</span> <span class="token operator">/</span> self<span class="token punctuation">.</span>visit<span class="token punctuation">(</span>node<span class="token punctuation">.</span>right<span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">visit_Num</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> node<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">return</span> node<span class="token punctuation">.</span>value
+
+
+    <span class="token keyword">def</span> <span class="token function">visit_UnaryOp</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> node<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        op <span class="token operator">=</span> node<span class="token punctuation">.</span>op<span class="token punctuation">.</span><span class="token builtin">type</span>
+        <span class="token keyword">if</span> op <span class="token operator">==</span> PLUS<span class="token punctuation">:</span>
+            <span class="token keyword">return</span> <span class="token operator">+</span>self<span class="token punctuation">.</span>visit<span class="token punctuation">(</span>node<span class="token punctuation">.</span>expr<span class="token punctuation">)</span>
+        <span class="token keyword">elif</span> op <span class="token operator">==</span> MINUS<span class="token punctuation">:</span>
+            <span class="token keyword">return</span> <span class="token operator">-</span>self<span class="token punctuation">.</span>visit<span class="token punctuation">(</span>node<span class="token punctuation">.</span>expr<span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">visit_Compound</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> node<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">for</span> child <span class="token keyword">in</span> node<span class="token punctuation">.</span>children<span class="token punctuation">:</span>
+            self<span class="token punctuation">.</span>visit<span class="token punctuation">(</span>child<span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">visit_Assign</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> node<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        var_name <span class="token operator">=</span> node<span class="token punctuation">.</span>left<span class="token punctuation">.</span>value
+        self<span class="token punctuation">.</span>GLOBAL_SCOPE<span class="token punctuation">[</span>var_name<span class="token punctuation">]</span> <span class="token operator">=</span> self<span class="token punctuation">.</span>visit<span class="token punctuation">(</span>node<span class="token punctuation">.</span>right<span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">visit_Var</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> node<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        var_name <span class="token operator">=</span> node<span class="token punctuation">.</span>value
+        val <span class="token operator">=</span> self<span class="token punctuation">.</span>GLOBAL_SCOPE<span class="token punctuation">.</span>get<span class="token punctuation">(</span>var_name<span class="token punctuation">)</span>
+        <span class="token keyword">if</span> val <span class="token keyword">is</span> <span class="token boolean">None</span><span class="token punctuation">:</span>
+            <span class="token keyword">raise</span> NameError<span class="token punctuation">(</span><span class="token builtin">repr</span><span class="token punctuation">(</span>var_name<span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token keyword">else</span><span class="token punctuation">:</span>
+            <span class="token keyword">return</span> val
+
+    <span class="token keyword">def</span> <span class="token function">visit_NoOp</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> node<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">pass</span>
+
+    <span class="token keyword">def</span> <span class="token function">interpret</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        tree <span class="token operator">=</span> self<span class="token punctuation">.</span>parser<span class="token punctuation">.</span>parse<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token keyword">if</span> tree <span class="token keyword">is</span> <span class="token boolean">None</span><span class="token punctuation">:</span>
+            <span class="token keyword">return</span> <span class="token string">''</span>
+        <span class="token keyword">return</span> self<span class="token punctuation">.</span>visit<span class="token punctuation">(</span>tree<span class="token punctuation">)</span>
+
+<span class="token keyword">def</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">import</span> sys
+    text <span class="token operator">=</span> <span class="token builtin">open</span><span class="token punctuation">(</span>sys<span class="token punctuation">.</span>argv<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token string">'r'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>read<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    lexer <span class="token operator">=</span> Lexer<span class="token punctuation">(</span>text<span class="token punctuation">)</span>
+    parser <span class="token operator">=</span> Parser<span class="token punctuation">(</span>lexer<span class="token punctuation">)</span>
+    interpreter <span class="token operator">=</span> Interpreter<span class="token punctuation">(</span>parser<span class="token punctuation">)</span>
+    result <span class="token operator">=</span> interpreter<span class="token punctuation">.</span>interpret<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span>interpreter<span class="token punctuation">.</span>GLOBAL_SCOPE<span class="token punctuation">)</span>
+
+
+<span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">'__main__'</span><span class="token punctuation">:</span>
+    main<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Moving on to parser changes.</p>
+<p>Here is the summary of changes in the parser:</p>
+<img data-src="./imgs/lsbasi_part9_parser.png" alt="" />
+
+<p>1.Let’s start with new AST nodes:</p>
+<ul>
+<li>Compound AST node represents a compound statement. It contains a list of statement nodes in its <code>children</code> variable.</li>
+</ul>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">Compound</span><span class="token punctuation">(</span>AST<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token triple-quoted-string string">""" Represents a 'BEGIN ... END' block """</span>
+    <span class="token keyword">def</span> <span class="token function">__init__self</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>children <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<ul>
+<li>Assign AST node represents an assignemnt statement. Its <code>left</code> variable is for storing a <em>Var</em> node and its <code>right</code> variable for a node returned by the <em>expr</em> parser method:</li>
+</ul>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">Assign</span><span class="token punctuation">(</span>AST<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> left<span class="token punctuation">,</span> op <span class="token punctuation">,</span> right<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>left <span class="token operator">=</span> left
+        self<span class="token punctuation">.</span>token <span class="token operator">=</span> self<span class="token punctuation">.</span>op <span class="token operator">=</span> op
+        self<span class="token punctuation">.</span>right <span class="token operator">=</span> right<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<ul>
+<li><em>NoOp</em> node is used to represent an empty statement. For example <code>BEGIN END</code> is a valid compound statement that has no statements.</li>
+</ul>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">NoOp</span><span class="token punctuation">(</span>AST<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">pass</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>2.Each rule from the grammar has a corresponding method in the recursive-descent parser. This time we add some methods which are responsible for parsing new language constructs and constructing new AST nodes. They are pretty straightforward:</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">program</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token triple-quoted-string string">""" program : compound_statement DOT """</span>
+    node <span class="token operator">=</span> self<span class="token punctuation">.</span>coumpound_statement<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    self<span class="token punctuation">.</span>eat<span class="token punctuation">(</span>DOT<span class="token punctuation">)</span>
+    <span class="token keyword">return</span> node
+
+<span class="token keyword">def</span> <span class="token function">compound_statement</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token triple-quoted-string string">"""
+    compound_statement: BEGIN statement_list END
+    """</span>
+    self<span class="token punctuation">.</span>eat<span class="token punctuation">(</span>BEGIN<span class="token punctuation">)</span>
+    nodes <span class="token operator">=</span> self<span class="token punctuation">.</span>statement_list<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    self<span class="token punctuation">.</span>eat<span class="token punctuation">(</span>END<span class="token punctuation">)</span>
+
+    root <span class="token operator">=</span> Compound<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">for</span> node <span class="token keyword">in</span> nodes<span class="token punctuation">:</span>
+        root<span class="token punctuation">.</span>children<span class="token punctuation">.</span>append<span class="token punctuation">(</span>node<span class="token punctuation">)</span>
+
+    <span class="token keyword">return</span> root
+
+<span class="token keyword">def</span> <span class="token function">statement_list</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token triple-quoted-string string">"""
+    statement_list : statement
+                   | statement SEMI statement_list
+    """</span>
+    node <span class="token operator">=</span> self<span class="token punctuation">.</span>statement<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    results <span class="token operator">=</span> <span class="token punctuation">[</span>node<span class="token punctuation">]</span>
+
+    <span class="token keyword">while</span> self<span class="token punctuation">.</span>current_token<span class="token punctuation">.</span><span class="token builtin">type</span> <span class="token operator">==</span> SEMI<span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>eat<span class="token punctuation">(</span>SEMI<span class="token punctuation">)</span>
+        results<span class="token punctuation">.</span>append<span class="token punctuation">(</span>self<span class="token punctuation">.</span>statement<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">if</span> self<span class="token punctuation">.</span>current_token<span class="token punctuation">.</span><span class="token builtin">type</span> <span class="token operator">==</span> ID<span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>error<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">return</span> results
+
+<span class="token keyword">def</span> <span class="token function">statement</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token triple-quoted-string string">"""
+    statement : compound_statement
+              | assignment_statement
+              | empty
+    """</span>
+    <span class="token keyword">if</span> self<span class="token punctuation">.</span>current_token<span class="token punctuation">.</span><span class="token builtin">type</span> <span class="token operator">==</span> BEGIN<span class="token punctuation">:</span>
+        node <span class="token operator">=</span> self<span class="token punctuation">.</span>compound_statement<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">elif</span> self<span class="token punctuation">.</span>current_token<span class="token punctuation">.</span><span class="token builtin">type</span> <span class="token operator">==</span> ID<span class="token punctuation">:</span>
+        node <span class="token operator">=</span> self<span class="token punctuation">.</span>assignment_statement<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">else</span><span class="token punctuation">:</span>
+        node <span class="token operator">=</span> self<span class="token punctuation">.</span>empty<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">return</span> node
+
+<span class="token keyword">def</span> <span class="token function">assign_statement</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token triple-quoted-string string">"""
+    assignment_statement : variable ASSIGN expr
+    """</span>
+    left <span class="token operator">=</span> self<span class="token punctuation">.</span>variable<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    token <span class="token operator">=</span> self<span class="token punctuation">.</span>current_token
+    self<span class="token punctuation">.</span>eat<span class="token punctuation">(</span>ASSIGN<span class="token punctuation">)</span>
+    right <span class="token operator">=</span> self<span class="token punctuation">.</span>expr<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    node <span class="token operator">=</span> Assign<span class="token punctuation">(</span>left<span class="token punctuation">,</span> token<span class="token punctuation">,</span> right<span class="token punctuation">)</span>
+    <span class="token keyword">return</span> node
+
+<span class="token keyword">def</span> <span class="token function">variable</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token triple-quoted-string string">"""
+    variable: ID
+    """</span>
+    node <span class="token operator">=</span> Var<span class="token punctuation">(</span>self<span class="token punctuation">.</span>current_token<span class="token punctuation">)</span>
+    self<span class="token punctuation">.</span>eat<span class="token punctuation">(</span>ID<span class="token punctuation">)</span>
+    <span class="token keyword">return</span> node
+
+<span class="token keyword">def</span> <span class="token function">empty</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token triple-quoted-string string">""" An empty production """</span>
+    <span class="token keyword">return</span> NoOp<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>3.We also need to update the existing <em>factor</em> method to parse variables:</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">factor</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token triple-quoted-string string">"""
+    factor : PLUS factor
+           | MINUS factor
+           | INTEGER
+           | LPAREN expr RPAREN
+           | variable
+    """</span>
+    token <span class="token operator">=</span> self<span class="token punctuation">.</span>current_token
+    <span class="token keyword">if</span> token<span class="token punctuation">.</span><span class="token builtin">type</span> <span class="token operator">==</span> PLUS<span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>eat<span class="token punctuation">(</span>PLUS<span class="token punctuation">)</span>
+        node <span class="token operator">=</span> UnaryOp<span class="token punctuation">(</span>token<span class="token punctuation">,</span> self<span class="token punctuation">.</span>factor<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span> node
+    <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+    <span class="token keyword">else</span><span class="token punctuation">:</span>
+        node <span class="token operator">=</span> self<span class="token punctuation">.</span>variable<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span> node<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>4.The parser’s <em>parse</em> method is updated to start the parsing process by parsing a program definition;</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">parse</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    node <span class="token operator">=</span> self<span class="token punctuation">.</span>program<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> self<span class="token punctuation">.</span>current_token<span class="token punctuation">.</span><span class="token builtin">type</span> <span class="token operator">!=</span> EOF<span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>error<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">return</span> node<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>And some changes are required for the interpreter:</p>
+<img data-src="./imgs/lsbasi_part9_interpreter.png" alt="" />
+
+<p>To interpreter new AST nodes, we need to add corresponding visitor methods to the interpreter.</p>
+<ul>
+<li>visit_Compound</li>
+<li>visit_Assign</li>
+<li>visit_Var</li>
+<li>visit_NoOp</li>
+</ul>
+<p><em>Compound</em> and <em>NoOp</em> visitor methods are pretty straightforward. The <em>visit_Compound_ method iterates over its children and visits each one in turn, and the _visit_NoOp</em> method does nothing.</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">visit_Compound</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> node<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">for</span> child <span class="token keyword">in</span> node<span class="token punctuation">.</span>children<span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>visit<span class="token punctuation">(</span>child<span class="token punctuation">)</span>
+
+<span class="token keyword">def</span> <span class="token function">visit_NoOp</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> node<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">pass</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>The <em>Assign</em> and <em>Var</em> visitor methods deserve a closer examination.</p>
+<p>When we assign a value to a variable, we need to store that value somewhere for when we need it later, and that’s exactly what the _visit_Assign_ method does:</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">visit_Assign</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> node<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    var_name <span class="token operator">=</span> node<span class="token punctuation">.</span>left<span class="token punctuation">.</span>value
+    self<span class="token punctuation">.</span>GLOBAL_SCOPE<span class="token punctuation">[</span>var_name<span class="token punctuation">]</span> <span class="token operator">=</span> self<span class="token punctuation">.</span>visit<span class="token punctuation">(</span>node<span class="token punctuation">.</span>right<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>The method stores a key-value pair in a <em>symbol table</em> GLOBAL_SCOPE, which is an abstract data type (ADT) for tracking various symbols in source code. The only symbol category we have right now is variables and we use the Python dictionary to implement the symbol table ADT.</p>
+<p>Let’s take a look at an AST for the statement “a := 3;” and the symbol table before and after the _visit_Assign_ method does its job:</p>
+<img data-src="./imgs/lsbasi_part9_ast_st01.png" alt="" />
+
+<p>Then take a look at an AST for the statement “b := a + 7;”</p>
+<img data-src="./imgs/lsbasi_part9_ast_only_st02.png" alt="" />
+
+<p>The right-hand side of the assignment statement - “a + 7” -references the variable ‘a’, so we need to find out what the value ‘a’ is before we can evaluate the expression “a + 7”, which is the responsibility of the _visit_Var_ method:</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">visit_Var</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span>node<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    var_name <span class="token operator">=</span> node<span class="token punctuation">.</span>value
+    val <span class="token operator">=</span> self<span class="token punctuation">.</span>GLOBAL_SCOPE<span class="token punctuation">.</span>get<span class="token punctuation">(</span>var_name<span class="token punctuation">)</span>
+    <span class="token keyword">if</span> val <span class="token keyword">is</span> <span class="token boolean">None</span><span class="token punctuation">:</span>
+        <span class="token keyword">raise</span> NameError<span class="token punctuation">(</span><span class="token builtin">repr</span><span class="token punctuation">(</span>var_name<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token keyword">else</span><span class="token punctuation">:</span>
+        <span class="token keyword">return</span> val<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>When the method visits a <em>Var</em> node as in the above AST picture, it first gets the variable’s name and then uses that name as a key into the <code>GLOBAL_SCOPE</code> dictionary to get the variable’s value. If it can find the value, it returns it, if not - it raises a <em>NameError</em> exception. Here are the contents of the symbol table before evaluating the assignment statement “b := a + 7;”:</p>
+<img data-src="./imgs/lsbasi_part9_ast_st02.png" alt="" />
+
+<p><strong>Wrapping Up</strong></p>
+<p>In this article we introduce a number of “hacks” which will be removed as we move forward with the series:</p>
+<ol>
+<li>The program grammar rule is incomplete. We’ll extend it later with additional elements.</li>
+<li>Pascal is a statically typed language, and you must declare a variable and its type before using it. But, as you saw, that was not the case in this article.</li>
+<li>No type checking so far. It’s not a big deal at this point, but I just wanted to mention it explicitly. Once we add more types to our interpreter we’ll need to report an error when you try to add a string and an integer, for example.</li>
+<li>A symbol table in this part is a simple Python dictionary that does double duty as a memory space. Worry not: symbol tables are such an important topic that I’ll have several articles dedicated just to them. And memory space (runtime management) is a topic of its own.</li>
+<li>In our simple calculator from previous articles, we used a forward slash character ‘/‘ for denoting integer division. In Pascal, though, you have to use a keyword div to specify integer division.</li>
+<li>There is also one hack that I introduced on purpose in Pascal all reserved keywords and identifiers are case insensitive, but the interpreter in this article treats them as case sensitive.</li>
+</ol>
+<img data-src="./imgs/lsbasi_part9_hacks.png" alt="" />
+
+<p><a href="./chapter-10.html">Next, close the gap</a></p>
+<h3 id="quick-reference"><a href="#quick-reference" class="headerlink" title="Quick Reference"></a>Quick Reference</h3><ol>
+<li><a href="/lisp-interpreter-in-py/chapter-01.html">Chapter 01</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-02.html">Chapter 02</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-03.html">Chapter 03</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-04.html">Chapter 04</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-05.html">Chapter 05</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-06.html">Chapter 06</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-07.html">Chapter 07</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-08.html">Chapter 08</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-09.html">Chapter 09</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-10.html">Chapter 10</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-11.html">Chapter 11</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-12.html">Chapter 12</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-13.html">Chapter 13</a></li>
+<li><a href="/lisp-interpreter-in-py/chapter-14.html">Chapter 14</a></li>
+</ol>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

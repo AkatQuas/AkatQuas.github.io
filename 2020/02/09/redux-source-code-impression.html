@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="redux version is 4.0.5.  redux 本身的设计很简单，主要是通过 pure function 来改变 store 里面 state 的值。 source code &#x2F;&#x2F; 每一次在组件层面或者 store 直接调用 &#96;dispatch&#96; &#x2F;&#x2F; 经过相关中间件的执行之后，最后的函数会到这里 function dispatch(action) &amp;#123;   &#x2F;&#x2F; 一些错误">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redux 源码读后感">
+<meta property="og:url" content="https://akatquas.github.io/2020/02/09/redux-source-code-impression.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="redux version is 4.0.5.  redux 本身的设计很简单，主要是通过 pure function 来改变 store 里面 state 的值。 source code &#x2F;&#x2F; 每一次在组件层面或者 store 直接调用 &#96;dispatch&#96; &#x2F;&#x2F; 经过相关中间件的执行之后，最后的函数会到这里 function dispatch(action) &amp;#123;   &#x2F;&#x2F; 一些错误">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-02-09T18:14:44.000Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.366Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="reactjs">
+<meta property="article:tag" content="redux">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://akatquas.github.io/2020/02/09/redux-source-code-impression.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>Redux 源码读后感 | 🔭</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#react-%E5%92%8C-redux"><span class="nav-text">React 和 Redux</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#react-redux-v6-x"><span class="nav-text">react-redux v6.x</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#react-redux-v7-x"><span class="nav-text">react-redux v7.x</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%84%E4%BB%B6%E6%9B%B4%E6%96%B0%E9%97%AE%E9%A2%98%E7%9A%84%E8%80%83%E8%99%91"><span class="nav-text">组件更新问题的考虑</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://akatquas.github.io/2020/02/09/redux-source-code-impression.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Akat">
+      <meta itemprop="description" content="Take notes aperiodically">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="🔭">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Redux 源码读后感
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-02-10 02:14:44" itemprop="dateCreated datePublished" datetime="2020-02-10T02:14:44+08:00">2020-02-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/frontend/" itemprop="url" rel="index"><span itemprop="name">frontend</span></a>
+        </span>
+          , 
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/frontend/javascript/" itemprop="url" rel="index"><span itemprop="name">javascript</span></a>
+        </span>
+          , 
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/frontend/javascript/reactjs/" itemprop="url" rel="index"><span itemprop="name">reactjs</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <blockquote>
+<p>redux version is 4.0.5.</p>
+</blockquote>
+<p><code>redux</code> 本身的设计很简单，主要是通过 <em>pure function</em> 来改变 <code>store</code> 里面 <code>state</code> 的值。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/reduxjs/redux/blob/v4.0.5/src/createStore.js">source code</a></p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">// 每一次在组件层面或者 store 直接调用 `dispatch`</span>
+<span class="token comment">// 经过相关中间件的执行之后，最后的函数会到这里</span>
+<span class="token keyword">function</span> <span class="token function">dispatch</span><span class="token punctuation">(</span><span class="token parameter">action</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// 一些错误判断，预防机制</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">isPlainObject</span><span class="token punctuation">(</span>action<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">Error</span><span class="token punctuation">(</span>
+      <span class="token string">'Actions must be plain objects. '</span> <span class="token operator">+</span>
+        <span class="token string">'Use custom middleware for async actions.'</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">typeof</span> action<span class="token punctuation">.</span>type <span class="token operator">===</span> <span class="token string">'undefined'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">Error</span><span class="token punctuation">(</span>
+      <span class="token string">'Actions may not have an undefined "type" property. '</span> <span class="token operator">+</span>
+        <span class="token string">'Have you misspelled a constant?'</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>isDispatching<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">Error</span><span class="token punctuation">(</span><span class="token string">'Reducers may not dispatch actions.'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
+    isDispatching <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+    <span class="token comment">// pure function 更新 state</span>
+    currentState <span class="token operator">=</span> <span class="token function">currentReducer</span><span class="token punctuation">(</span>currentState<span class="token punctuation">,</span> action<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span> <span class="token keyword">finally</span> <span class="token punctuation">&#123;</span>
+    isDispatching <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token comment">// subscribed 的回调在这里触发</span>
+  <span class="token comment">// ...</span>
+
+  <span class="token keyword">return</span> action<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<a id="more"></a>
+
+<p>进一步地，是整个对象的整体替换，甚至对于 <code>combineReducers</code> 之后的巨大 <code>state</code> 依然是通过遍历整个 <code>state</code> 的每一个 <em>subState</em> 来进行 <code>action</code> 的 <code>dispatch</code>。理想来看，只有些许的存储开销，但是每一步的运行开销是不可避免的。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/reduxjs/redux/blob/v4.0.5/src/combineReducers.js">source code</a></p>
+<pre class="line-numbers language-typescript" data-language="typescript"><code class="language-typescript"><span class="token comment">// 合并之后的一个 reducer，也是个 pure function</span>
+<span class="token keyword">function</span> <span class="token function">combination</span><span class="token punctuation">(</span>
+  state<span class="token operator">:</span> StateFromReducersMapObject<span class="token operator">&lt;</span><span class="token keyword">typeof</span> reducers<span class="token operator">></span> <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  action<span class="token operator">:</span> AnyAction
+<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// ...</span>
+  <span class="token comment">// 一些错误检测</span>
+  <span class="token comment">// ...</span>
+
+  <span class="token keyword">let</span> hasChanged <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+  <span class="token keyword">const</span> nextState<span class="token operator">:</span> StateFromReducersMapObject<span class="token operator">&lt;</span><span class="token keyword">typeof</span> reducers<span class="token operator">></span> <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+  <span class="token comment">// 遍历，然后那相应的 reducer 来执行 action</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> finalReducerKeys<span class="token punctuation">.</span>length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">const</span> key <span class="token operator">=</span> finalReducerKeys<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token keyword">const</span> reducer <span class="token operator">=</span> finalReducers<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token keyword">const</span> previousStateForKey <span class="token operator">=</span> state<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token keyword">const</span> nextStateForKey <span class="token operator">=</span> <span class="token function">reducer</span><span class="token punctuation">(</span>previousStateForKey<span class="token punctuation">,</span> action<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">typeof</span> nextStateForKey <span class="token operator">===</span> <span class="token string">'undefined'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">const</span> errorMessage <span class="token operator">=</span> <span class="token function">getUndefinedStateErrorMessage</span><span class="token punctuation">(</span>key<span class="token punctuation">,</span> action<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">Error</span><span class="token punctuation">(</span>errorMessage<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    nextState<span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token operator">=</span> nextStateForKey<span class="token punctuation">;</span>
+    hasChanged <span class="token operator">=</span>
+      hasChanged <span class="token operator">||</span> nextStateForKey <span class="token operator">!==</span> previousStateForKey<span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  hasChanged <span class="token operator">=</span>
+    hasChanged <span class="token operator">||</span>
+    finalReducerKeys<span class="token punctuation">.</span>length <span class="token operator">!==</span> Object<span class="token punctuation">.</span><span class="token function">keys</span><span class="token punctuation">(</span>state<span class="token punctuation">)</span><span class="token punctuation">.</span>length<span class="token punctuation">;</span>
+
+  <span class="token comment">// 如果有变化，会返回一个全新的对象引用</span>
+  <span class="token keyword">return</span> hasChanged <span class="token operator">?</span> nextState <span class="token operator">:</span> state<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>另外 <code>redux</code> 提供了一种<code>订阅</code>模式，形如 <code>store.subscribe(callback)</code>，这些 <code>callback</code> 会被存储到一个私有的回调函数数组 <code>listeners</code> 里面。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/reduxjs/redux/blob/v4.0.5/src/createStore.js">source code</a></p>
+<pre class="line-numbers language-typescript" data-language="typescript"><code class="language-typescript"><span class="token keyword">function</span> <span class="token function">ensureCanMutateNextListeners</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>nextListeners <span class="token operator">===</span> currentListeners<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      nextListeners <span class="token operator">=</span> currentListeners<span class="token punctuation">.</span><span class="token function">slice</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">function</span> <span class="token function">subscribe</span><span class="token punctuation">(</span><span class="token function-variable function">listener</span><span class="token operator">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token keyword">void</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">/// ...</span>
+  <span class="token comment">// 错误检测</span>
+  <span class="token comment">// ...</span>
+
+  <span class="token keyword">let</span> isSubscribed <span class="token operator">=</span> <span class="token boolean">true</span>
+
+  <span class="token function">ensureCanMutateNextListeners</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token comment">// 插入回调数组</span>
+  nextListeners<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>listener<span class="token punctuation">)</span>
+
+  <span class="token comment">// 返回 unsubscribe 函数，解除监听</span>
+  <span class="token keyword">return</span> <span class="token keyword">function</span> <span class="token function">unsubscribe</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>isSubscribed<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>isDispatching<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">Error</span><span class="token punctuation">(</span>
+        <span class="token string">'You may not unsubscribe from a store listener while the reducer is executing. '</span> <span class="token operator">+</span>
+          <span class="token string">'See https://redux.js.org/api-reference/store#subscribelistener for more details.'</span>
+      <span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+
+    isSubscribed <span class="token operator">=</span> <span class="token boolean">false</span>
+
+    <span class="token function">ensureCanMutateNextListeners</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">const</span> index <span class="token operator">=</span> nextListeners<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span>listener<span class="token punctuation">)</span>
+    nextListeners<span class="token punctuation">.</span><span class="token function">splice</span><span class="token punctuation">(</span>index<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span>
+    currentListeners <span class="token operator">=</span> <span class="token keyword">null</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>当每一次 <code>store</code> 进行地 <code>dispatch</code> 一次成功的 <code>action</code> 之后，（无论 <code>state</code> 是否发生了变化），都会对上述的 <code>listener</code> 进行遍历，调用每一个函数。因此，回调函数里面要显示的检查一下两次 <code>state</code> 是否一致。（<code>react-redux</code> 里面的 <code>Provider</code> 就这么做的。）</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/reduxjs/redux/blob/v4.0.5/src/createStore.js">source code</a></p>
+<pre class="line-numbers language-typescript" data-language="typescript"><code class="language-typescript"><span class="token keyword">function</span> <span class="token function">dispatch</span><span class="token punctuation">(</span>action<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// ...</span>
+  <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
+    isDispatching <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+    <span class="token comment">// pure function 更新 state</span>
+    currentState <span class="token operator">=</span> <span class="token function">currentReducer</span><span class="token punctuation">(</span>currentState<span class="token punctuation">,</span> action<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span> <span class="token keyword">finally</span> <span class="token punctuation">&#123;</span>
+    isDispatching <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token comment">//  执行了dispatch</span>
+  <span class="token comment">// 无论 state 是否发生改变</span>
+
+  <span class="token comment">// subscribed 的回调在这里触发</span>
+  <span class="token keyword">const</span> listeners <span class="token operator">=</span> <span class="token punctuation">(</span>currentListeners <span class="token operator">=</span> nextListeners<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> listeners<span class="token punctuation">.</span>length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">const</span> listener <span class="token operator">=</span> listeners<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token function">listener</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token keyword">return</span> action<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>额外的，<code>redux</code> 提供了 <code>middleware</code>，允许在执行真正的 <code>action</code> <em>mutation</em> 之前，进行其他形式的函数调用，常见的有异步操作。</p>
+<p><code>compose</code> 的实现代码比较巧妙，跟 <code>koa-compose</code> 可以相提并论，值得好好分析。源码里还定义了许多参数情形下 <code>compose</code> 的表现。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/reduxjs/redux/blob/v4.0.5/src/compose.js">source code</a></p>
+<pre class="line-numbers language-typescript" data-language="typescript"><code class="language-typescript"><span class="token keyword">function</span> <span class="token function">compose</span><span class="token punctuation">(</span><span class="token operator">...</span>funcs<span class="token operator">:</span> <span class="token builtin">Function</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>funcs<span class="token punctuation">.</span>length <span class="token operator">===</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> <span class="token operator">&lt;</span><span class="token constant">T</span><span class="token operator">></span><span class="token punctuation">(</span>arg<span class="token operator">:</span> <span class="token constant">T</span><span class="token punctuation">)</span> <span class="token operator">=></span> arg<span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>funcs<span class="token punctuation">.</span>length <span class="token operator">===</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> funcs<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token comment">// 每次返回另一个函数，</span>
+  <span class="token comment">// 按序执行</span>
+  <span class="token keyword">return</span> funcs<span class="token punctuation">.</span><span class="token function">reduce</span><span class="token punctuation">(</span><span class="token punctuation">(</span>a<span class="token punctuation">,</span> b<span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">(</span><span class="token operator">...</span>args<span class="token operator">:</span> <span class="token builtin">any</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token function">a</span><span class="token punctuation">(</span><span class="token function">b</span><span class="token punctuation">(</span><span class="token operator">...</span>args<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>为了加深理解，最后一个返回表达式翻译如下，最终形成一个嵌套多层的函数：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">funcs<span class="token punctuation">.</span><span class="token function">reduce</span><span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">a<span class="token punctuation">,</span> b</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">return</span> <span class="token keyword">function</span> <span class="token function">middle</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> <span class="token function">a</span><span class="token punctuation">(</span><span class="token function">b</span><span class="token punctuation">.</span><span class="token function">apply</span><span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token number">0</span><span class="token punctuation">,</span> arguments<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="react-和-redux"><a href="#react-和-redux" class="headerlink" title="React 和 Redux"></a>React 和 Redux</h2><p><code>redux</code> 和 <code>react</code> 一起使用的时候，要借助 <code>react-redux</code> 的帮忙。原因是在 <code>store</code> 里面的 <code>state</code> 更新之后，要触发 <code>react</code> <em>相关组件</em>的更新。</p>
+<h3 id="react-redux-v6-x"><a href="#react-redux-v6-x" class="headerlink" title="react-redux v6.x"></a>react-redux v6.x</h3><p>在 v6.x 的代码中，</p>
+<p><code>connect</code> 是 <code>react-redux</code> 提供的封装过的高阶组件 _HOC_，主要功能是从 <code>store</code> 里面 <code>state</code> 和 <code>dispatch</code> 进行相关 <code>props</code> 的注入。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/reduxjs/react-redux/blob/v6.0.1/src/connect/connect.js">source code</a></p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">connect</span><span class="token punctuation">(</span>
+  mapStateToProps<span class="token punctuation">,</span> <span class="token comment">// 经常使用的从 store 里面读取 state 数据的注入</span>
+  mapDispatchToProps<span class="token punctuation">,</span> <span class="token comment">// dispatch 函数的注入</span>
+  mergeProps<span class="token punctuation">,</span>
+  <span class="token punctuation">&#123;</span>
+    pure <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    areStatesEqual <span class="token operator">=</span> strictEqual<span class="token punctuation">,</span>
+    areOwnPropsEqual <span class="token operator">=</span> shallowEqual<span class="token punctuation">,</span>
+    areStatePropsEqual <span class="token operator">=</span> shallowEqual<span class="token punctuation">,</span>
+    areMergedPropsEqual <span class="token operator">=</span> shallowEqual<span class="token punctuation">,</span>
+    <span class="token operator">...</span>extraOptions
+  <span class="token punctuation">&#125;</span> <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">const</span> initMapStateToProps <span class="token operator">=</span> <span class="token function">match</span><span class="token punctuation">(</span>
+    mapStateToProps<span class="token punctuation">,</span>
+    mapStateToPropsFactories<span class="token punctuation">,</span>
+    <span class="token string">'mapStateToProps'</span>
+  <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">const</span> initMapDispatchToProps <span class="token operator">=</span> <span class="token function">match</span><span class="token punctuation">(</span>
+    mapDispatchToProps<span class="token punctuation">,</span>
+    mapDispatchToPropsFactories<span class="token punctuation">,</span>
+    <span class="token string">'mapDispatchToProps'</span>
+  <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">const</span> initMergeProps <span class="token operator">=</span> <span class="token function">match</span><span class="token punctuation">(</span>
+    mergeProps<span class="token punctuation">,</span>
+    mergePropsFactories<span class="token punctuation">,</span>
+    <span class="token string">'mergeProps'</span>
+  <span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token comment">// selectorFactory 就是实际上用到的组件，</span>
+  <span class="token comment">// 后面的参数都是一般都是原有 闭包 中带进来的默认值，</span>
+  <span class="token comment">// 当然可以在 connect 的调用时传进来</span>
+  <span class="token keyword">return</span> <span class="token function">connectHOC</span><span class="token punctuation">(</span>selectorFactory<span class="token punctuation">,</span> <span class="token punctuation">&#123;</span>
+    methodName<span class="token operator">:</span> <span class="token string">'connect'</span><span class="token punctuation">,</span>
+
+    <span class="token function-variable function">getDisplayName</span><span class="token operator">:</span> <span class="token parameter">name</span> <span class="token operator">=></span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">Connect(</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span>name<span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string">)</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">,</span>
+
+    shouldHandleStateChanges<span class="token operator">:</span> <span class="token function">Boolean</span><span class="token punctuation">(</span>mapStateToProps<span class="token punctuation">)</span><span class="token punctuation">,</span>
+
+    initMapStateToProps<span class="token punctuation">,</span>
+    initMapDispatchToProps<span class="token punctuation">,</span>
+    initMergeProps<span class="token punctuation">,</span>
+    pure<span class="token punctuation">,</span>
+    areStatesEqual<span class="token punctuation">,</span>
+    areOwnPropsEqual<span class="token punctuation">,</span>
+    areStatePropsEqual<span class="token punctuation">,</span>
+    areMergedPropsEqual<span class="token punctuation">,</span>
+
+    <span class="token operator">...</span>extraOptions
+  <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>默认的 <a target="_blank" rel="noopener" href="https://github.com/reduxjs/react-redux/blob/v6.0.1/src/components/connectAdvanced.js">connectHOC</a>.</p>
+<p>但是 <code>connect</code> 本身鼠没有涉及注册 <code>store</code> 变化的监听响应，因此单单一个 <code>connect</code> 是不够的，于是 <code>react-redux</code> 还提供了 <code>Provider</code>，一个用于根组件包装的组件。</p>
+<p><code>Provider</code> 本身也是一个简单的组件，它主要做了一件事情，即对 <code>store</code> 进行了一次监听，然后调用 <code>setState</code>，以此开始，触发了 <code>react</code> 组件的更新。一般而言，这个 <code>Provider</code> 是整个组件树的根，从这里开始，会触发整棵组件树的更新，那些用了 <code>connect</code> 包裹的组件同时就会取得最新的 <code>store</code> 里面的状态值，因此达到了更新的结果。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/reduxjs/react-redux/blob/master/src/components/Provider.js">source code</a></p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">class</span> <span class="token class-name">Provider</span> <span class="token keyword">extends</span> <span class="token class-name">Component</span> <span class="token punctuation">&#123;</span>
+  <span class="token function">constructor</span><span class="token punctuation">(</span><span class="token parameter">props</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">super</span><span class="token punctuation">(</span>props<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">const</span> <span class="token punctuation">&#123;</span> store <span class="token punctuation">&#125;</span> <span class="token operator">=</span> props<span class="token punctuation">;</span>
+
+    <span class="token keyword">this</span><span class="token punctuation">.</span>state <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+      storeState<span class="token operator">:</span> store<span class="token punctuation">.</span><span class="token function">getState</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      store
+    <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token function">componentDidMount</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>_isMounted <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">subscribe</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token function">componentWillUnmount</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>unsubscribe<span class="token punctuation">)</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">unsubscribe</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">this</span><span class="token punctuation">.</span>_isMounted <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token function">componentDidUpdate</span><span class="token punctuation">(</span><span class="token parameter">prevProps</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>store <span class="token operator">!==</span> prevProps<span class="token punctuation">.</span>store<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>unsubscribe<span class="token punctuation">)</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">unsubscribe</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+      <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">subscribe</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token function">subscribe</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">const</span> <span class="token punctuation">&#123;</span> store <span class="token punctuation">&#125;</span> <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">;</span>
+
+    <span class="token comment">// 注册，当 store 里面 state 变化时，进行 re-render</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>unsubscribe <span class="token operator">=</span> store<span class="token punctuation">.</span><span class="token function">subscribe</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">const</span> newStoreState <span class="token operator">=</span> store<span class="token punctuation">.</span><span class="token function">getState</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+      <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span>_isMounted<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span><span class="token punctuation">;</span>
+      <span class="token punctuation">&#125;</span>
+
+      <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState</span><span class="token punctuation">(</span><span class="token parameter">providerState</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+        <span class="token comment">// If the value is the same, skip the unnecessary state update.</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>providerState<span class="token punctuation">.</span>storeState <span class="token operator">===</span> newStoreState<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+          <span class="token keyword">return</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+
+        <span class="token keyword">return</span> <span class="token punctuation">&#123;</span> storeState<span class="token operator">:</span> newStoreState <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+      <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// Actions might have been dispatched between render and mount - handle those</span>
+    <span class="token keyword">const</span> postMountStoreState <span class="token operator">=</span> store<span class="token punctuation">.</span><span class="token function">getState</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>postMountStoreState <span class="token operator">!==</span> <span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>storeState<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span> storeState<span class="token operator">:</span> postMountStoreState <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">const</span> Context <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>context <span class="token operator">||</span> ReactReduxContext<span class="token punctuation">;</span>
+
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>
+      <span class="token operator">&lt;</span>Context<span class="token punctuation">.</span>Provider value<span class="token operator">=</span><span class="token punctuation">&#123;</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">&#125;</span><span class="token operator">></span>
+        <span class="token punctuation">&#123;</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>children<span class="token punctuation">&#125;</span>
+      <span class="token operator">&lt;</span><span class="token operator">/</span>Context<span class="token punctuation">.</span>Provider<span class="token operator">></span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="react-redux-v7-x"><a href="#react-redux-v7-x" class="headerlink" title="react-redux v7.x"></a>react-redux v7.x</h3><p>v7.x 的版本中，组件的基本都用 <code>hooks</code> 相关 API 进行了重构，把上述的变化进行了调整，可以做到在根组件 <code>Provider</code> 实例一个根级订阅器，然后在 <code>connect</code> 的 HOC 里面进行嵌套订阅，达到了在组件层级的 re-render，就不必从根组件重新渲染了。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/reduxjs/react-redux/blob/v7.1.3/src/components/Provider.js">source code</a></p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">// 用了 hooks 之后就变成了一个 stateless 组件</span>
+<span class="token comment">// react-redux 实现了一个简单的订阅器，因为要维护 useEffect 副作用变化带来的 取消/重新 订阅机制。</span>
+<span class="token keyword">function</span> <span class="token function">Provider</span><span class="token punctuation">(</span><span class="token parameter"><span class="token punctuation">&#123;</span> store<span class="token punctuation">,</span> context<span class="token punctuation">,</span> children <span class="token punctuation">&#125;</span></span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// 一般来说，store 是不变的，</span>
+  <span class="token comment">// contextValue 也是不变的</span>
+  <span class="token keyword">const</span> contextValue <span class="token operator">=</span> <span class="token function">useMemo</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">const</span> subscription <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Subscription</span><span class="token punctuation">(</span>store<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    subscription<span class="token punctuation">.</span>onStateChange <span class="token operator">=</span> subscription<span class="token punctuation">.</span>notifyNestedSubs<span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token punctuation">&#123;</span>
+      store<span class="token punctuation">,</span>
+      subscription
+    <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token punctuation">[</span>store<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token comment">// 一般来说， store 不变， previousState 也是不变的</span>
+  <span class="token keyword">const</span> previousState <span class="token operator">=</span> <span class="token function">useMemo</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> store<span class="token punctuation">.</span><span class="token function">getState</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">[</span>store<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token function">useEffect</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">const</span> <span class="token punctuation">&#123;</span> subscription <span class="token punctuation">&#125;</span> <span class="token operator">=</span> contextValue<span class="token punctuation">;</span>
+    subscription<span class="token punctuation">.</span><span class="token function">trySubscribe</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>previousState <span class="token operator">!==</span> store<span class="token punctuation">.</span><span class="token function">getState</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token comment">// 如果 store 整个更新了，自然要通知下面的组件更新。整体 re-render</span>
+      subscription<span class="token punctuation">.</span><span class="token function">notifyNestedSubs</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+      subscription<span class="token punctuation">.</span><span class="token function">tryUnsubscribe</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      subscription<span class="token punctuation">.</span>onStateChange <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token punctuation">[</span>contextValue<span class="token punctuation">,</span> previousState<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token keyword">const</span> Context <span class="token operator">=</span> context <span class="token operator">||</span> ReactReduxContext<span class="token punctuation">;</span>
+
+  <span class="token keyword">return</span> <span class="token punctuation">(</span>
+    <span class="token operator">&lt;</span>Context<span class="token punctuation">.</span>Provider value<span class="token operator">=</span><span class="token punctuation">&#123;</span>contextValue<span class="token punctuation">&#125;</span><span class="token operator">></span>
+      <span class="token punctuation">&#123;</span>children<span class="token punctuation">&#125;</span>
+    <span class="token operator">&lt;</span><span class="token operator">/</span>Context<span class="token punctuation">.</span>Provider<span class="token operator">></span>
+  <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><code>connectHOC</code> 的代码比较复杂，比较繁重，但总体上还是为了处理 数据从 <code>store</code> 中的获取，以及注册 <code>state</code> 更新的响应事件。其实从这个地方来看， <code>react-redux</code> 对于 <code>store</code> 的处理并不简洁明了，为了解决这个响应更新问题，肯定是付出了很多努力。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/reduxjs/react-redux/blob/v7.1.3/src/components/connectAdvanced.js">connectHOC source</a></p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">connectAdvanced</span><span class="token punctuation">(</span>
+  selectorFactory<span class="token punctuation">,</span>
+  <span class="token comment">// options object:</span>
+  <span class="token punctuation">&#123;</span>
+    <span class="token comment">// ...</span>
+  <span class="token punctuation">&#125;</span> <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// 错误检查</span>
+
+  <span class="token keyword">const</span> Context <span class="token operator">=</span> context<span class="token punctuation">;</span>
+
+  <span class="token comment">// 返回包装后的组件</span>
+  <span class="token keyword">return</span> <span class="token keyword">function</span> <span class="token function">wrapWithConnect</span><span class="token punctuation">(</span><span class="token parameter">WrappedComponent</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// ... 一些数据准备，配置项参数等</span>
+
+    <span class="token keyword">function</span> <span class="token function">ConnectFunction</span><span class="token punctuation">(</span><span class="token parameter">props</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">const</span> ContextToUse <span class="token operator">=</span> <span class="token function">useMemo</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+        <span class="token comment">// Users may optionally pass in a custom context instance to use instead of our ReactReduxContext.</span>
+        <span class="token comment">// Memoize the check that determines which context instance we should use.</span>
+        <span class="token keyword">return</span> propsContext <span class="token operator">&amp;&amp;</span>
+          propsContext<span class="token punctuation">.</span>Consumer <span class="token operator">&amp;&amp;</span>
+          <span class="token function">isContextConsumer</span><span class="token punctuation">(</span><span class="token operator">&lt;</span>propsContext<span class="token punctuation">.</span>Consumer <span class="token operator">/</span><span class="token operator">></span><span class="token punctuation">)</span>
+          <span class="token operator">?</span> propsContext
+          <span class="token operator">:</span> Context<span class="token punctuation">;</span>
+      <span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token punctuation">[</span>propsContext<span class="token punctuation">,</span> Context<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+      <span class="token comment">// 找到相关的 context，以便找到下面的 store</span>
+      <span class="token keyword">const</span> contextValue <span class="token operator">=</span> <span class="token function">useContext</span><span class="token punctuation">(</span>ContextToUse<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+      <span class="token comment">// ... store 检查</span>
+
+      <span class="token comment">// Based on the previous check, one of these must be true</span>
+      <span class="token keyword">const</span> store <span class="token operator">=</span> didStoreComeFromProps
+        <span class="token operator">?</span> props<span class="token punctuation">.</span>store
+        <span class="token operator">:</span> contextValue<span class="token punctuation">.</span>store<span class="token punctuation">;</span>
+
+      <span class="token comment">// ....</span>
+
+      <span class="token keyword">const</span> <span class="token punctuation">[</span>subscription<span class="token punctuation">,</span> notifyNestedSubs<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token function">useMemo</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>shouldHandleStateChanges<span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token constant">NO_SUBSCRIPTION_ARRAY</span><span class="token punctuation">;</span>
+
+        <span class="token comment">// 子组件也实例化一个订阅器，以后更新组件使用</span>
+        <span class="token keyword">const</span> subscription <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Subscription</span><span class="token punctuation">(</span>
+          store<span class="token punctuation">,</span>
+          didStoreComeFromProps <span class="token operator">?</span> <span class="token keyword">null</span> <span class="token operator">:</span> contextValue<span class="token punctuation">.</span>subscription
+        <span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment">// `notifyNestedSubs` is duplicated to handle the case where the component is unmounted in</span>
+        <span class="token comment">// the middle of the notification loop, where `subscription` will then be null. This can</span>
+        <span class="token comment">// probably be avoided if Subscription's listeners logic is changed to not call listeners</span>
+        <span class="token comment">// that have been unsubscribed in the  middle of the notification loop.</span>
+        <span class="token keyword">const</span> notifyNestedSubs <span class="token operator">=</span> subscription<span class="token punctuation">.</span><span class="token function">notifyNestedSubs</span><span class="token punctuation">.</span><span class="token function">bind</span><span class="token punctuation">(</span>
+          subscription
+        <span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token keyword">return</span> <span class="token punctuation">[</span>subscription<span class="token punctuation">,</span> notifyNestedSubs<span class="token punctuation">]</span><span class="token punctuation">;</span>
+      <span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token punctuation">[</span>store<span class="token punctuation">,</span> didStoreComeFromProps<span class="token punctuation">,</span> contextValue<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+      <span class="token comment">// Determine what &#123;store, subscription&#125; value should be put into nested context, if necessary,</span>
+      <span class="token comment">// and memoize that value to avoid unnecessary context updates.</span>
+      <span class="token keyword">const</span> overriddenContextValue <span class="token operator">=</span> <span class="token function">useMemo</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>didStoreComeFromProps<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+          <span class="token comment">// This component is directly subscribed to a store from props.</span>
+          <span class="token comment">// We don't want descendants reading from this store - pass down whatever</span>
+          <span class="token comment">// the existing context value is from the nearest connected ancestor.</span>
+          <span class="token keyword">return</span> contextValue<span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+
+        <span class="token comment">// Otherwise, put this component's subscription instance into context, so that</span>
+        <span class="token comment">// connected descendants won't update until after this component is done</span>
+        <span class="token keyword">return</span> <span class="token punctuation">&#123;</span>
+          <span class="token operator">...</span>contextValue<span class="token punctuation">,</span>
+          subscription
+        <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+      <span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token punctuation">[</span>didStoreComeFromProps<span class="token punctuation">,</span> contextValue<span class="token punctuation">,</span> subscription<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+      <span class="token comment">// We need to force this wrapper component to re-render whenever a Redux store update</span>
+      <span class="token comment">// causes a change to the calculated child component props (or we caught an error in mapState)</span>
+      <span class="token keyword">const</span> <span class="token punctuation">[</span>
+        <span class="token punctuation">[</span>previousStateUpdateResult<span class="token punctuation">]</span><span class="token punctuation">,</span>
+        forceComponentUpdateDispatch
+      <span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token function">useReducer</span><span class="token punctuation">(</span>
+        storeStateUpdatesReducer<span class="token punctuation">,</span>
+        <span class="token constant">EMPTY_ARRAY</span><span class="token punctuation">,</span>
+        initStateUpdates
+      <span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+      <span class="token comment">// Propagate any mapState/mapDispatch errors upwards</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>
+        previousStateUpdateResult <span class="token operator">&amp;&amp;</span>
+        previousStateUpdateResult<span class="token punctuation">.</span>error
+      <span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">throw</span> previousStateUpdateResult<span class="token punctuation">.</span>error<span class="token punctuation">;</span>
+      <span class="token punctuation">&#125;</span>
+
+      <span class="token comment">// Set up refs to coordinate values between the subscription effect and the render logic</span>
+      <span class="token keyword">const</span> lastChildProps <span class="token operator">=</span> <span class="token function">useRef</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">const</span> lastWrapperProps <span class="token operator">=</span> <span class="token function">useRef</span><span class="token punctuation">(</span>wrapperProps<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">const</span> childPropsFromStoreUpdate <span class="token operator">=</span> <span class="token function">useRef</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">const</span> renderIsScheduled <span class="token operator">=</span> <span class="token function">useRef</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+      <span class="token keyword">const</span> actualChildProps <span class="token operator">=</span> <span class="token function">usePureOnlyMemo</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+        <span class="token comment">// Tricky logic here:</span>
+        <span class="token comment">// - This render may have been triggered by a Redux store update that produced new child props</span>
+        <span class="token comment">// - However, we may have gotten new wrapper props after that</span>
+        <span class="token comment">// If we have new child props, and the same wrapper props, we know we should use the new child props as-is.</span>
+        <span class="token comment">// But, if we have new wrapper props, those might change the child props, so we have to recalculate things.</span>
+        <span class="token comment">// So, we'll use the child props from store update only if the wrapper props are the same as last time.</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>
+          childPropsFromStoreUpdate<span class="token punctuation">.</span>current <span class="token operator">&amp;&amp;</span>
+          wrapperProps <span class="token operator">===</span> lastWrapperProps<span class="token punctuation">.</span>current
+        <span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+          <span class="token keyword">return</span> childPropsFromStoreUpdate<span class="token punctuation">.</span>current<span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+
+        <span class="token comment">// TODO We're reading the store directly in render() here. Bad idea?</span>
+        <span class="token comment">// This will likely cause Bad Things (TM) to happen in Concurrent Mode.</span>
+        <span class="token comment">// Note that we do this because on renders _not_ caused by store updates, we need the latest store state</span>
+        <span class="token comment">// to determine what the child props should be.</span>
+        <span class="token keyword">return</span> <span class="token function">childPropsSelector</span><span class="token punctuation">(</span>store<span class="token punctuation">.</span><span class="token function">getState</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> wrapperProps<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token punctuation">[</span>store<span class="token punctuation">,</span> previousStateUpdateResult<span class="token punctuation">,</span> wrapperProps<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+      <span class="token comment">// We need this to execute synchronously every time we re-render. However, React warns</span>
+      <span class="token comment">// about useLayoutEffect in SSR, so we try to detect environment and fall back to</span>
+      <span class="token comment">// just useEffect instead to avoid the warning, since neither will run anyway.</span>
+      <span class="token function">useIsomorphicLayoutEffect</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+        <span class="token comment">// We want to capture the wrapper props and child props we used for later comparisons</span>
+        lastWrapperProps<span class="token punctuation">.</span>current <span class="token operator">=</span> wrapperProps<span class="token punctuation">;</span>
+        lastChildProps<span class="token punctuation">.</span>current <span class="token operator">=</span> actualChildProps<span class="token punctuation">;</span>
+        renderIsScheduled<span class="token punctuation">.</span>current <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+
+        <span class="token comment">// If the render was from a store update, clear out that reference and cascade the subscriber update</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>childPropsFromStoreUpdate<span class="token punctuation">.</span>current<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+          childPropsFromStoreUpdate<span class="token punctuation">.</span>current <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+          <span class="token function">notifyNestedSubs</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+      <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+      <span class="token comment">// Our re-subscribe logic only runs when the store/subscription setup changes</span>
+      <span class="token function">useIsomorphicLayoutEffect</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+        <span class="token comment">// If we're not subscribed to the store, nothing to do here</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>shouldHandleStateChanges<span class="token punctuation">)</span> <span class="token keyword">return</span><span class="token punctuation">;</span>
+
+        <span class="token comment">// Capture values for checking if and when this component unmounts</span>
+        <span class="token keyword">let</span> didUnsubscribe <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+        <span class="token keyword">let</span> lastThrownError <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+
+        <span class="token comment">// 每次 store 更新的时候，这个函数都会执行，re-render</span>
+        <span class="token keyword">const</span> <span class="token function-variable function">checkForUpdates</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+          <span class="token keyword">if</span> <span class="token punctuation">(</span>didUnsubscribe<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token comment">// Don't run stale listeners.</span>
+            <span class="token comment">// Redux doesn't guarantee unsubscriptions happen until next dispatch.</span>
+            <span class="token keyword">return</span><span class="token punctuation">;</span>
+          <span class="token punctuation">&#125;</span>
+
+          <span class="token keyword">const</span> latestStoreState <span class="token operator">=</span> store<span class="token punctuation">.</span><span class="token function">getState</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+          <span class="token keyword">let</span> newChildProps<span class="token punctuation">,</span> error<span class="token punctuation">;</span>
+          <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
+            <span class="token comment">// Actually run the selector with the most recent store state and wrapper props</span>
+            <span class="token comment">// to determine what the child props should be</span>
+            newChildProps <span class="token operator">=</span> <span class="token function">childPropsSelector</span><span class="token punctuation">(</span>
+              latestStoreState<span class="token punctuation">,</span>
+              lastWrapperProps<span class="token punctuation">.</span>current
+            <span class="token punctuation">)</span><span class="token punctuation">;</span>
+          <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span>e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            error <span class="token operator">=</span> e<span class="token punctuation">;</span>
+            lastThrownError <span class="token operator">=</span> e<span class="token punctuation">;</span>
+          <span class="token punctuation">&#125;</span>
+
+          <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>error<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            lastThrownError <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+          <span class="token punctuation">&#125;</span>
+
+          <span class="token comment">// If the child props haven't changed, nothing to do here - cascade the subscription update</span>
+          <span class="token comment">// 向下传递更新事件</span>
+          <span class="token keyword">if</span> <span class="token punctuation">(</span>newChildProps <span class="token operator">===</span> lastChildProps<span class="token punctuation">.</span>current<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>renderIsScheduled<span class="token punctuation">.</span>current<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+              <span class="token function">notifyNestedSubs</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+          <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+            <span class="token comment">// Save references to the new child props.  Note that we track the "child props from store update"</span>
+            <span class="token comment">// as a ref instead of a useState/useReducer because we need a way to determine if that value has</span>
+            <span class="token comment">// been processed.  If this went into useState/useReducer, we couldn't clear out the value without</span>
+            <span class="token comment">// forcing another re-render, which we don't want.</span>
+            lastChildProps<span class="token punctuation">.</span>current <span class="token operator">=</span> newChildProps<span class="token punctuation">;</span>
+            childPropsFromStoreUpdate<span class="token punctuation">.</span>current <span class="token operator">=</span> newChildProps<span class="token punctuation">;</span>
+            renderIsScheduled<span class="token punctuation">.</span>current <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+
+            <span class="token comment">// If the child props _did_ change (or we caught an error), this wrapper component needs to re-render</span>
+            <span class="token function">forceComponentUpdateDispatch</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
+              type<span class="token operator">:</span> <span class="token string">'STORE_UPDATED'</span><span class="token punctuation">,</span>
+              payload<span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+                error
+              <span class="token punctuation">&#125;</span>
+            <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+          <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+
+        <span class="token comment">// Actually subscribe to the nearest connected ancestor (or store)</span>
+        subscription<span class="token punctuation">.</span>onStateChange <span class="token operator">=</span> checkForUpdates<span class="token punctuation">;</span>
+        subscription<span class="token punctuation">.</span><span class="token function">trySubscribe</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment">// Pull data from the store after first render in case the store has</span>
+        <span class="token comment">// changed since we began.</span>
+        <span class="token comment">// 保底的re-render</span>
+        <span class="token function">checkForUpdates</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment">// ... 取消订阅器</span>
+        <span class="token keyword">const</span> <span class="token function-variable function">unsubscribeWrapper</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+          didUnsubscribe <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+          subscription<span class="token punctuation">.</span><span class="token function">tryUnsubscribe</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+          subscription<span class="token punctuation">.</span>onStateChange <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+
+          <span class="token keyword">if</span> <span class="token punctuation">(</span>lastThrownError<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">throw</span> lastThrownError<span class="token punctuation">;</span>
+          <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+
+        <span class="token keyword">return</span> unsubscribeWrapper<span class="token punctuation">;</span>
+      <span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token punctuation">[</span>store<span class="token punctuation">,</span> subscription<span class="token punctuation">,</span> childPropsSelector<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+      <span class="token comment">//...</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token comment">// 收尾工作，返回最终包裹的组件</span>
+    <span class="token comment">// ...</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="组件更新问题的考虑"><a href="#组件更新问题的考虑" class="headerlink" title="组件更新问题的考虑"></a>组件更新问题的考虑</h2><p>可以看到每次 <code>store</code> 的更新，都会引起从 <code>Provider</code> 为根节点的整棵组件树的更新，然后进行相应的 diff 和 update。</p>
+<p>因此理论上来看，对于不同的数据来源的组件，可以多拆几个 <code>store</code>，不强求维护到同一个 <code>store</code> 下，这其实就是 <code>mobx</code> 的一个特别形式了。</p>
+<p>折中的办法，就相当于把 <code>state</code> 下放到下面的组件，给一个较高的父组件来维护 <code>state</code> 然后往下传值，缺点就是无法从子组件直接改变这个父组件的 <code>state</code>（因为没有暴露类似的 <code>dispatch</code>方法），这对于组件传值过深的子组件有一定影响。</p>
+<p>因此， <code>redux</code> 的使用应该仍主要从数据的共享性出发来考虑。多余的可以放在组件自己中维护，尽量使用 <code>hooks</code>。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/reactjs/" rel="tag"># reactjs</a>
+              <a href="/tags/redux/" rel="tag"># redux</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/02/13/simple-querybuilder.html" rel="prev" title="一个简单的QueryBuilder设计">
+                  <i class="fa fa-chevron-left"></i> 一个简单的QueryBuilder设计
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/12/10/depth-in-event-loop.html" rel="next" title="Depth in Event loop">
+                  Depth in Event loop <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

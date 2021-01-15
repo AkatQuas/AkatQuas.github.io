@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="It’s worth taking a moment to take a peek at how the runtime works, how it stitches everything together underthe covers. However, you might find these hard to understand. Challenge yourself a bit! Wor">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Goroutines and the Go Runtime">
+<meta property="og:url" content="https://akatquas.github.io/concurrency-in-go/internal.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="It’s worth taking a moment to take a peek at how the runtime works, how it stitches everything together underthe covers. However, you might find these hard to understand. Challenge yourself a bit! Wor">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-01-15T10:21:08.370Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.370Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="akat,programmer,frontend,node,javascript,golang,python">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://akatquas.github.io/concurrency-in-go/internal.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>Goroutines and the Go Runtime | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#work-stealing"><span class="nav-text">Work Stealing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#stealing-tasks-or-continuations"><span class="nav-text">Stealing Tasks or Continuations?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#contents"><span class="nav-text">Contents</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">Goroutines and the Go Runtime
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <p>It’s worth taking a moment to take a peek at how the runtime works, how it stitches everything together underthe covers.</p>
+<p>However, you might find these hard to understand. Challenge yourself a bit!</p>
+<h2 id="work-stealing"><a href="#work-stealing" class="headerlink" title="Work Stealing"></a>Work Stealing</h2><p>Go runtime handles multiplexing goroutines onto OS threads for the developers. The algorithm it uses is known as a <em>work stealing</em> strategy.</p>
+<p>Before <em>work stealing</em>, there’s a naive strategy called <em>fair scheduling</em> for sharing work among processors. In an effort to ensure all processors were equally utilized, we could evenly, distribute the load between all available processors.</p>
+<p>However, Go models concurrency using a fork-join model. In this fork-join paradigm, tasks are likely dependent on one another, and it turns out naively splitting them among processors will likely cause one of the processors to be underutilized, as well as it can lead to poor cache locality as tasks that require the same data are scheduled on other processors.</p>
+<p>We give each processor its own thread and a doubl-ended queue, or <em>deque</em>.</p>
+<p>The work stealing algorithm follows a few basic rules. Given a thread of execution:</p>
+<ol>
+<li><p>At a fork point, add tasks to the tail of deque associated with the thread.</p>
+</li>
+<li><p>If the thread is idle, steal work from the head of deque associated with some other random thread.</p>
+</li>
+<li><p>At a join point that cannot be realized yet, pop work off the tail of the thread’s own deque.</p>
+</li>
+<li><p>If the thread’s deque is empty, either:</p>
+<ul>
+<li><p>Stall at a join</p>
+</li>
+<li><p>Steal work from the head of a random thread’s assocaited deque.</p>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="stealing-tasks-or-continuations"><a href="#stealing-tasks-or-continuations" class="headerlink" title="Stealing Tasks or Continuations?"></a>Stealing Tasks or Continuations?</h2><p>One thing we’ve kind of glossed over is the question of what work we are enqueuing and stealing. Under a fork-join paradigm, there are two options: tasks and continuations.</p>
+<p>In Go, goroutines are tasks. Everything after a goroutine is called the continuation.</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">var</span> fib <span class="token keyword">func</span><span class="token punctuation">(</span>n <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token builtin">int</span>
+fib <span class="token operator">=</span> <span class="token keyword">func</span><span class="token punctuation">(</span>n <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token builtin">int</span> <span class="token punctuation">&#123;</span>
+  result <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">)</span>
+  <span class="token comment">/* tasks start */</span>
+  <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">defer</span> <span class="token function">close</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span>
+    <span class="token keyword">if</span> n <span class="token operator">&lt;=</span> <span class="token number">2</span> <span class="token punctuation">&#123;</span>
+      result <span class="token operator">&lt;-</span> <span class="token number">1</span>
+      <span class="token keyword">return</span>
+    <span class="token punctuation">&#125;</span>
+    result <span class="token operator">&lt;-</span> <span class="token operator">&lt;-</span><span class="token function">fib</span><span class="token punctuation">(</span>n<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token operator">&lt;-</span><span class="token function">fib</span><span class="token punctuation">(</span>n<span class="token operator">-</span><span class="token number">2</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token comment">/* tasks end */</span>
+  <span class="token comment">/* after goroutine, continuation */</span>
+  <span class="token keyword">return</span> result
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>In the previous walkthrough of a distributed-queue work-stealing algorithm, Go runtime were enqueuing <em>tasks</em>, or goroutines. Since a goroutine hosts functions that nicely encapsulate a body of work, this is a natural way to think about things.</p>
+<p>However, this is not actually how Go’s work-stealing algorithm works. Go’s work-stealing algorithm enqueues and steals <strong><em>continuations</em></strong>.</p>
+<p>To begin answering this question, let’s look at the program join points.</p>
+<p>Under the algorithm, when a thread of execution reaches an <em>unrealized join point</em>, the thread must pause execution and go fishing for a task to steal. This is called a <em>stalling join</em> because it is <em>stalling at the join while looking for work to do</em>. Both task-stealing and continuation-stealing algorithms have stalling joins, but there is a significant difference in how often stalls occur.</p>
+<p>Consider this: when creating a goroutine, it is very likely that your program will want the function in that goroutine to execute. It is also reasonably likely that the continuation from that goroutine will at some point want to join with that goroutine. And it’s not uncommon for the continuation to attempt a join before the goroutine has finished completing.</p>
+<p>Now think back to the properties of a thread pushing and popping work to/from the tail of its deque, and other threads popping work from the head. If we push the continuation onto the tail of the deque, it’s least likely to get stolen by another thread that is popping things from the head of the deque, and therefore it becomes very likely that we’ll be able to just pick it back up when we’re finished executing our goroutine, thus avoiding a stall. This also makes the forked task look a lot like a function call: the thread jumps to executing the goroutine and then returns to the continuation after it’s finished.</p>
+<p>Go performs additional optimizations. Before we analyze those, let’s set the stage by starting to use the Go scheduler’s nomenclature as laid out in the source code.</p>
+<p>From the Go scheduler’s perspective, there are primarily three entities:</p>
+<ul>
+<li><p>Goroutine (G)</p>
+<p>Goroutine is the logical unit of execution that contains teh actual instructions.</p>
+<p>When the Go program starts, a goroutine called main goroutine is first launched, and it takes care of setting up the runtime space before starting the program.</p>
+</li>
+<li><p>OS thread or machine (M)</p>
+<p>Initially, the OS threads or machines are created by and managed by the OS. Later on, the scheduler can request for more OS threads or machines to be created or destroyed. It is the actual resource upon which a goroutine will be executed. It also maintains information about the main goroutine.</p>
+</li>
+<li><p>Context or processor (P)</p>
+<p>The program has a global scheduler which takes care of bringing up new OS thread, registering Goroutine, and handling system calls. However, it does not handle the actual execution of goroutines. This is done by an entity called Processor, which has its own internal scheduler and a queue called runqueue (<code>runq</code> in code) consisting of goroutines that will be executed in the current context. It also handles switching between various goroutines.</p>
+</li>
+</ul>
+<p>By the time the program is ready to start executing, the runtime would request the OS to start an ample number of Machines, GOMAXPROCS number of Processors to execute goroutines. It’s important to understand that OS thread is the actual unit of execution and goroutine is teh logical unit of execution. However, they require context to actually execute goroutine against the OS thread.</p>
+<p>The <code>GOMAXPROCS</code> setting controls how many contexts are available for use by the runtime. The default setting is for there to be one context per logical CPU on the host machine. Unlike contexts, there may be more or less OS threads than cores to help Go’s runtime manage things like garbage collection and goroutines. The runtime also contains a thread pool for threads that aren’t currently being utilized.</p>
+<p>Consider what would happen if any of the goroutines were blocked either by input/ output or by making a system call outside of Go’s runtime. The OS thread that hosts the goroutine would also be blocked and would be unable to make progress or host any other goroutines. Logically, this is just fine, but from a performance perspective, Go could do more to keep processors on the machine as active as possible.</p>
+<p>What Go does in this situation is dissociate the context from the OS thread so that the context can be handed off to another, unblocked, OS thread. This allows the context to schedule further goroutines, which allows the runtime to keep the host machine’s CPUs active. The blocked goroutine remains associated with the blocked thread.</p>
+<p>When the goroutine eventually becomes unblocked, the host OS thread attempts to steal back a context from one of the other OS threads so that it can continue execut‐ ing the previously blocked goroutine. However, sometimes this is not always possible. In this case, the thread will place its goroutine on a global context, the thread will go to sleep, and it will be put into the runtime’s thread pool for future use.</p>
+<p>The global context we just mentioned doesn’t fit into our prior discussions of abstract work-stealing algorithms. It’s an implementation detail that is necessitated by how Go is optimizing CPU utilization. To ensure that goroutines placed into the global con‐ text aren’t there perpetually, a few extra steps are added into the work-stealing algo‐ rithm. Periodically, a context will check the global context to see if there are any goroutines there, and when a context’s queue is empty, it will first check the global context for work to steal before checking other OS threads’ contexts.</p>
+<p>Other than input/output and system calls, Go also allows goroutines to be preempted during any function call. This works in tandem with Go’s philosophy of preferring very fine-grained concurrent tasks by ensuring the runtime can efficiently schedule work. One notable exception that the team has been trying to solve is goroutines that perform no input/output, system calls, or function calls. Currently, these kinds of goroutines are not preemptable and can cause significant issues like long GC waits, or even deadlocks. Fortunately, from an anecdotal perspective, this is a vanishingly small occurrence.</p>
+<h2 id="contents"><a href="#contents" class="headerlink" title="Contents"></a>Contents</h2><p><a href="./introduction.html">Introduction on Concurrency and Parallelism</a></p>
+<p><a href="./primitives.html">Go’s Concurrency Primitives</a></p>
+<p><a href="./patterns.html">Concurrency Patterns in go</a></p>
+<p><a href="./scalability.html">Concurrency at Scale</a></p>
+<p><a href="./internal.html">Goroutines and the Go Runtime</a></p>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

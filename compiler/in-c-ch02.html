@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="为了将一个程序从一种语言翻译成另一种语言，编译器必须首先把程序的各种成分拆开，并搞清其结构和含义，之后再用另一种方式把这些成分组合起来。编译器的前端执行分析，后端进行合成。 分析一般分 3 种：  词法分析：将输入分解成一个个独立的词法符号，即“单词符号”token，简称单词。 语法分析：分析程序的短语结构。 语义分析：推算程序的含义。  语法分析器以字符流作为输入，生成一系列的名字、关键字和标点">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Chapter 02 - 词法分析">
+<meta property="og:url" content="https://akatquas.github.io/compiler/in-c-ch02.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="为了将一个程序从一种语言翻译成另一种语言，编译器必须首先把程序的各种成分拆开，并搞清其结构和含义，之后再用另一种方式把这些成分组合起来。编译器的前端执行分析，后端进行合成。 分析一般分 3 种：  词法分析：将输入分解成一个个独立的词法符号，即“单词符号”token，简称单词。 语法分析：分析程序的短语结构。 语义分析：推算程序的含义。  语法分析器以字符流作为输入，生成一系列的名字、关键字和标点">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://akatquas.github.io/compiler/img/in-c-ch02f01.png">
+<meta property="og:image" content="https://akatquas.github.io/compiler/img/in-c-ch02f02.png">
+<meta property="og:image" content="https://akatquas.github.io/compiler/img/in-c-ch02f03.png">
+<meta property="article:published_time" content="2021-01-15T10:21:08.370Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.370Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="compiler">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://akatquas.github.io/compiler/img/in-c-ch02f01.png">
+
+
+<link rel="canonical" href="https://akatquas.github.io/compiler/in-c-ch02.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>Chapter 02 - 词法分析 | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%8D%E6%B3%95%E5%8D%95%E8%AF%8D"><span class="nav-text">词法单词</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="nav-text">正则表达式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%89%E9%99%90%E8%87%AA%E5%8A%A8%E6%9C%BA"><span class="nav-text">有限自动机</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%86%E5%88%AB%E6%9C%80%E9%95%BF%E7%9A%84%E5%8C%B9%E9%85%8D"><span class="nav-text">识别最长的匹配</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%9E%E7%A1%AE%E5%AE%9A%E6%9C%89%E9%99%90%E8%87%AA%E5%8A%A8%E6%9C%BA"><span class="nav-text">非确定有限自动机</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">Chapter 02 - 词法分析
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <p>为了将一个程序从一种语言翻译成另一种语言，编译器必须首先把程序的各种成分拆开，并搞清其结构和含义，之后再用另一种方式把这些成分组合起来。编译器的前端执行分析，后端进行合成。</p>
+<p>分析一般分 3 种：</p>
+<ul>
+<li>词法分析：将输入分解成一个个独立的词法符号，即“单词符号”token，简称单词。</li>
+<li>语法分析：分析程序的短语结构。</li>
+<li>语义分析：推算程序的含义。</li>
+</ul>
+<p>语法分析器以字符流作为输入，生成一系列的名字、关键字和标点符号，同时抛弃单词之间的空白符和注释。</p>
+<blockquote>
+<p>如果让语法分析器来处理程序中任意位置都可能出现的空白符和注释会让语法分析变得过于复杂，因此将词法分析从语法分析中分离出来。</p>
+</blockquote>
+<h2 id="词法单词"><a href="#词法单词" class="headerlink" title="词法单词"></a>词法单词</h2><p>词法单词是字符组成的序列，是程序设计语言的文法单位，可归类为有限的几组单词类型。</p>
+<p>|类型|例子| |:-:||:-:| |ID|foo n14 last| |NUM| 73 0 00 515 082| |REAL|66.1 .5 10. 1e67 5.5e-10| |IF|if| |COMMA|,| |NOTEQ|!=| |LPAREN|(| |RPAREN|)|</p>
+<p>IF、VOID、RETURN 等保留字是不能作为标识符使用的。</p>
+<p>非单词的例子：</p>
+<ul>
+<li>注释 /_ try agian _/</li>
+<li>预处理命令 #include&lt;stdio.h&gt;</li>
+<li>预处理命令 #define NUMS 5, 6</li>
+<li>宏 NUMS</li>
+<li>空格符号、制表符、换行符 \s \t \n</li>
+</ul>
+<p>对 C 或 Java 中标识符的一种描述：</p>
+<blockquote>
+<p>标识符是字母和数字组成的序列，第一个字符必须是字母。下划线<code>_</code>视为字母。大小写字母不同。如果经过若干单词分析后输入流已到达一个给定的字符，则下一个单词将由有可能组成一个单词的最长字符串所组成。其中的空格符、制表符、换行符和注释都将被忽略。另外还需要有某种空白符来分隔相邻的标识符、关键字和常数。</p>
+</blockquote>
+<p>将用<strong>正则表达式</strong>的形式语言来指明<strong>词法单词</strong>，用<strong>确定的有限自动机</strong>来实现<strong>词法分析器</strong>，并用数学方法将两者联系起来得到一个简单且可读性更好的词法分析器。</p>
+<h2 id="正则表达式"><a href="#正则表达式" class="headerlink" title="正则表达式"></a>正则表达式</h2><p><strong>语言 language</strong>是<strong>字符串 string</strong>组成的集合，<strong>字符串</strong>是<strong>符号 symbol</strong>的有限序列。<strong>符号</strong>本身来自有限<strong>字母表 alphabet</strong>。</p>
+<p>为了用有限的描述来指明这类（可能是无限）的语言，使用正则表达式的表示法，每个正则表达式代表一个字符串集合。</p>
+<ul>
+<li><p><strong>符号</strong>。对于语言字母表中的每个字符<code>a</code>，正则表达式 <em>a</em> 表示仅包含字符串<code>a</code>的语言。</p>
+</li>
+<li><p><strong>可选（并集）</strong>。对于给定的两个正则表达式 <em>M</em> 和 <em>N</em> ，可选操作符 <code>|</code> 形成一个新的正则表达式， <em>M|N</em> 。如果一个字符串属于语言 <em>M</em> 或属于 <em>N_，则它属于 _M|N</em> 。</p>
+</li>
+<li><p><strong>联结（串接）</strong>。对于给定的两个正则表达式 <em>M</em> 和 <em>N</em> ，联结操作符<code>·</code>形成一个醒的正则表达式， <em>M·N</em> 。如果一个字符串由任意两个字符串 α 和 β 的联结，且 α 属于语言 <em>M</em> ，β 属于 <em>N</em> ，则该字符串属于 <em>M·N</em> 组成的语言。</p>
+</li>
+<li><p><strong>ϵ</strong>。正则表达式 <em>ϵ</em> 表示仅含一个空字符串的语言。</p>
+</li>
+<li><p><strong>重复（闭包）</strong>。对给定的正则表达式，其克林闭包是／ M* ／。如果一个字符串是由 <em>M</em> 中的字符串经过 0 次至多次联结运算的结果，则该字符串属于／ M* ／。</p>
+</li>
+</ul>
+<p>使用时，会省略联结操作符或 ϵ 符号。并假定优先级上 克林闭包 -&gt; 联结运算 -&gt; 可选运算。</p>
+<table>
+<thead>
+<tr>
+<th align="center">正则</th>
+<th align="center">意义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">a</td>
+<td align="center">一个表示字符本身的原始字符</td>
+</tr>
+<tr>
+<td align="center">ϵ</td>
+<td align="center">空字符串</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="center">空空字符串的另一种写法</td>
+</tr>
+<tr>
+<td align="center"><em>M|N</em></td>
+<td align="center">可选，在 M 和 N 之间选择</td>
+</tr>
+<tr>
+<td align="center"><em>MN</em></td>
+<td align="center">联结，M 之后跟随 N</td>
+</tr>
+<tr>
+<td align="center"><em>M·N</em></td>
+<td align="center">联结的另一种写法</td>
+</tr>
+<tr>
+<td align="center">M<sup>*</sup></td>
+<td align="center">重复 0 次及以上</td>
+</tr>
+<tr>
+<td align="center">M<sup>+</sup></td>
+<td align="center">重复 1 次及以上</td>
+</tr>
+<tr>
+<td align="center">M?</td>
+<td align="center">选择，M 出现 0 次或 1 次</td>
+</tr>
+<tr>
+<td align="center">[a-zA-Z]</td>
+<td align="center">字符集</td>
+</tr>
+<tr>
+<td align="center">.</td>
+<td align="center">句点表示除换行符以外的任意单个字符</td>
+</tr>
+<tr>
+<td align="center">“ a. + * “</td>
+<td align="center">引号中的字符串表示文字字符串本身</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>问题，对于形如<code>if8</code>这样以保留字开头的字符串看作什么？</p>
+<p>消除二义性的规则：</p>
+<ul>
+<li>最长匹配：初始输入子串中，取可与任何正则表达式匹配的那个最长的字符串作为下一个单词</li>
+<li>规则有限：对于一个特定的最长初始子串，第一个与之匹配的正则表达式决定了这个子串的单词类型。意味着，正则表达式规则的书写顺序有意义。</li>
+</ul>
+</blockquote>
+<h2 id="有限自动机"><a href="#有限自动机" class="headerlink" title="有限自动机"></a>有限自动机</h2><p>用<em>正则表达式</em>可以方便的指明词法单词。用<em>有限自动机</em>可以实现形式化方法。</p>
+<p>有限自动机有一个有限<em>状态</em>合集和一些从一个状态通向另一个状态的<em>边</em>，每条边上标记有一个<em>符号</em>；其中一个状态是<em>初态</em>，某些状态是<em>终态</em>。</p>
+<table>
+<thead>
+<tr>
+<th align="center">正则</th>
+<th align="center">意义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">if</td>
+<td align="center">{return IF;}</td>
+</tr>
+<tr>
+<td align="center">[a-z][a-z0-9]*</td>
+<td align="center">{return ID;}</td>
+</tr>
+<tr>
+<td align="center">[1-9][0-9]*</td>
+<td align="center">{return NUM;}</td>
+</tr>
+<tr>
+<td align="center">([0-9]+”.”[0-9]_ ) | ([0-9]_”.”[0-9]+)</td>
+<td align="center">{return REAL;}</td>
+</tr>
+<tr>
+<td align="center">(“–”[a-z]* “\n”) | (“ “|”\n”|”\t” )</td>
+<td align="center">{ /_ do nothing, space _/}</td>
+</tr>
+<tr>
+<td align="center">.</td>
+<td align="center">{error();}</td>
+</tr>
+</tbody></table>
+<div style="text-align: center">
+<img data-src="./img/in-c-ch02f01.png"/>
+</div>
+
+<p>在<em>确定的</em>有限自动机中，不会有同一状态出发的两条边标记有相同的符号。</p>
+<p>DFA 以如下方式<em>接受</em>或<em>拒绝</em>一个字符串：从初始状态出发，对于输入字符串中的每个字符，自动机都将沿着一条边到达另一状态，这条边必须是标有输入字符的边。对 n 个字符的字符串进行了 n 次状态转换后，如果自动机到达了一个终态，那么自动机将接受这个字符串。若到达的不是终态，或者找不到与输入字符相匹配的边，自动机将拒绝这个字符串。</p>
+<p>由一个自动机识别的<em>语言</em>是该自动机接受的字符串集合。</p>
+<p>将上面的六个自动机合并后可以得到下图。</p>
+<div style="text-align: center">
+<img data-src="./img/in-c-ch02f02.png"/>
+</div>
+
+<h3 id="识别最长的匹配"><a href="#识别最长的匹配" class="headerlink" title="识别最长的匹配"></a>识别最长的匹配</h3><p>词法分析器的任务是要找到最长的匹配，因为输入中最长的初始子串才是合法的单词。在进行转换的过程中，词法分析器要一直追踪到迄今见到的最长匹配以及这个最长匹配的位置。</p>
+<p>追踪最长匹配一位置需要用两个变量 Last_Final(最近遇到的终态的编号) 和 Input_Position_at_Last_Final 来记住自动机最后一次处于终态时的时机。每次进入一个终态时，词法分析器都要更新这两个变量；当到达停滞状态(无出口转换的非终态状态)时，从这两个变量就能得知所匹配的单词和它的结束位置。</p>
+<p>下图说明了一个词法分析器识别最长匹配的操作过程。注意，当前输入位置可能相距识别器最近到达终态时的位置已很远。</p>
+<div style="text-align: center">
+<img data-src="./img/in-c-ch02f03.png"/>
+</div>
+
+<h2 id="非确定有限自动机"><a href="#非确定有限自动机" class="headerlink" title="非确定有限自动机"></a>非确定有限自动机</h2><p>非确定有限自动机是一种需要对从一个状态出发的多条标有相同符号的边进行选择的自动机。它可能存在标有 ϵ 的边，表示空字符串。</p>
+<p>// todo</p>
+<p><a href="../compiler-implementation-c.md">Back to Preface</a></p>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="There is a dedicated binary in the Kubernetes, which is called the Kubernetes scheduler, to schedule containers to work nodes in the cluster of machines. Kubernetes can handle a wide variety of work‐">
+<meta property="og:type" content="website">
+<meta property="og:title" content="the Kubernetes Scheduler">
+<meta property="og:url" content="https://akatquas.github.io/kubernetes/scheduler.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="There is a dedicated binary in the Kubernetes, which is called the Kubernetes scheduler, to schedule containers to work nodes in the cluster of machines. Kubernetes can handle a wide variety of work‐">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-01-15T10:21:08.390Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.390Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="akat,programmer,frontend,node,javascript,golang,python">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://akatquas.github.io/kubernetes/scheduler.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>the Kubernetes Scheduler | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#overview"><span class="nav-text">Overview</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#scheduling-process"><span class="nav-text">Scheduling Process</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#predicates"><span class="nav-text">Predicates</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#priorites"><span class="nav-text">Priorites</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#high-level-algorithm"><span class="nav-text">High-Level algorithm</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#conflicts"><span class="nav-text">Conflicts</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#controlling-scheduling-with-labels-affinity-taints-and-tolerations"><span class="nav-text">Controlling Scheduling with Labels, Affinity, Taints, and Tolerations</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#node-selector"><span class="nav-text">Node Selector</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#node-affinity"><span class="nav-text">Node Affinity</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#taints-and-tolerations"><span class="nav-text">Taints and Tolerations</span></a></li></ol></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">the Kubernetes Scheduler
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <p>There is a dedicated binary in the Kubernetes, which is called the Kubernetes scheduler, to schedule containers to work nodes in the cluster of machines.</p>
+<p>Kubernetes can handle a wide variety of work‐ loads, from stateless web serving to stateful applications, big data batch jobs, or machine learning on GPUs. The key to ensuring that all of these very different applications can operate in harmony on the same cluster lies in the application of <em>job scheduling</em>, which ensures that each container is placed onto the worker node best suited to it.</p>
+<h2 id="overview"><a href="#overview" class="headerlink" title="Overview"></a>Overview</h2><p>When a Pod is first created, it generally doesn’t have a <code>nodeName</code> field. The <code>nodeName</code> indicates the node on which the Pod should execute.</p>
+<p>The Kubernetes scheduler is constantly scanning the API server (via a <code>watch</code> request) for Pods that don’t have a <code>nodeName</code>; these are Pods that are eligible for scheduling.</p>
+<p>The scheduler then selects an appropriate node for the Pod and updates the Pod definition with the <code>nodeName</code> that the scheduler selected. After the <code>nodeName</code> is set, the kubelet running on that node is notified about the Pod’s existence (again, via a <code>watch</code> request) and it begins to actually execute that Pod on that node.</p>
+<blockquote>
+<p>If you want to skip the scheduler, you can always set the <code>nodeName</code> yourself on a Pod. This direct schedules a Pod onto a specific node. This is how the <code>DaemonSet</code> controller schedules a single Pod onto each node in the cluster.</p>
+</blockquote>
+<h2 id="scheduling-process"><a href="#scheduling-process" class="headerlink" title="Scheduling Process"></a>Scheduling Process</h2><p>When the scheduler discovers a Pod that hasn’t been assigned to a node, it needs to determine which node to schedule the Pod onto. In general, the scheduler is trying to optimize a variety of different criteria to find the node that is best for the particular Pod.</p>
+<h3 id="predicates"><a href="#predicates" class="headerlink" title="Predicates"></a>Predicates</h3><p>Simply stated, a <code>predicate</code> indicates whether a Pod fits onto a particular node. Predicates are hard constraints, which, if violated, lead to a Pod not operating correctly (or at all) on that node.</p>
+<blockquote>
+<p>An example of a predicate is a node-selector label query specified by the user. In this case, the user has requested that a Pod only run on certain machines as indicated by the node labels. The predicate is false if a node does not have the required label.</p>
+</blockquote>
+<h3 id="priorites"><a href="#priorites" class="headerlink" title="Priorites"></a>Priorites</h3><p>There is a generic interface used by the scheduler to determine preference for one node over another. These preferences are expressed as <code>priorities</code> or <code>priority functions</code>. The role of a priority function is to score the relative value of scheduling a Pod onto a particular node.</p>
+<blockquote>
+<p>As an example, a priority function would weight nodes where the image has already been pulled. Therefore, the container would start faster than nodes where the image is not present and would have to be pulled, delaying Pod startup.</p>
+</blockquote>
+<p>One important priority function is the <code>spreading</code> function. This function is responsible for prioritizing nodes where Pods that are members of the same Kubernetes <code>Service</code> are not present. It is used to ensure reliability, since it reduces the chances that a machine failure will disable all of the containers in a particular Service.</p>
+<h3 id="high-level-algorithm"><a href="#high-level-algorithm" class="headerlink" title="High-Level algorithm"></a>High-Level algorithm</h3><p>For every Pod that needs scheduling, the scheduling algorithm is run. At a high level, the algorithm looks like this:</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token function">schedule</span><span class="token punctuation">(</span>pod<span class="token punctuation">)</span><span class="token punctuation">:</span> <span class="token builtin">string</span>
+  nodes <span class="token operator">:=</span> <span class="token function">getAllHealthyNodes</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  viableNodes <span class="token operator">:=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+  <span class="token keyword">for</span> node in nodes<span class="token punctuation">:</span>
+    <span class="token keyword">for</span> predicate in predicates<span class="token punctuation">:</span>
+      <span class="token keyword">if</span> <span class="token function">predicate</span><span class="token punctuation">(</span>node<span class="token punctuation">,</span> pod<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        viableNodes<span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span>node<span class="token punctuation">)</span>
+  scoredNodes <span class="token operator">:=</span> PriorityQueue<span class="token operator">&lt;</span>score<span class="token punctuation">,</span> Node<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">></span>
+  priorities <span class="token operator">:=</span> <span class="token function">GetPriorityFunctions</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token keyword">for</span> node in viableNodes<span class="token punctuation">:</span>
+    score <span class="token operator">=</span> <span class="token function">CalculateCombinedPriority</span><span class="token punctuation">(</span>node<span class="token punctuation">,</span> pod<span class="token punctuation">,</span> priorities<span class="token punctuation">)</span>
+    scoredNodes<span class="token punctuation">[</span>score<span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>node<span class="token punctuation">)</span>
+
+  bestScore <span class="token operator">:=</span> scoredNodes<span class="token punctuation">.</span><span class="token function">top</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>score
+  selectedNodes <span class="token operator">:=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+  while scoredNodes<span class="token punctuation">.</span><span class="token function">top</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>score <span class="token operator">==</span> bestScore<span class="token punctuation">:</span>
+    selectedNodes<span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span>scoredNodes<span class="token punctuation">.</span><span class="token function">pop</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+  node <span class="token operator">:=</span> <span class="token function">selectAtRandom</span><span class="token punctuation">(</span>selectedNodes<span class="token punctuation">)</span> <span class="token comment">// RoundRobin selection</span>
+  <span class="token keyword">return</span> node<span class="token punctuation">.</span>Name<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="conflicts"><a href="#conflicts" class="headerlink" title="Conflicts"></a>Conflicts</h2><p>Because there is lag time between when a Pod is scheduled (time <code>T_1</code>) and when the container actually executes (time <code>T_N</code>), the scheduling decision may become invalid, due to other actions during the time interval between scheduling and execution.</p>
+<p>In general, these sorts of soft-constraint conflicts aren’t that important and they normalize in the aggregate. These conflicts are thus ignored by Kubernetes. _Scheduling decisions are only optimal for a single moment in time_—they can always become worse as time passes and the cluster changes.</p>
+<blockquote>
+<p>You should always run Pods (even singletons) via a ReplicaSet or Deployment.</p>
+</blockquote>
+<h2 id="controlling-scheduling-with-labels-affinity-taints-and-tolerations"><a href="#controlling-scheduling-with-labels-affinity-taints-and-tolerations" class="headerlink" title="Controlling Scheduling with Labels, Affinity, Taints, and Tolerations"></a>Controlling Scheduling with Labels, Affinity, Taints, and Tolerations</h2><h3 id="node-selector"><a href="#node-selector" class="headerlink" title="Node Selector"></a>Node Selector</h3><p>Every object in Kubernetes has an associated set of <code>labels</code>. Labels provide identifying metadata for Kubernetes objects, and <code>label selectors</code> are often used to dynamically identify sets of API objects for various operations.</p>
+<p>Label selectors can also be used to identify a subset of the nodes in a Kubernetes clus‐ ter that should be used for scheduling a particular Pod. By default, all nodes in the cluster are potential candidates for scheduling, but by filling in the <code>spec.nodeSelector</code> field in a Pod or PodTemplate, the initial set of nodes can be reduced to a subset.</p>
+<p>Kubernetes has a default predicate that requires every node to match the <code>nodeSelector</code> label query, if it is present.</p>
+<h3 id="node-affinity"><a href="#node-affinity" class="headerlink" title="Node Affinity"></a>Node Affinity</h3><p>Node selectors provide a simple way to guarantee that a Pod lands on a particular node, but they lack flexibility.</p>
+<p>Affinity is a more complicated structure to understand, but it is significantly more flexible if you want to express more complicated scheduling policies.</p>
+<p><a target="_blank" rel="noopener" href="https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes-using-node-affinity/">More on here</a></p>
+<h3 id="taints-and-tolerations"><a href="#taints-and-tolerations" class="headerlink" title="Taints and Tolerations"></a>Taints and Tolerations</h3><p>A node taint is exactly what it sounds like. When a taint is applied to a node, the node is considered tainted and will be excluded by default from scheduling. Any tainted node will fail a predicate check at the time of scheduling.</p>
+<p>This toleration enables the scheduling predicate to pass and thus allows for the node to schedule onto the tainted machine.</p>
+<p>It is important to note that, although a toleration for a taint enables a Pod to run on a tainted machine, it does not require that the Pod runs on the tainted machine.</p>
+<p>Indeed, all of the priorities run just as before and, thus, all of the machines in the cluster are available to execute on.</p>
+<p><strong>Forcing a Pod onto a particular machine is a use case for nodeSelectors or affinity as described earlier.</strong></p>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

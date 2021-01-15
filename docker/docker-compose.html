@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="Modern cloud-native apps are made of multiple smaller services that interact to form a useful app. We call this pattern microservices. A simple example might be an app with the following seven service">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Docker Compose">
+<meta property="og:url" content="https://akatquas.github.io/docker/docker-compose.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="Modern cloud-native apps are made of multiple smaller services that interact to form a useful app. We call this pattern microservices. A simple example might be an app with the following seven service">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-01-15T10:21:08.374Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.374Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="akat,programmer,frontend,node,javascript,golang,python">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://akatquas.github.io/docker/docker-compose.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>Docker Compose | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#docker-compose"><span class="nav-text">Docker Compose</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#howe-docker-plugs-containers-together"><span class="nav-text">Howe Docker plugs containers together</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#understanding-the-problem-docker-compose-solves"><span class="nav-text">Understanding the problem Docker Compose solves</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#docker-compose-in-multiple-environments"><span class="nav-text">Docker Compose in Multiple Environments</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#using-docker-compose-override-files"><span class="nav-text">Using Docker Compose override files</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#injecting-configuration-with-environment-variables-and-secrets"><span class="nav-text">Injecting configuration with environment variables and secrets</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#the-configuration-workflow-with-docker"><span class="nav-text">The configuration workflow with Docker</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#references"><span class="nav-text">References</span></a></li></ol></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">Docker Compose
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <p>Modern cloud-native apps are made of multiple smaller services that interact to form a useful app. We call this pattern <em>microservices</em>. A simple example might be an app with the following seven services:</p>
+<ul>
+<li>Webfront-end</li>
+<li>Ordering</li>
+<li>Catalog</li>
+<li>Back-enddatabase</li>
+<li>Logging</li>
+<li>Authentication</li>
+<li>Authorization</li>
+</ul>
+<p>Get all of these working together, and you have a useful application.</p>
+<h2 id="docker-compose"><a href="#docker-compose" class="headerlink" title="Docker Compose"></a>Docker Compose</h2><p>Each component runs in its own lightweight container, and Docker plugs them together using standard network protocols.</p>
+<p>Compose is a file format for describing distributed Docker apps, and it’s a tool for managing them.</p>
+<p>Dockerfile is a script for packaging only an application.</p>
+<p>The Docker Compose file describes the desired state of your app – what it should look like when everything’s running.</p>
+<p>It’s a simple file format where you place all the options you would put in your <code>docker container run</code> commands into the Compose file. Then you use the Docker Compose tool to run the app. It works out what Docker resources it needs, which could be containers, networks, or volumes – and it sends requests to the Docker API to create them.</p>
+<p>Docker Compose uses YAML.</p>
+<p>Docker Compose is a client-side tool. It’s a command line that sends instructions to the Docker API based on the contents of the Compose file. Docker itself just runs containers; it isn’t aware that how many containers to represent a single application. Only Compose knows that, and Compose only knows the structure of your application by looking at the Docker Compose YAML file, so you need to have that file always available to manage your app.</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">docker-compose up
+docker-compose down
+
+docker-compose start
+docker-compose stop
+
+docker-compose <span class="token function">rm</span>
+
+docker-compose restart
+
+docker-compose <span class="token function">ps</span>
+docker-compose <span class="token function">top</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<details>
+<summary>
+An example docker compose file for running single container
+</summary>
+
+<ul>
+<li><p><code>version</code> is the version of the Docker Compose format used in this file. The feature set has evolved over many releases, so the version here identifies which releases this definition works with.</p>
+</li>
+<li><p><code>services</code> lists all the components that make up the application. Docker Compose uses the idea of services instead of actual containers, because a service could be run at scale with several containers from the same image.</p>
+</li>
+<li><p><code>networks</code> lists all the Docker networks that the service containers can plug into. By default, Compose will create bridge networks. These are single-host networks that can only connect containers on the same Docker host. However, you can use the driver property to specify different network types.</p>
+</li>
+<li><p><code>volumes</code> tells Docker to create new volumes.</p>
+</li>
+</ul>
+<p>The volumes won’t be deleted after the <code>docker-compose down</code>. Volumes are intended to be long-term persistent data stores. As such, their lifecycle is entirely decoupled from the applications they serve. Running a docker volume ls will show that the volume is still present on the system. If you’d written any data to the volume, that data would still exist.</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">version</span><span class="token punctuation">:</span> <span class="token string">'3.7'</span>
+
+<span class="token key atrule">services</span><span class="token punctuation">:</span>
+  <span class="token comment"># equivalent docker command ⬇️</span>
+  <span class="token comment"># docker container run- p 8020:80 --name todo-web --network nat todo-list</span>
+  <span class="token key atrule">todo-web</span><span class="token punctuation">:</span> <span class="token comment"># a service calle `todo-web`</span>
+    <span class="token key atrule">image</span><span class="token punctuation">:</span> todo<span class="token punctuation">-</span>list <span class="token comment"># run container from image `todo-list`</span>
+    <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token string">'8020:80'</span> <span class="token comment"># publish host port to container port</span>
+    <span class="token key atrule">networks</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> app<span class="token punctuation">-</span>net <span class="token comment"># plug into the `app-net` network inside the compose file</span>
+
+<span class="token key atrule">networks</span><span class="token punctuation">:</span>
+  <span class="token key atrule">app-net</span><span class="token punctuation">:</span>
+    <span class="token key atrule">external</span><span class="token punctuation">:</span>
+      <span class="token key atrule">name</span><span class="token punctuation">:</span> nat<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>The service name becomes the container name and the DNS name of the container, which other containers can use to connect on the Docker network. The network name in the service is <code>app-net</code>, but under the networks section that network is specified as mapping to an external network called <code>nat</code>. The external option means Compose expects the nat network to already exist, and it won’t try to create it.</p>
+<p>To start the compose</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">docker network create nat
+
+<span class="token builtin class-name">cd</span> path/to/directory/with/docker-compose.yaml
+
+docker-compose up<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</details>
+
+<details>
+<summary>
+An example to run multi-container application with compose
+</summary>
+
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">version</span><span class="token punctuation">:</span> <span class="token string">'3.7'</span>
+
+<span class="token key atrule">services</span><span class="token punctuation">:</span>
+  <span class="token key atrule">accesslog</span><span class="token punctuation">:</span>
+    <span class="token key atrule">image</span><span class="token punctuation">:</span> access<span class="token punctuation">-</span>log
+    <span class="token key atrule">networks</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> app<span class="token punctuation">-</span>net
+
+  <span class="token key atrule">api</span><span class="token punctuation">:</span>
+    <span class="token key atrule">build</span><span class="token punctuation">:</span> . <span class="token comment"># build a new image using Dockerfile in the current directory (.)</span>
+    <span class="token key atrule">command</span><span class="token punctuation">:</span> node server.js <span class="token comment"># run this command as the main process, override CMD in Dockerfile</span>
+    <span class="token key atrule">restart</span><span class="token punctuation">:</span> unless<span class="token punctuation">-</span>stopped
+    <span class="token key atrule">environment</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> VERSION=1.1.2
+    <span class="token key atrule">volumes</span><span class="token punctuation">:</span>
+      <span class="token comment"># bind mount directory</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">type</span><span class="token punctuation">:</span> bind
+        <span class="token key atrule">source</span><span class="token punctuation">:</span> /data/assets
+        <span class="token key atrule">target</span><span class="token punctuation">:</span> /app/assets
+    <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token string">'80'</span> <span class="token comment"># publish port 80 on the container to a random port on the host</span>
+    <span class="token key atrule">networks</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> app<span class="token punctuation">-</span>net
+
+  <span class="token key atrule">server</span><span class="token punctuation">:</span>
+    <span class="token key atrule">image</span><span class="token punctuation">:</span> front<span class="token punctuation">-</span>server
+    <span class="token key atrule">restart</span><span class="token punctuation">:</span> on<span class="token punctuation">-</span>failure
+    <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+      <span class="token comment"># publish port: 8010 on the host to port 80 on the container</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">target</span><span class="token punctuation">:</span> <span class="token number">80</span>
+        <span class="token key atrule">published</span><span class="token punctuation">:</span> <span class="token number">8010</span>
+    <span class="token key atrule">depends_on</span><span class="token punctuation">:</span> <span class="token comment"># dependency on the other services</span>
+      <span class="token punctuation">-</span> accesslog
+      <span class="token punctuation">-</span> api
+    <span class="token key atrule">volumes</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">type</span><span class="token punctuation">:</span> volume
+        <span class="token key atrule">source</span><span class="token punctuation">:</span> assets
+        <span class="token key atrule">target</span><span class="token punctuation">:</span> /container/directory
+    <span class="token key atrule">networks</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> app<span class="token punctuation">-</span>net
+
+<span class="token key atrule">networks</span><span class="token punctuation">:</span>
+  <span class="token key atrule">app-net</span><span class="token punctuation">:</span>
+    <span class="token key atrule">external</span><span class="token punctuation">:</span>
+      <span class="token key atrule">name</span><span class="token punctuation">:</span> nat
+  <span class="token key atrule">over-net</span><span class="token punctuation">:</span>
+    <span class="token key atrule">driver</span><span class="token punctuation">:</span> overlay
+    <span class="token key atrule">attachable</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+
+<span class="token key atrule">volumes</span><span class="token punctuation">:</span>
+  assets<span class="token punctuation">:</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">docker-compose up --detach
+
+<span class="token comment"># some time elapse</span>
+<span class="token comment"># scale the api service to a scale of 3</span>
+docker-compose up -d --scale <span class="token assign-left variable">api</span><span class="token operator">=</span><span class="token number">3</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</details>
+
+<h3 id="howe-docker-plugs-containers-together"><a href="#howe-docker-plugs-containers-together" class="headerlink" title="Howe Docker plugs containers together"></a>Howe Docker plugs containers together</h3><p>All the components in a distributed application run in Docker containers with Compose, but how do they communicate with each other?</p>
+<p>A container is a virtualized environment with its own network space. Each container has a virtual IP address assigned by Docker, and containers plugged into the same Docker network can reach each other using their IP addresses. But containers get replaced during the application life cycle, and new containers will have new IP addresses, so Docker also supports service discovery with DNS.</p>
+<p>Docker has its own DNS service built in. Apps running in containers make domain lookups when they try to access other components. The DNS service in Docker performs that lookup – if the domain name is actually a container name, Docker returns the container’s IP address, and the consumer can work directly across the Docker network. If the domain name isn’t a container, Docker passes the request on to the host where Docker is running, so it will make a standard DNS lookup to find an IP address on host’s network or the public internet.</p>
+<p>Containers plugged into the same Docker network will get IP addresses in the same network range, and they connect over that network. Using DNS means that when your containers get replaced and the IP address changes, your app still works because the DNS service in Docker will always return the current container’s IP address from the domain lookup.</p>
+<p>DNS servers can return multiple IP address for a domain name. Docker Compose uses this mechanism for simple load-balancing, returning all the container IP addresses for a service. To try to provide load-balancing across all the containers, the Docker DNS returns the list in a different order each time.</p>
+<p>Plugging app configuration into the Compose file lets you use the same Docker images in different ways and be explicit about the settings for each environment. You can have separate Compose files for your development and test environments, publishing different ports and triggering different features of the app.</p>
+<h3 id="understanding-the-problem-docker-compose-solves"><a href="#understanding-the-problem-docker-compose-solves" class="headerlink" title="Understanding the problem Docker Compose solves"></a>Understanding the problem Docker Compose solves</h3><p>Docker Compose is a very neat way of describing the setup for complex distributed apps in a small, clear file format.</p>
+<p>Compose lets you define your application and apply the definition to a single machine running Docker. It compares the live Docker resources on that machine with the resources described in the Compose file, and it will send requests to the Docker API to replace resources that have been updated and create new resources where they are needed.</p>
+<p>It is not a full container platform like Docker Swarm or Kubernetes—it does not continually run to make sure your application keeps its desired state. If containers fail or if you remove them manually, Docker Compose will not restart or replace them until you explicitly run docker-compose up again.</p>
+<h2 id="docker-compose-in-multiple-environments"><a href="#docker-compose-in-multiple-environments" class="headerlink" title="Docker Compose in Multiple Environments"></a>Docker Compose in Multiple Environments</h2><p>Docker Compose is a tool for running multi-container applications on a single Docker Engine.</p>
+<blockquote>
+<p>Under the same project (environment), Docker Compose won’t start any new instance of the application if it thinks you’re asking it to run an application that is already running.</p>
+</blockquote>
+<p>Docker Compose uses the concept of a <em>project</em> to identify that various resources are part of the same application, and it uses the name of the directory that contains the Compose file as the default project name.</p>
+<blockquote>
+<p>Using <code>-p</code> or <code>--project-name</code> to specify different project.</p>
+</blockquote>
+<p>Compose prefixes the project name when it creates resources, and for containers it also adds a numeric counter as a suffix.</p>
+<blockquote>
+<p>So if your Compose file is in a folder called <code>app1</code>, and it defines one service called <code>web</code> and one volume called <code>disk</code>, Compose will deploy it by creating a volume called <code>app1_disk</code> and a container called <code>app1_web_1</code>. The counter at the end of the container name supports scale, so if you scale that up to two instances of the web service, the new container will be called <code>app1_web_2</code>.</p>
+</blockquote>
+<h3 id="using-docker-compose-override-files"><a href="#using-docker-compose-override-files" class="headerlink" title="Using Docker Compose override files"></a>Using Docker Compose override files</h3><p><a target="_blank" rel="noopener" href="https://docs.docker.com/compose/reference/overview/#use--f-to-specify-name-and-path-of-one-or-more-compose-files">official reference</a></p>
+<p>Teams hit the problem of trying to run different app configurations with Docker Compose and often end up with many Compose files – one for each environment.</p>
+<p>However, Docker Compose lets you merge multiple files together, with properties from later files overriding those from earlier in the merge.</p>
+<p>Docker Compose merges files together when you specify multiple file paths in docker-compose commands. The config command is very useful here—it validates the contents of the input files, and if the input is valid, it writes out the final output. You can use that to see what will happen when you apply an override file.</p>
+<p>If you up the application with multiple compose files, you need to use all the same options when you tear down it.</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># start the application</span>
+docker-compose -f ./docker-compose.yml -f ./docker-compose-dev.yml -p dev up
+
+<span class="token comment"># tear down</span>
+docker-compose -f ./docker-compose.yml -f ./docker-compose-dev.yml -p dev down<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<details>
+<summary>
+An example to illustrate how to use overrides to structure an easily maintainable set of Compose files.
+</summary>
+
+<p>In the override file you just specify the properties you care about, but you need to preserve the structure of the main Compose file so that Docker Compose can link the definitions together.</p>
+<p>The other override files follow the same pattern. Each environment uses different ports for the web application and the API so you can run them all on a single machine.</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># validate and inspect the compose.yml files</span>
+docker-compose -f ./docker-compose.yml -f ./docker-compose-dev.yml config
+docker-compose -f ./docker-compose.yml -f ./docker-compose-test.yml config
+docker-compose -f ./docker-compose.yml -f ./docker-compose-uat.yml config<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment"># docker-compose.yml</span>
+<span class="token comment"># Only services and basic settings</span>
+<span class="token key atrule">version</span><span class="token punctuation">:</span> <span class="token string">'3.7'</span>
+
+<span class="token key atrule">services</span><span class="token punctuation">:</span>
+  <span class="token key atrule">api</span><span class="token punctuation">:</span>
+    <span class="token key atrule">image</span><span class="token punctuation">:</span> api<span class="token punctuation">:</span>v3
+    <span class="token key atrule">networks</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> app<span class="token punctuation">-</span>net
+
+  <span class="token key atrule">web</span><span class="token punctuation">:</span>
+    <span class="token key atrule">image</span><span class="token punctuation">:</span> web<span class="token punctuation">:</span>v3
+    <span class="token key atrule">environment</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> ServerApi__Url=http<span class="token punctuation">:</span>//api/api
+    <span class="token key atrule">networks</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> app<span class="token punctuation">-</span>net
+
+<span class="token key atrule">networks</span><span class="token punctuation">:</span>
+  app<span class="token punctuation">-</span>net<span class="token punctuation">:</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment"># docker-compose-dev.yml</span>
+<span class="token comment"># Settings (services/network) for development</span>
+<span class="token key atrule">version</span><span class="token punctuation">:</span> <span class="token string">'3.7'</span>
+
+<span class="token key atrule">services</span><span class="token punctuation">:</span>
+  <span class="token key atrule">api</span><span class="token punctuation">:</span>
+    <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token string">'8087:80'</span>
+    <span class="token key atrule">healthcheck</span><span class="token punctuation">:</span>
+      <span class="token key atrule">disable</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+
+  <span class="token key atrule">web</span><span class="token punctuation">:</span>
+    <span class="token key atrule">entrypoint</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> node
+      <span class="token punctuation">-</span> static<span class="token punctuation">-</span>web.js
+    <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token string">'8088:80'</span>
+
+<span class="token key atrule">networks</span><span class="token punctuation">:</span>
+  <span class="token key atrule">app-net</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> dev<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment"># docker-compose-test.yml</span>
+<span class="token comment"># Settings (services/network) for test</span>
+<span class="token key atrule">version</span><span class="token punctuation">:</span> <span class="token string">'3.7'</span>
+
+<span class="token key atrule">services</span><span class="token punctuation">:</span>
+  <span class="token key atrule">api</span><span class="token punctuation">:</span>
+    <span class="token key atrule">image</span><span class="token punctuation">:</span> api<span class="token punctuation">:</span>v3<span class="token punctuation">-</span>fix <span class="token comment"># using differrent version</span>
+    <span class="token key atrule">healthcheck</span><span class="token punctuation">:</span>
+      <span class="token key atrule">interval</span><span class="token punctuation">:</span> 20s
+      <span class="token key atrule">start_period</span><span class="token punctuation">:</span> 15s
+      <span class="token key atrule">retries</span><span class="token punctuation">:</span> <span class="token number">4</span>
+
+  <span class="token key atrule">web</span><span class="token punctuation">:</span>
+    <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token string">'8080:80'</span>
+    <span class="token key atrule">restart</span><span class="token punctuation">:</span> on<span class="token punctuation">-</span>failure
+    <span class="token key atrule">healthcheck</span><span class="token punctuation">:</span>
+      <span class="token key atrule">test</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">'CMD'</span><span class="token punctuation">,</span> <span class="token string">'node'</span><span class="token punctuation">,</span> <span class="token string">'health-check.js'</span><span class="token punctuation">]</span>
+      <span class="token key atrule">interval</span><span class="token punctuation">:</span> 20s
+      <span class="token key atrule">timeout</span><span class="token punctuation">:</span> 10s
+      <span class="token key atrule">retries</span><span class="token punctuation">:</span> <span class="token number">4</span>
+      <span class="token key atrule">start_period</span><span class="token punctuation">:</span> 10s
+
+<span class="token key atrule">networks</span><span class="token punctuation">:</span>
+  <span class="token key atrule">app-net</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> test<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment"># docker-compose-uat.yml</span>
+<span class="token comment"># Settings for User-Acceptance-Test environment</span>
+<span class="token key atrule">version</span><span class="token punctuation">:</span> <span class="token string">'3.7'</span>
+
+<span class="token key atrule">services</span><span class="token punctuation">:</span>
+  <span class="token key atrule">api</span><span class="token punctuation">:</span>
+    <span class="token key atrule">healthcheck</span><span class="token punctuation">:</span>
+      <span class="token key atrule">interval</span><span class="token punctuation">:</span> 10s
+      <span class="token key atrule">retries</span><span class="token punctuation">:</span> <span class="token number">2</span>
+    <span class="token key atrule">restart</span><span class="token punctuation">:</span> always
+    <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token string">'8090:80'</span>
+
+  <span class="token key atrule">web</span><span class="token punctuation">:</span>
+    <span class="token key atrule">restart</span><span class="token punctuation">:</span> always
+    <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token string">'80:80'</span>
+    <span class="token key atrule">healthcheck</span><span class="token punctuation">:</span>
+      <span class="token key atrule">interval</span><span class="token punctuation">:</span> 10s
+      <span class="token key atrule">retries</span><span class="token punctuation">:</span> <span class="token number">2</span>
+
+<span class="token key atrule">networks</span><span class="token punctuation">:</span>
+  <span class="token key atrule">app-net</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> uat<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</details>
+
+<h3 id="injecting-configuration-with-environment-variables-and-secrets"><a href="#injecting-configuration-with-environment-variables-and-secrets" class="headerlink" title="Injecting configuration with environment variables and secrets"></a>Injecting configuration with environment variables and secrets</h3><p>Most applications can read configuration settings from environment variables or files, and Compose has good support for both those approaches.</p>
+<p>This secret is specified as coming from the source <code>db-connection</code>, which means there needs to be a secret with that name defined in the Compose file.</p>
+<p>Secrets are a useful way of injecting configuration – they have support in Docker Compose, Docker Swarm, and Kubernetes.</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">version</span><span class="token punctuation">:</span> <span class="token string">'3.7'</span>
+
+<span class="token key atrule">services</span><span class="token punctuation">:</span>
+  <span class="token key atrule">web</span><span class="token punctuation">:</span>
+    <span class="token key atrule">image</span><span class="token punctuation">:</span> web<span class="token punctuation">:</span>v1
+    <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token string">'$&#123;HOST_WEB_PORT:-8090&#125;:80'</span> <span class="token comment"># using environment variable, default would be 8090</span>
+    <span class="token key atrule">environment</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> Database<span class="token punctuation">:</span>Provider=Sqlite
+    <span class="token key atrule">env_file</span><span class="token punctuation">:</span>
+      <span class="token comment"># path to a text dotenv file</span>
+      <span class="token punctuation">-</span> ./config/logging.debug.env
+
+    <span class="token key atrule">secrets</span><span class="token punctuation">:</span>
+      <span class="token comment"># The source is the place where the secret</span>
+      <span class="token comment">#   is loaded from the container runtime</span>
+      <span class="token comment"># The target is the file path where the secret</span>
+      <span class="token comment">#   is surfaced inside the container</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">source</span><span class="token punctuation">:</span> db<span class="token punctuation">-</span>connection
+        <span class="token key atrule">target</span><span class="token punctuation">:</span> /app/config/secrets.json
+
+  <span class="token key atrule">api</span><span class="token punctuation">:</span>
+    <span class="token comment"># if the environment variable not exist, using v1 instead</span>
+    <span class="token key atrule">image</span><span class="token punctuation">:</span> api<span class="token punctuation">:</span>$<span class="token punctuation">&#123;</span>BUILD_VERSION<span class="token punctuation">:</span><span class="token punctuation">-</span>v1<span class="token punctuation">&#125;</span>
+    <span class="token key atrule">secrets</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">source</span><span class="token punctuation">:</span> redis<span class="token punctuation">-</span>connection
+        <span class="token key atrule">target</span><span class="token punctuation">:</span> /app/config/ <span class="token comment"># copy all the directory files</span>
+
+<span class="token key atrule">secrets</span><span class="token punctuation">:</span>
+  <span class="token key atrule">db-connection</span><span class="token punctuation">:</span>
+    <span class="token key atrule">file</span><span class="token punctuation">:</span> ./config/secrets.json
+  <span class="token key atrule">redis-connection</span><span class="token punctuation">:</span>
+    <span class="token key atrule">file</span><span class="token punctuation">:</span> ./config/dev <span class="token comment"># directory with multiple config.json</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># .env file</span>
+<span class="token assign-left variable">HOST_WEB_PORT</span><span class="token operator">=</span><span class="token number">8877</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<blockquote>
+<p>Keeping an environment file alongside your Compose files helps to document which sets of files represent which environment, but be aware that Docker Compose only looks for a file called <code>.env</code>. You can’t specify a filename, so you can’t easily switch between environments with multiple environment files.</p>
+</blockquote>
+<p>Useful tips:</p>
+<ul>
+<li><p>Using the <code>environment</code> property to specify environment variables is the simplest option, and it makes your application configuration easy to read from the Compose file. Those settings are in plain text, though, so you shouldn’t use them for sensitive data like connection strings or API keys.</p>
+</li>
+<li><p>Loading configuration files with <code>secret</code> properties is the most flexible option, because it’s supported by all the container runtimes and it can be used for sensitive data. The source of the secret could be <em>a local file when you’re using Compose</em>, or it could be an encrypted secret stored in a Docker Swarm or Kubernetes cluster. Whatever the source, the contents of the secret get loaded into a file in the container for the application to read.</p>
+</li>
+<li><p>Storing settings in a file and loading them into containers with the <code>environment_file</code> property is useful when you have lots of shared settings between services. Compose reads the file locally and sets the individual values as environment properties, so you can use local environment files when you’re connected to a remote Docker Engine.</p>
+</li>
+<li><p>The Compose environment file, <code>.env</code>, is useful for capturing the setup for whichever environment you want to be the default deployment target.</p>
+</li>
+</ul>
+<details>
+<summary>
+
+<p>Reducing duplication with extendsion fields</p>
+</summary>
+
+<p>Using extension fields to define blocks of YAML in a single place, which you can reuse throughout the Compose file.</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">x-labels</span><span class="token punctuation">:</span> <span class="token important">&amp;logging</span>
+  <span class="token key atrule">logging</span><span class="token punctuation">:</span>
+    <span class="token key atrule">options</span><span class="token punctuation">:</span>
+      <span class="token key atrule">max-size</span><span class="token punctuation">:</span> <span class="token string">'100m'</span>
+      <span class="token key atrule">max-file</span><span class="token punctuation">:</span> <span class="token string">'10'</span>
+
+<span class="token key atrule">x-labels</span><span class="token punctuation">:</span> <span class="token important">&amp;labels</span>
+  <span class="token key atrule">app-name</span><span class="token punctuation">:</span> image<span class="token punctuation">-</span>web
+
+<span class="token comment"># used in compose file</span>
+<span class="token key atrule">version</span><span class="token punctuation">:</span> <span class="token string">"3.7"</span>
+
+<span class="token key atrule">x-labels</span><span class="token punctuation">:</span> <span class="token important">&amp;logging</span>
+  <span class="token key atrule">logging</span><span class="token punctuation">:</span>
+    <span class="token key atrule">options</span><span class="token punctuation">:</span>
+      <span class="token key atrule">max-size</span><span class="token punctuation">:</span> <span class="token string">'100m'</span>
+      <span class="token key atrule">max-file</span><span class="token punctuation">:</span> <span class="token string">'10'</span>
+
+<span class="token key atrule">x-labels</span><span class="token punctuation">:</span> <span class="token important">&amp;labels</span>
+  <span class="token key atrule">app-name</span><span class="token punctuation">:</span> image<span class="token punctuation">-</span>web
+
+<span class="token key atrule">services</span><span class="token punctuation">:</span>
+  <span class="token key atrule">accesslog</span><span class="token punctuation">:</span>
+    <span class="token key atrule">&lt;&lt;</span><span class="token punctuation">:</span> <span class="token important">*logging</span>
+    <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+      <span class="token key atrule">&lt;&lt;</span><span class="token punctuation">:</span> <span class="token important">*labels</span>
+
+  <span class="token key atrule">prometheus</span><span class="token punctuation">:</span>
+    <span class="token key atrule">image</span><span class="token punctuation">:</span> prometheus
+    <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token string">"9090:9090"</span>
+    <span class="token key atrule">environment</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> DOCKER_HOST=$<span class="token punctuation">&#123;</span>HOST_IP<span class="token punctuation">&#125;</span>
+    <span class="token key atrule">networks</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> app<span class="token punctuation">-</span>net
+    <span class="token key atrule">&lt;&lt;</span><span class="token punctuation">:</span> <span class="token important">*logging</span>
+    <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+      <span class="token key atrule">&lt;&lt;</span><span class="token punctuation">:</span> <span class="token important">*labels</span>
+
+  <span class="token key atrule">grafana</span><span class="token punctuation">:</span>
+    <span class="token key atrule">image</span><span class="token punctuation">:</span> grafana
+    <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token string">"3000:3000"</span>
+    <span class="token key atrule">depends_on</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> prometheus
+    <span class="token key atrule">networks</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> app<span class="token punctuation">-</span>net
+    <span class="token key atrule">&lt;&lt;</span><span class="token punctuation">:</span> <span class="token important">*logging</span>
+    <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+      <span class="token key atrule">&lt;&lt;</span><span class="token punctuation">:</span> <span class="token important">*labels</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</details>
+
+<h3 id="the-configuration-workflow-with-docker"><a href="#the-configuration-workflow-with-docker" class="headerlink" title="The configuration workflow with Docker"></a>The configuration workflow with Docker</h3><ul>
+<li><p><strong>Application composition</strong> :Not every environment will run the whole stack. Override files makes this work neatly, sharing common services and adding specific ones in each environment.</p>
+</li>
+<li><p><strong>Container configuration</strong>: Properties need to change to match the requirements and capabilities of the environment. Overrides enable this, along with isolated Docker networks for each application, allowing you to run multiple environments on a single server.</p>
+</li>
+<li><p><strong>Application configuration</strong>: The behavior of applications inside containers will change between environments. You can do this using Compose with any combination of override files, environment files, and secrets.</p>
+</li>
+</ul>
+<p>The most important takeaway from this is that the configuration workflow uses the same Docker image in every environment.</p>
+<h3 id="references"><a href="#references" class="headerlink" title="References"></a>References</h3><p><a target="_blank" rel="noopener" href="https://docs.docker.com/compose/reference/overview/">Guidance on docker-compose CLI</a></p>
+<p><a target="_blank" rel="noopener" href="https://docs.docker.com/compose/compose-file/">Reference and guidelines for docker compose file</a></p>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

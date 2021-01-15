@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="Programs are typically designed to model complex phenomena, and more often than not one must construct computational objects that have several parts in order to model real-world phenomena that have se">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Building Abstractions with Data">
+<meta property="og:url" content="https://akatquas.github.io/sicp/02-building-abstractions-with-data.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="Programs are typically designed to model complex phenomena, and more often than not one must construct computational objects that have several parts in order to model real-world phenomena that have se">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-01-15T10:21:08.426Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.426Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="sicp">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://akatquas.github.io/sicp/02-building-abstractions-with-data.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>Building Abstractions with Data | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#introduction-to-data-abstraction"><span class="nav-text">Introduction to Data Abstraction</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#pairs"><span class="nav-text">Pairs</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#abstraction-barriers"><span class="nav-text">Abstraction Barriers</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#what-is-meant-by-data"><span class="nav-text">What Is Meant by Data?</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hierarchical-data-and-the-closure-property"><span class="nav-text">Hierarchical Data and the Closure Property</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#representing-sequences"><span class="nav-text">Representing Sequences</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#list-operation"><span class="nav-text">List operation</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#mapping-over-lists"><span class="nav-text">Mapping over lists</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#hierarchical-structures"><span class="nav-text">Hierarchical Structures</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#mapping-over-trees"><span class="nav-text">Mapping over trees</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sequences-as-conventional-interfaces"><span class="nav-text">Sequences as Conventional Interfaces</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#sequence-operations"><span class="nav-text">Sequence Operations</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#nested-mappings"><span class="nav-text">Nested Mappings</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#symbolic-data"><span class="nav-text">Symbolic Data</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#quotation"><span class="nav-text">Quotation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#representing-sets"><span class="nav-text">Representing Sets</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#example-huffman-encoding-trees"><span class="nav-text">Example: Huffman Encoding Trees</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#multiple-representations-for-abstract-data"><span class="nav-text">Multiple Representations for Abstract Data</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#tagged-data"><span class="nav-text">Tagged data</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#data-directed-programming-and-additivity"><span class="nav-text">Data-Directed Programming and Additivity</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#message-passing"><span class="nav-text">Message passing</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#systems-with-generic-operations"><span class="nav-text">Systems with Generic Operations</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#generic-arithmetic-operations"><span class="nav-text">Generic Arithmetic Operations</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#combining-data-of-different-types"><span class="nav-text">Combining Data of Different Types</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#coercion"><span class="nav-text">Coercion</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#hierarchies-of-types"><span class="nav-text">Hierarchies of types</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#inadequacies-of-hierarchies"><span class="nav-text">Inadequacies of hierarchies</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#quick-contents"><span class="nav-text">Quick Contents</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">Building Abstractions with Data
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <p>Programs are typically designed to model complex phenomena, and more often than not one must construct computational objects that have several parts in order to model real-world phenomena that have several aspects. Any programming language would provide the means for building abstractions by combining data objects to form compound data.</p>
+<p>We need compound data in programming languages for:</p>
+<ul>
+<li><p>to elevate the conceptual level at which we can design our programs,</p>
+</li>
+<li><p>to increase the modularity of our designs,</p>
+</li>
+<li><p>to enhance the expressive power of our language.</p>
+</li>
+</ul>
+<p>Just as the ability to define procedures enables us to deal with processes at a higher conceptual level than that of the primitive operations of the language, the ability to construct compound data objects enables us to deal with data at a higher conceptual level than that of the primitive data objects of the language.</p>
+<p>The use of compound data also enables us to increase the modularity of our programs. The general technique of isolating the parts of a program that deal with how data objects are represented from the parts of a program that deal with how data objects are used is a powerful design methodology called <em>data abstraction</em>.</p>
+<p>As with compound procedures, the main issue to be addressed is that of abstraction as a technique for coping with complexity, and we will see how data abstraction enables us to erect suitable abstraction barriers between different parts of a program.</p>
+<p>The key to forming compound data is that a programming language should provide some kind of “glue” so that data objects can be combined to form more complex data objects.</p>
+<p>One key idea in dealing with compound data is the notion of <em>closure</em> —that the glue we use for combining data objects should allow us to combine not only primitive data objects, but compound data objects as well. Another key idea is that compound data objects can serve as <em>conventional interfaces</em> for combining program modules in mix-and-match ways.</p>
+<p>Using <em>symbolic expressions</em> and various alternatives for representing sets of objects. There are many ways in which a given data structure can be represented in terms of simpler objects, and the choice of representation can have significant impact on the time and space requirements of processes that manipulate the data.</p>
+<p>Maintaining modularity in the presence of <em>generic operations</em>, which helps to handle many different types of data, requires more powerful abstraction barriers than can be erected with simple data abstraction alone.</p>
+<p>In particular, we introduce datadirected programming as a technique that allows individual data representations to be designed in isolation and then combined additively.</p>
+<h2 id="introduction-to-data-abstraction"><a href="#introduction-to-data-abstraction" class="headerlink" title="Introduction to Data Abstraction"></a>Introduction to Data Abstraction</h2><p>Data abstraction is a methodology that enables us to isolate how a compound data object is used from the details of how it is constructed from more primitive data objects.</p>
+<p>The basic idea of data abstraction is that the programs should use data in such a way as to make no as- sumptions about the data that are not strictly necessary for performing the task at hand. At the same time, a <em>concrete</em> data representation is defined independent of the programs that use the data.</p>
+<p>The interface between these two parts of our system will be a set of procedures, called <em>selectors</em> and <em>constructors</em>, that implement the abstract data in terms of the concrete representation.</p>
+<h4 id="pairs"><a href="#pairs" class="headerlink" title="Pairs"></a>Pairs</h4><p>To enable the program to implement the concrete level of the data abstraction, the language provides a compound structure called a <em>pair</em>.</p>
+<p>A pair is a data object that can be given a name and manipulated, just like a primitive data object.</p>
+<p>The ability to combine pairs means that pairs can be used as general-purpose building blocks to create all sorts of complex data structures. Data objects constructed from pairs are called <em>list-structured</em> data.</p>
+<h3 id="abstraction-barriers"><a href="#abstraction-barriers" class="headerlink" title="Abstraction Barriers"></a>Abstraction Barriers</h3><p>In general, the underlying idea of data abstraction is to identify for each type of data objects of that type will be expressed, and then to use only those operations in manipulating the data.</p>
+<p>The details of how one level is implemented are irrelevant to the rest levels. In effect, procedures at each level are the interfaces that define the abstraction barriers and connect the different levels.</p>
+<p>Using abstraction barriers makes programs much easier to maintain and to modify. Any complex data structure can be represented in a variety of ways with the primitive data structures provided by a programming language. Of course, the choice of representation influences the programs that operate on it; thus, if the representation were to be changed at some later time, all such programs might have to be modified accordingly.</p>
+<p>Constraining the dependence on the representation to a few interface procedures helps us design programs as well as modify them, because it allows us to maintain the flexibility to consider alternate implementations.</p>
+<h3 id="what-is-meant-by-data"><a href="#what-is-meant-by-data" class="headerlink" title="What Is Meant by Data?"></a>What Is Meant by Data?</h3><p>But exactly what is meant by data? It is not enough to say <em>whatever is implemented by the given selectors and constructors</em>. In general, we can think of data as defined by some collection of selectors and constructors, together with specified conditions that these procedures must fulfill in order to be a valid representation.</p>
+<h2 id="hierarchical-data-and-the-closure-property"><a href="#hierarchical-data-and-the-closure-property" class="headerlink" title="Hierarchical Data and the Closure Property"></a>Hierarchical Data and the Closure Property</h2><p>Pairs provide a primitive <em>glue</em> to construct compound data objects.</p>
+<p>The ability to create pairs whose elements could be pairs is the essence of list structure’s importance as a representational tool. In general, an operation for combining data objects satisfies the closure property if the results of combining things with that operation can themselves be combined using the same operation. Closure is the key to power in any means of combination because it premits programmers to create <em>hierarchical</em> structures-structures made up of parts, which themselves are made up of parts, and so on.</p>
+<blockquote>
+<p>Throughout the book, the meaning of <em>closure</em> is from abstract algebra, and its meaning is where a set of elements is said to be closed under an operation if applying the operation to elements in the set produces an element that is again an element of that set. <em>代数闭包（域）</em> or <em>algebraic closure</em>.</p>
+</blockquote>
+<h3 id="representing-sequences"><a href="#representing-sequences" class="headerlink" title="Representing Sequences"></a>Representing Sequences</h3><p>One of the useful structures we can build with pairs is a sequence—an ordered collection of data objects.</p>
+<blockquote>
+<p>List, Array</p>
+</blockquote>
+<h4 id="list-operation"><a href="#list-operation" class="headerlink" title="List operation"></a>List operation</h4><p>It is customary to number the elements of the list beginning with index 0.</p>
+<p>The <code>length</code> procedure implements a simple recursive plan. The reduction step is:</p>
+<ul>
+<li>The <code>length</code> of an empty list is <code>0</code>,</li>
+<li>The <code>length</code> of any list is <code>1</code> plus the <code>length</code> of the after list.</li>
+</ul>
+<p><code>append</code> takes two lists as arguments and combines their elements to make a new list, using a recursive plan:</p>
+<ul>
+<li>If <code>list1</code> is the empty list, then the result is just <code>list2</code>.</li>
+<li>Otherwise, append the first element of <code>list1</code> and <code>list2</code>, and add the rest <code>list1</code> onto the result</li>
+</ul>
+<h4 id="mapping-over-lists"><a href="#mapping-over-lists" class="headerlink" title="Mapping over lists"></a>Mapping over lists</h4><p>One extremely useful operation is to apply some transformation to each element in a list and generate the list of results. We can abstract this general idea and capture it as a common paern expressed as a higher-order procedure.</p>
+<p>The higher-order procedure here is called <code>map</code>. <code>map</code> takes as arguments a procedure of one argument and a list, and returns a list of the results produced by applying the procedure to each element in the list.</p>
+<p><code>map</code> is an important construct, not only because it captures a common pattern, but because it establishes a higher level of abstraction barrier that isolates the implementation of procedures that transform lists from the details of how the elements of the list are extracted and combined. This abstraction gives us the flexibility to change the low-level details of how sequences are implemented, while preserving the conceptual framework of operations that transform sequences to sequences.</p>
+<h3 id="hierarchical-structures"><a href="#hierarchical-structures" class="headerlink" title="Hierarchical Structures"></a>Hierarchical Structures</h3><p>Another way to think of sequences whose elements are sequences is as <em>trees</em>. The elements of the sequence are the branches of the tree, and elements that are themselves sequences are subtrees.</p>
+<p>Recursion is a natural tool for dealing with tree structures, since we can often reduce operations on trees to operations on their branches, which reduce in turn to operations on the branches of the branches, and so on, until we reach the leaves of the tree.</p>
+<h4 id="mapping-over-trees"><a href="#mapping-over-trees" class="headerlink" title="Mapping over trees"></a>Mapping over trees</h4><p>Just as <code>map</code> is a powerful abstraction for dealing with sequences, <code>map</code> together with recursion is a powerful abstraction for dealing with trees.</p>
+<h3 id="sequences-as-conventional-interfaces"><a href="#sequences-as-conventional-interfaces" class="headerlink" title="Sequences as Conventional Interfaces"></a>Sequences as Conventional Interfaces</h3><p>If we could organize our programs to make the signal-flow structure manifest in the procedures we write, this would increase the conceptual clarity of the resulting code.</p>
+<h4 id="sequence-operations"><a href="#sequence-operations" class="headerlink" title="Sequence Operations"></a>Sequence Operations</h4><p>The key to organizing programs so as to more clearly reflect the signal-flow structure is to concentrate on the <em>signals</em> that flow from one stage in the process to the next. If we represent these signals as lists, then we can use list operations to implement the processing at each of the stages.</p>
+<p>The value of expressing programs as sequence operations is that this helps us make program designs that are modular, that is, designes that are constructed by combining relatively independent pieces. We can encourage modular design by providing a library of standard components together with a conventional interface for connecting the components in flexible ways.</p>
+<p>Sequences, implemented here as lists, serve as a conventional interface that permits us to combine processing modules. Additionally, when we uniformly represent structures as sequences, we have localized the data-structure dependencies in our programs to a small number of sequence operations. By changing these, we can experiment with alternative representations of sequences, while leaving the overall design of our programs intact.</p>
+<h4 id="nested-mappings"><a href="#nested-mappings" class="headerlink" title="Nested Mappings"></a>Nested Mappings</h4><p>We can extend the sequence paradigm to include many computations that are commonly expressed using nested loops.</p>
+<h2 id="symbolic-data"><a href="#symbolic-data" class="headerlink" title="Symbolic Data"></a>Symbolic Data</h2><p>We extend the representational capability of our language by introducing the ability to work with arbitrary symbols as data.</p>
+<blockquote>
+<p>MatLab has the ability to do symbolic mathematical work.</p>
+</blockquote>
+<h3 id="quotation"><a href="#quotation" class="headerlink" title="Quotation"></a>Quotation</h3><p>In order to manipulate symbols we need a new element in the language: the ability to <em>quote</em> a data object.</p>
+<p>The expression <code>(list a b)</code> constructs a list of the values of a and b rather than the symbols themselves. This issue is well known in the context of natural languages, where words and sentences may be regarded either as semantic entities or as character strings (syntactic entities).</p>
+<p>Using quotation, such as <code>(list &#39;a &#39;b)</code> allows us to type in compound objects, using the conventional printed representation.</p>
+<pre class="line-numbers language-none"><code class="language-none">(define a 1)
+(define b 2)
+(list a b)
+&#x2F;&#x2F; output is (1 2)
+(list &#39;a &#39;b)
+&#x2F;&#x2F; output is (a b)
+(list &#39;a b)
+&#x2F;&#x2F; output is (a 2)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="representing-sets"><a href="#representing-sets" class="headerlink" title="Representing Sets"></a>Representing Sets</h3><p>There are a number of possible representation for sets. Informally, a set is simply a collection of distinct objects.</p>
+<ol>
+<li><p>Sets as unordered lists</p>
+<p>One way to represent a set is as a list of its elements in which no element appears more than once. The empty set is represented by the empty list.</p>
+</li>
+<li><p>Sets as ordered lists</p>
+<p>One way to speed up our set operations is to change the representation so that the set elements are listed in increasing order. To do this, we need some way to compare two objects so that we can say which is bigger.</p>
+</li>
+<li><p>Sets as binary trees</p>
+<p>To do better than the ordered-list representation, we arrange the set elements in the form of a tree. Each node of the tree holds one element of the set, called the <em>entry</em> at that node, and a link to each of two other (possibly empty) nodes. The <em>left</em> link points to elements smaller than the one at the node, and the <em>right</em> link to elements greater than the one at the node.</p>
+<p>One way to solve this unbalanced tree problem is to define an operation that transforms an arbitrary tree into a balanced tree with the same elements. Then we can perform this transformation after every few <em>adjoin-set</em> operations to keep our set in balance. There are also other ways to solve this problem, most of which involve designing new data structures for which searching and insertion both can be done in <code>Θ(logn)</code> steps</p>
+</li>
+</ol>
+<h3 id="example-huffman-encoding-trees"><a href="#example-huffman-encoding-trees" class="headerlink" title="Example: Huffman Encoding Trees"></a>Example: Huffman Encoding Trees</h3><p>In general, we can attain significant savings if we use variable-length prefix codes that take advantage of the relative frequencies of the symbols in the messages to be encoded.</p>
+<p>A Huffman code can be represented as a binary tree whose leaves are the symbols that are encoded. At each non-leaf node of the tree there is a set containing all the symbols in the leaves that lie below the node. In addition, each symbol at a leaf is assigned a weight (which is its relative frequency), and each non-leaf node contains a weight that is the sum of all the weights of the leaves lying below it. The weights are not used in the encoding or the decoding process.</p>
+<h2 id="multiple-representations-for-abstract-data"><a href="#multiple-representations-for-abstract-data" class="headerlink" title="Multiple Representations for Abstract Data"></a>Multiple Representations for Abstract Data</h2><p>In addition to the data-abstraction barriers that isolate different design choices from each other and permit different choices to coexist in a single program.</p>
+<p>Data may be represented in different ways by different parts of a program. This requires constructing <em>generic procedures</em> - procedures that can operate on data that may be represented in more than one way. Our main technique for building generic procedures will be to work in terms of data objects that have <em>type tags</em>, that is, data objects that include explicit <em>information about how they are to be processed</em>.</p>
+<p><em>Data-directed</em> programming is a powerful and convenient implementation strategy for additively assembling systems with generic operations.</p>
+<p>The discipline of data abstraction ensures that the different implementation of same selectors will work with different constructor representations.</p>
+<h3 id="tagged-data"><a href="#tagged-data" class="headerlink" title="Tagged data"></a>Tagged data</h3><p>One way to view data abstraction is as an application of the <em>principle of least commitment</em>.</p>
+<p>The abstraction barrier formed by the selectors and constructors permits programmers to defer to the last possible moment the choice of a concrete representation for the data objects and thus retain maximum flexibility in the system design.</p>
+<p>A straightforward way to accomplish this distinction between different constructor is to include a <em>type tag</em>. Then we can use the tag to decide which selector to apply.</p>
+<p>Each generic selector is implemented as a procedure that checks the tag of its argument and calls the appropriate procedure for handling data of that type.</p>
+<p>Since each data object is tagged with its type, the selectors operate on the data in a generic manner. That is, each selector is defined to have a behavior that depends upon the particular type of data it is applied to.</p>
+<blockquote>
+<p>Factory Pattern</p>
+</blockquote>
+<h3 id="data-directed-programming-and-additivity"><a href="#data-directed-programming-and-additivity" class="headerlink" title="Data-Directed Programming and Additivity"></a>Data-Directed Programming and Additivity</h3><p>The general strategy of checking the type of a datum and calling an appropriate procedure is called <em>dispatching on type</em>.</p>
+<p>This is a powerful strategy for obtaining modularity in system design. On the other hand, implementing the dispatch has two significant weaknesses:</p>
+<ol>
+<li>the generic interface procedures must know about all the different representations.</li>
+<li>no two procedures in the entire system have the same name even though the individual representations can be designed separately.</li>
+</ol>
+<p>To understand how data-directed programming works, begin with the observation that whenever we deal with a set of generic operations that are common to a set of different types, we are, in effect, dealing with a two-dimensional table that contains the possible operations on one axis and the possible types on the other axis. The entries in the table are the procedures that implement each operation for each type of argument presented.</p>
+<h4 id="message-passing"><a href="#message-passing" class="headerlink" title="Message passing"></a>Message passing</h4><p>The key idea of data-directed programming is to handle generic operations in programs by dealing explicitly with operation-and-type tables.</p>
+<p>The style of programming organizes the required dispatching on type by having each operation take care of its own dispatching. In effect, this decomposes the operation-and-type table into rows, with each generic operation procedure repersenting a row of the table.</p>
+<p>An alternative implementation strategy is to decompose the table into columns and, instead of using <em>intelligent operations</em> that dispatch on data types, to work with <em>intelligent data objects</em> that dispatch on operation names. We can do this by arranging things so that a data object is represented as a procedure that takes as input the required operation name and performs the operation indicated.</p>
+<p>This style of programming is called <em>message passing</em>. The name comes from the image that a data object is an entity that receives the requested operation name as a <em>message</em>. Message passing is not a mathematical trick but a useful technique for organizing systems with generic operations.</p>
+<h2 id="systems-with-generic-operations"><a href="#systems-with-generic-operations" class="headerlink" title="Systems with Generic Operations"></a>Systems with Generic Operations</h2><p>Generic interface procedures helps programmers to link the code that specifies the data operations to the several representations. The same idea is not only suitable to define operations that are generic over different representations but also to define operations that are generic over different kinds of arguments.</p>
+<h3 id="generic-arithmetic-operations"><a href="#generic-arithmetic-operations" class="headerlink" title="Generic Arithmetic Operations"></a>Generic Arithmetic Operations</h3><p>Creating a table to store types and operations.</p>
+<blockquote>
+<p>Operator overloading</p>
+</blockquote>
+<h3 id="combining-data-of-different-types"><a href="#combining-data-of-different-types" class="headerlink" title="Combining Data of Different Types"></a>Combining Data of Different Types</h3><p>We have gone to great pains to introduce barriers between parts of our programs so that they can be developed and understood separately. We would like to introduce the cross-type operations in some carefully controlled way, so that we can support them without seriously violating our module boundaries.</p>
+<p>One way to handle cross-type operations is to design a different procedure for each possible combination of types for which the operation is valid.</p>
+<p>This technique works, but it is cumbersome. With such a system, the cost of introducing a new type is not just the construction of the package of procedures for that type but also the construction and installation of the procedures that implement the cross-type operations.</p>
+<h4 id="coercion"><a href="#coercion" class="headerlink" title="Coercion"></a>Coercion</h4><p>In the general situation of completely unrelated operations acting on completely unrelated types, implementing explicit cross-type operations, cumbersome though it may be, is the best that one can hope for.</p>
+<p>Often the different data types are not completely independent, and there may be ways by which objects of one type may be viewed as being of another type. This process is called <em>coercion</em>.</p>
+<blockquote>
+<p>type casting</p>
+</blockquote>
+<p>In general, we can implement this idea by designing coercion procedures that transform an object of one type into an equivalent object of another type.</p>
+<p>Although we still need to write coercion procedures to relate the types (possibly n<sup>2</sup> procedures for a system with <code>n</code> types), we need to write only one procedure for each pair of types rather than a different procedure for each collection of types and each generic operation. What we are counting on here is the fact that the appropriate transformation between types depends only on the types themselves, not on the operation to be applied.</p>
+<p>On the other hand, there may be applications for which our coercion scheme is not general enough. Even when neither of the objects to be combined can be converted to the type of the other it may still be possible to perform the operation by converting both objects to a third type.</p>
+<h4 id="hierarchies-of-types"><a href="#hierarchies-of-types" class="headerlink" title="Hierarchies of types"></a>Hierarchies of types</h4><p>Often there is more <em>global</em> structure in how the different types relate to each other, this is a so-called <em>hierarchy of types</em>.</p>
+<h4 id="inadequacies-of-hierarchies"><a href="#inadequacies-of-hierarchies" class="headerlink" title="Inadequacies of hierarchies"></a>Inadequacies of hierarchies</h4><p>In general, a type may have more than one subtype, or more than one supertype.</p>
+<p>This multiple-supertypes issue is particularly thorny, since it means that there is no unique way to <em>raise</em> a type in the hierarchy. Finding the <em>correct</em> supertype in which to apply an operation to an object may involve considerable searching through the entire type network on the part of a procedure such as <em>apply-generic</em>. Since there generally are multiple subtypes for a type, there is a similar problem in coercing a value <em>down</em> the type hierarchy.</p>
+<h2 id="quick-contents"><a href="#quick-contents" class="headerlink" title="Quick Contents"></a>Quick Contents</h2><ol>
+<li><p><a href="/sicp/01-building-abstractions-with-procedures.html">Building Abstractions with Procedures</a></p>
+</li>
+<li><p><a href="/sicp/02-building-abstractions-with-data.html">Building Abstractions with Data</a></p>
+</li>
+<li><p><a href="/sicp/03-modularity-objects-state.html">Modularity, Objects, and State</a></p>
+</li>
+<li><p><a href="/sicp/04-metalinguistic-abstraction.html">Metalinguistic Abstraction</a></p>
+</li>
+<li><p><a href="/sicp/05-computing-with-register-machines.html">Computing with Register Machines</a></p>
+</li>
+</ol>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

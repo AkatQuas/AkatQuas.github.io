@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="Overview本章再来了解某些基本术语和概念之后，将先看看构成网络的基本硬件和软件组件 。从 网络的边缘 开始，考察在网络中运行的 端系统和网络应用 ；再研究计算机网络的核心，探讨 传输数据的链路和交换机 ，以及连接端系统与网络核心的 接入网和物理媒体 。将了解因特网是 “网络的网络” ，以及这些网络是如何彼此连接起来的。 浏览完计算机网络的边缘和核心之后，将从更广泛、更抽象的角度来考察计算机网">
+<meta property="og:type" content="website">
+<meta property="og:title" content="计算机网络和因特网">
+<meta property="og:url" content="https://akatquas.github.io/network-top-down-approach/ch01-network-and-internet.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="Overview本章再来了解某些基本术语和概念之后，将先看看构成网络的基本硬件和软件组件 。从 网络的边缘 开始，考察在网络中运行的 端系统和网络应用 ；再研究计算机网络的核心，探讨 传输数据的链路和交换机 ，以及连接端系统与网络核心的 接入网和物理媒体 。将了解因特网是 “网络的网络” ，以及这些网络是如何彼此连接起来的。 浏览完计算机网络的边缘和核心之后，将从更广泛、更抽象的角度来考察计算机网">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://akatquas.github.io/network-top-down-approach/imgs/ch01f01.png">
+<meta property="og:image" content="https://akatquas.github.io/network-top-down-approach/imgs/ch01f02.png">
+<meta property="og:image" content="https://akatquas.github.io/network-top-down-approach/imgs/ch01f03.png">
+<meta property="og:image" content="https://akatquas.github.io/network-top-down-approach/imgs/ch01f04.png">
+<meta property="og:image" content="https://akatquas.github.io/network-top-down-approach/imgs/ch01f05.png">
+<meta property="og:image" content="https://akatquas.github.io/network-top-down-approach/imgs/ch01f06.png">
+<meta property="og:image" content="https://akatquas.github.io/network-top-down-approach/imgs/ch01f07.png">
+<meta property="og:image" content="https://akatquas.github.io/network-top-down-approach/imgs/ch01f08.png">
+<meta property="og:image" content="https://akatquas.github.io/network-top-down-approach/imgs/ch01f09.png">
+<meta property="og:image" content="https://akatquas.github.io/network-top-down-approach/imgs/ch01f10.png">
+<meta property="og:image" content="https://akatquas.github.io/network-top-down-approach/imgs/ch01f11.png">
+<meta property="og:image" content="https://akatquas.github.io/network-top-down-approach/imgs/ch01f11.png">
+<meta property="og:image" content="https://akatquas.github.io/network-top-down-approach/imgs/ch01f12.png">
+<meta property="article:published_time" content="2021-01-15T10:21:08.414Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.414Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="akat,programmer,frontend,node,javascript,golang,python">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://akatquas.github.io/network-top-down-approach/imgs/ch01f01.png">
+
+
+<link rel="canonical" href="https://akatquas.github.io/network-top-down-approach/ch01-network-and-internet.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>计算机网络和因特网 | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#overview"><span class="nav-text">Overview</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#about-internet"><span class="nav-text">About Internet</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#internet-%E7%9A%84%E6%9E%84%E6%88%90"><span class="nav-text">Internet 的构成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E6%8F%8F%E8%BF%B0"><span class="nav-text">服务描述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#what-is-protocol"><span class="nav-text">What is Protocol</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E8%BE%B9%E7%BC%98"><span class="nav-text">网络边缘</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E6%9C%BA%E5%92%8C%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%A8%8B%E5%BA%8F"><span class="nav-text">客户机和服务器程序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A5%E5%85%A5%E7%BD%91-access-network"><span class="nav-text">接入网 access network</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%A9%E7%90%86%E5%AA%92%E4%BD%93"><span class="nav-text">物理媒体</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E6%A0%B8%E5%BF%83"><span class="nav-text">网络核心</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%B5%E8%B7%AF%E4%BA%A4%E6%8D%A2%E5%92%8C%E5%88%86%E7%BB%84%E4%BA%A4%E6%8D%A2"><span class="nav-text">电路交换和分组交换</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E7%BB%84%E6%98%AF%E6%80%8E%E6%A0%B7%E9%80%9A%E8%BF%87%E5%88%86%E7%BB%84%E4%BA%A4%E6%8D%A2%E7%BD%91%E5%BD%A2%E6%88%90%E5%85%B6%E9%80%9A%E8%B7%AF%E7%9A%84"><span class="nav-text">分组是怎样通过分组交换网形成其通路的</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#isp-%E5%92%8C%E5%9B%A0%E7%89%B9%E7%BD%91%E4%B8%BB%E5%B9%B2"><span class="nav-text">ISP 和因特网主干</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E7%BB%84%E4%BA%A4%E6%8D%A2%E7%BD%91%E4%B8%AD%E7%9A%84%E6%97%B6%E5%BB%B6-time-delay-%E3%80%81%E4%B8%A2%E5%8C%85-packets-lost-%E3%80%81-%E5%90%9E%E5%90%90%E9%87%8F"><span class="nav-text">分组交换网中的时延 time delay 、丢包 packets lost 、 吞吐量</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#what-is-delay"><span class="nav-text">What is delay</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%92%E9%98%9F%E6%97%B6%E5%BB%B6"><span class="nav-text">排队时延</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%A2%E5%8C%85"><span class="nav-text">丢包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%9E%E5%90%90%E9%87%8F"><span class="nav-text">吞吐量</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%8F%E8%AE%AE%E5%B1%82%E6%AC%A1%E5%92%8C%E5%AE%83%E4%BB%AC%E7%9A%84%E6%9C%8D%E5%8A%A1%E6%A8%A1%E5%9E%8B"><span class="nav-text">协议层次和它们的服务模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8A%A5%E6%96%87%E3%80%81%E6%8A%A5%E6%96%87%E6%AE%B5%E3%80%81%E6%95%B0%E6%8D%AE%E6%AE%B5%E3%80%81%E5%B8%A7"><span class="nav-text">报文、报文段、数据段、帧</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8"><span class="nav-text">网络安全</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">计算机网络和因特网
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <h2 id="overview"><a href="#overview" class="headerlink" title="Overview"></a>Overview</h2><p>本章再来了解某些基本术语和概念之后，将先看看构成网络的<strong>基本硬件和软件组件</strong> 。从 <strong>网络的边缘</strong> 开始，考察在网络中运行的 <strong>端系统和网络应用</strong> ；再研究计算机网络的核心，探讨 <strong>传输数据的链路和交换机</strong> ，以及连接端系统与网络核心的 <strong>接入网和物理媒体</strong> 。将了解因特网是 “网络的网络” ，以及这些网络是如何彼此连接起来的。</p>
+<p>浏览完计算机网络的边缘和核心之后，将从更广泛、更抽象的角度来考察计算机网络。介绍计算机网络中 <strong>时延、丢包和吞吐量</strong> ，给出一个简单的 端到端 吞吐量和时延的定量模型，并且给出考虑了传输、传播和排队时延的模型。</p>
+<p>再接下来介绍计算机联网时的一些关键的体系结构上的原则，（如协议分层和服务模型）。</p>
+<h2 id="about-internet"><a href="#about-internet" class="headerlink" title="About Internet"></a>About Internet</h2><h3 id="internet-的构成"><a href="#internet-的构成" class="headerlink" title="Internet 的构成"></a>Internet 的构成</h3><div style="text-align: center;">
+<img data-src="./imgs/ch01f01.png">
+</div>
+
+<p>因特网中所有设备都称为 <strong>主机 host</strong> 或者 <strong>端系统 end system</strong> 。端系统通过 <strong>通信链路 communication link</strong> 和 <strong>分组交换机 packet switch</strong> 连接到一起。</p>
+<p>当一台端系统有数据要向另一台端系统发送时，发送端系统将数据分段，并为每段都加上首部字节，由此形成的信息包被称为 <strong>分组 packet</strong> ，这些分组通过网络发送到目的端系统。</p>
+<p>分组交换机从它的一条 <strong>入通信链路</strong> 中接收到达的分组，并从它的一条 <strong>出通信链路</strong> 转发该分组。典型的交换机是 <strong>路由器 router</strong> 和 <strong>链路层交换机 link-layer switch</strong> 。</p>
+<p>从发送端系统到接收端系统，一个分组所经历的一系列通信链路和分组交换机被称为该网络的 <strong>路径 route or path</strong> 。</p>
+<p>端系统通过 <strong>因特网服务提供商 Internet Service Provider ,ISP</strong> 接入因特网。每个 ISP 是一个由多个分组交换机和多段通信链路组成的网络。低层的 ISP 通过国家的、国际的高层 ISP 互联起来。高层的 ISP 是由通过高速光线链路互联的高速路由器组成。</p>
+<p>端系统、分组交换机和其他因特网部件，都要运行控制因特网中信息接受和发送的一系列 <strong>协议 protocol</strong>。 TCP (Transmission Control Protocol，传输控制协议) 和 IP (Internet Protocol，网际协议)是两个最为重要的协议。IP 协议定义了分组在路由器和端系统中发送和接收的格式。 <strong>因特网工程任务组 (Internet Engineering Task Force, ITTF)</strong> 的标准文档被称为 <strong>Request For Comment, RFC</strong> 。</p>
+<h3 id="服务描述"><a href="#服务描述" class="headerlink" title="服务描述"></a>服务描述</h3><p>还可以从另外的角度来看待因特网。 <strong>为应用程序提供服务的基础设施</strong> ，这些应用程序包括电子邮件、Web、IM、Stream Media、P2P，称为 <strong>分布式应用程序 distribution application</strong> 。它们设计多台相互交换数据的的端系统。而且， <strong>因特网应用程序是运行在端系统上，而不是在网络核心中的分组交换机上</strong> 。</p>
+<p>运行在一个端系统伤的 APP 如何才能指示因特网向运行在另一个端系统上的 APP 发送数据呢？</p>
+<p>与因特网相连的端系统提供了一个 API ，它规定了运行在一个端系统上的软件请求因特网基础设施向运行在另一个端系统上特定目的地软件交互数据的方式。</p>
+<h3 id="what-is-protocol"><a href="#what-is-protocol" class="headerlink" title="What is Protocol"></a>What is Protocol</h3><p>一个 <strong>协议</strong> 定义了在两个或多个通信实体之间交换的报文格式和次序，以及在报文传输和、或接收其他事件方面所采取的动作。</p>
+<h2 id="网络边缘"><a href="#网络边缘" class="headerlink" title="网络边缘"></a>网络边缘</h2><p>本节了解身边非常熟悉的部件， Computer\PDA\Cell Phone 等，下节会从网络边缘向网络核心推进，探讨计算机网络中的交换和选路。</p>
+<p>与因特网相连接的计算机等设备通常被称为 <strong>端系统</strong> ，因为它们位于因特网的边缘。</p>
+<p>端系统也称为 <strong>主机 host</strong> ，因为它们容纳（即运行）各种应用程序。在本书中， 主机 === 端系统 。主机有时候被进一步划分为两类： <strong>客户机 client</strong> 和 <strong>服务器 server</strong>。</p>
+<h3 id="客户机和服务器程序"><a href="#客户机和服务器程序" class="headerlink" title="客户机和服务器程序"></a>客户机和服务器程序</h3><p><strong>客户机程序 client program</strong> 是运行在一个端系统上的程序，它发送请求，并从运行在另一个端系统上的 <strong>服务器程序 server program</strong> 接收服务。</p>
+<p>客户机程序和服务器程序在因特网互相发送报文而进行交互。在这个层次的抽象下，路由器、链路和因特网服务的其他具体构件可看作一个“黑盒子”。下图中一条横跨的黑线显示了这种级别的 抽象。</p>
+<div style="text-align: center;">
+<img data-src="./imgs/ch01f02.png">
+</div>
+
+<p>除了客户机、服务器这样的功能以外，例如 P2P 文件共享应用程序 使得端系统既能够作为客户机又能作为服务器。当它向另一个对等方请求文件时，起客户机的作用，当它向另一个对等方发送文件时，起服务器作用。</p>
+<h3 id="接入网-access-network"><a href="#接入网-access-network" class="headerlink" title="接入网 access network"></a>接入网 access network</h3><p>将端系统连接到 <strong>因特网边缘路由器 edge router</strong> 的物理链路，称为 <strong>接入网 access network</strong> 。边缘路由器时端系统到任何其他远程端系统的路径上的第一台路由器。</p>
+<p>网络接入大致可分为三类：</p>
+<ul>
+<li>住宅接入 residential access，</li>
+<li>公司接入 company access，</li>
+<li>无线接入 wireless access</li>
+</ul>
+<blockquote>
+<p>住宅接入</p>
+</blockquote>
+<p>一种接入形式是通过普通模拟电话线用 <strong>拨号调制解调器 dial-up modem</strong> 与住宅 ISP 相连。家用调制解调器将 PC 输出的数字信号转换为模拟形式，以便在模拟电话线上传输。</p>
+<p>拨号的方式速度极低，替代的则是新型的宽带接入技术，有两种常见类型： <strong>数字用户线 digital subscriber line, DSL</strong> 和 <strong>混合光纤同轴电缆 hybrid fiber-coaxial cable, HFC</strong> 。</p>
+<p>DSL 概念上类似于拨号调制解调器，是一种新型调制解调器技术。通过限制用户和 ISP 调制解调器之间的距离， DSL 能够以高得多的速率传输和接收数据。另外数据传输速率在两个方向上是不对称的， 从 ISP 路由器到家庭的速率比从家庭到 ISP 路由器的速率要高。</p>
+<p>HFC 接入网扩展了当前用于广播电缆电视到电缆网络。在传统到电缆系统中，电缆 <strong>头端 head end</strong> 广播通过同轴电缆和放大器的 分配网络传向住宅。HFC 需要特殊的解调器，被称为 <strong>电缆调制解调器 cable modem</strong> 。电缆调制解调器将 HFC 网络划分为两个信道，即下行信道和上行信道。与 DSL 类似，下行信道通常分配了更大到带宽，拥有更快到传输速率。</p>
+<p>HFC 的一个重要特征是它共享广播媒体。头端发送的每个分组向下行经每段链路到每个家庭，每个家庭发送的每个分组经上行信道向头端传输。因为上行信道的共享，需要一个分布式多路访问协议，以协调传输和 避免碰撞。</p>
+<div style="text-align: center;">
+<img data-src="./imgs/ch01f03.png">
+</div>
+
+<blockquote>
+<p>公司接入</p>
+</blockquote>
+<p>在公司和大学校园， <strong>局域网 LAN</strong> 通常被用于连接端用户与边缘路由器。</p>
+<p>交换以太网技术使用星型拓补使主机直接与一台 “交换机” 向连，以允许所有主机以 LAN 的全部速率同事发送和接收。</p>
+<blockquote>
+<p>无线接入</p>
+</blockquote>
+<p>目前有两大类无线因特网接入方式。在 <strong>无线局域网 wireless LAN</strong> 中，无线用户与位于几十米半径内的基站发送、接收分组。这些基站通常与有线的因特网相连接，于是能为诬陷用户提供连接到有线网络的服务。在 <strong>广域无线接入网 wide-area wireless access network</strong> 中，分组经由用于 cell phone 的相同无线基础设施进行发送，基站由电信提供商管理，为数万米半径内的用户提供无线接入服务。</p>
+<p>基于 IEEE 802.11 技术的无线局域网。</p>
+<div style="text-align: center;">
+<img data-src="./imgs/ch01f04.png">
+</div>
+
+<h3 id="物理媒体"><a href="#物理媒体" class="headerlink" title="物理媒体"></a>物理媒体</h3><p>HFC 使用了光缆和同轴电缆相结合的技术、拨号调制解调器和 ASDL 使用了双绞铜线，移动接入网络使用了无线电频谱。</p>
+<p>物理媒体通常划分为两类： <strong>导引型媒体 guided media</strong> 和 <strong>非导引型媒体 unguided media</strong> 。对于导引型媒体，电波沿着固体媒体被导引，对于非导引型媒体，电波在空气或外层空间中传播。</p>
+<ul>
+<li>双绞铜线</li>
+<li>同轴电缆</li>
+<li>光缆</li>
+<li>陆地无线电信道</li>
+<li>卫星无线电信道</li>
+</ul>
+<h2 id="网络核心"><a href="#网络核心" class="headerlink" title="网络核心"></a>网络核心</h2><p>网络核心，即 <strong>互联了因特网端系统的分组交换机和链路的网状结构</strong> 。下图中红色区域。</p>
+<div style="text-align: center;">
+<img data-src="./imgs/ch01f05.png">
+</div>
+
+<h3 id="电路交换和分组交换"><a href="#电路交换和分组交换" class="headerlink" title="电路交换和分组交换"></a>电路交换和分组交换</h3><p>通过网络链路和交换机移动数据有两种基本方法： <strong>电路交换 circuit switching</strong> 和 <strong>分组交换 packet switching</strong>。</p>
+<p>在电路交换中，沿着端系统通信路径，为端系统之间通信所提供的资源（缓存、链路传输速率）在通信会话期间 会被预留。</p>
+<p>在分组交换中，这些资源则不被预留。会话的报文按需要使用这些资源，这将导致可能不得不等待（即排队）接入通信线路。</p>
+<blockquote>
+<p>电路交换</p>
+</blockquote>
+<div style="text-align: center;">
+<img data-src="./imgs/ch01f06.png">
+</div>
+
+<p>在上图这个网络中，用 4 条链路互联 4 台电路交换机。这些链路每条都有 n 条电路，因此每条链路能够支持 n 条电路同时连接。每台主机直接与一台交换机直接连接。当两台主机要通信时，该网络在两台主机之间创建一条专用的 <strong>端到端连接 end-to-end connection</strong> （虽然多个设备之间的会议呼叫也是可能的）。因此主机 A 为了向主机 B 发送报文，该网络必须在两条链路之一上预留一条电路。因为每条链路 具有 n 条电路，每条链路由端到端连接使用，该连接在连接期间获得该链路带宽的 1/n 部分。</p>
+<blockquote>
+<p>电路交换网络中的多路复用</p>
+</blockquote>
+<div style="text-align: center;">
+<img data-src="./imgs/ch01f07.png">
+</div>
+
+<p>链路中的电路要么通过 <strong>频分多路复用 Frequency-Division Multiplexing, FDM</strong> 实现，要么通过 <strong>时分多路复用 Time-Division Multiplexing, TDM</strong> 实现。</p>
+<p>对于 FDM ，链路的频谱由跨越链路创建的所有连接共享。特别的，该链路在连接期间为 每条连接专用一个频段。</p>
+<p>对于 TDM ，时间被划分为固定区间的帧，并且每帧又被划分为固定数量的时隙。当网络跨越一条链路创建一条连接时，该网络在每个帧中为该连接指定一个时隙。这个时隙专门由该连接单独使用，用于传输该链接的数据。</p>
+<blockquote>
+<p>分组交换</p>
+</blockquote>
+<div style="text-align: center;">
+<img data-src="./imgs/ch01f08.png">
+</div>
+
+<p>在现代计算机网络中，源主机将 <strong>长报文 long message</strong> 划分为较小的数据块，称为 <strong>分组 packet</strong> 。在源和目的地之间，这些分组中的每一个都通过通信链路和分组交换机（主要是路由器和链路层交换机）传送。分组以该链路的最大传输速率在通信电路上传输。</p>
+<p>多数分组交换机在链路的输入端使用 <strong>存储转发传输 store-and-forward transimission</strong> 机制。该机制是指交换机能够开始向输出链路传输该分组的第一个比特之前，必须接收到整个分组。因此存储转发式分组交换机沿着该分组的路径在每条链路的输入端引入了 <strong>存储转发时延</strong> 。</p>
+<p>对于相连于分组交换机的众多链路中每一条而言，该分组交换机具有一个 <strong>输出缓存 output buffer</strong> ，也称 <strong>输出队列 output queue</strong> 。它用于存储路由器准备发往那条链路的分组。如果到达的分组需要跨越链路传输，但发现该链路正忙于传输其他分组，于是该到达分组必须在输出缓存中等待。因此，分组还要承受输出缓存的 <strong>排队时延迟 queue delay</strong> 。这些时延的长短是不同的，取决于网络中的拥堵水平。并且交换机的缓存空间是有限的，所以一个到达的分组可能发现缓存已满，这种情况下就会出现 <strong>分组丢失或丢包 packet lost</strong> —— 可能是到达的分组丢失，也可能是已经排队的分组被丢弃。</p>
+<blockquote>
+<p>分组交换与电路交换对比：统计多路复用</p>
+</blockquote>
+<p>分组交换提供了比电路交换更好的带宽共享，它比电路交换更简单、更有效、实现成本更低。</p>
+<p>电路交换不考虑要求而预先分配传输链路的使用，这使得已分配但不需要的链路时间未被利用。另一方面，分组交换使用 <strong>按需</strong> 的方式分配链路。链路传输能力将只在所有的其分组要在链路上传输的用户中，逐个分组地被共享。这样的按需共享资源有时被称为资源的 <strong>统计多路复用 statistical multiplexing</strong> 。</p>
+<h3 id="分组是怎样通过分组交换网形成其通路的"><a href="#分组是怎样通过分组交换网形成其通路的" class="headerlink" title="分组是怎样通过分组交换网形成其通路的"></a>分组是怎样通过分组交换网形成其通路的</h3><p>在因特网中，每个通过该网络传输的分组在它的首部包含了其目的地址，该地址是一种层次结构。当分组到达网络中的一台路由器时，该路由器检查分组的目的地址一部分，并向相邻路由器转发该分组。更特别的是，每台路由器具有一个转发表，用于将目的地址（或其中地址的一部分）映射到输出链路。当分组到达一台路由器时，路由器检查目的地址，并在映射表中搜素，找到合适的输出电路，进行转发。</p>
+<p>因特网具有一些特殊的选路协议，用于自动地设置 <strong>转发表 forwarding table</strong> 。选路协议可以决定从每台路由器到每个目的地的最短路径，并使用这些最短路径来配置路由器中的转发表。</p>
+<h2 id="isp-和因特网主干"><a href="#isp-和因特网主干" class="headerlink" title="ISP 和因特网主干"></a>ISP 和因特网主干</h2><p>因特网是 <strong>网络的网络</strong> ，即若干小规模的网络之间连接形成一个巨大的网络。</p>
+<div style="text-align: center;">
+<img data-src="./imgs/ch01f09.png">
+</div>
+
+<p>在公共因特网中 ，坐落在因特网边缘的接入网路通过分层的 ISP 层次结构与因特网的其他部分相连。如上图，接入 ISP 位于该层次结构的底部。该层次结构最顶层是数量相对较少的 <strong>第一层 ISP tier-1 ISP</strong> 。第一层 ISP 除了基本的链路和路由器构件之外，它的链路速率通常是 622Mbps 或更高，有的甚至是 2.5 ～ 10Gbps ，还具有其他特性：</p>
+<ul>
+<li>直接与其他每个第一层 ISP 相连</li>
+<li>与大量的第二层 ISP 和其他客户网络相连</li>
+<li>覆盖国际区域。</li>
+</ul>
+<p>第一层 ISP 也被称为 <strong>因特网主干 Internet backbone</strong> 。</p>
+<p>第二层 ISP 通常具有区域性或国家性覆盖规模。并且非常重要地金鱼少数第一层 ISP 相连接。为了达到覆盖全球因特网的大部分区域，第二层 ISP 需要引导流量通过它所连接的第一层 ISP。 第二层 ISP 被称为是它所连接的第一层 ISP 的 <strong>客户 customer</strong> ，第一层 ISP 是相对该客户而言是 <strong>提供商 provider</strong> 。第二层 ISP 相互之间也可以直接相连，此时流量可以不经过第一层 ISP 而直接在第二层之间流动。</p>
+<h2 id="分组交换网中的时延-time-delay-、丢包-packets-lost-、-吞吐量"><a href="#分组交换网中的时延-time-delay-、丢包-packets-lost-、-吞吐量" class="headerlink" title="分组交换网中的时延 time delay 、丢包 packets lost 、 吞吐量"></a>分组交换网中的时延 time delay 、丢包 packets lost 、 吞吐量</h2><h3 id="what-is-delay"><a href="#what-is-delay" class="headerlink" title="What is delay"></a>What is delay</h3><p>分组从一台主机出发，经过一系列路由器传输，到达另一台主机，结束了它的传输历程。期间，分组在沿途的每个节点都经受了几种不同类型的时延。有几种比较突出的时延：</p>
+<ul>
+<li>节点处理时延 nodal processing delay</li>
+<li>排队时延 queuing delay</li>
+<li>传输时延 transimission delay</li>
+<li>传播时延 propagation delay</li>
+</ul>
+<div style="text-align: center;">
+<img data-src="./imgs/ch01f10.png">
+</div>
+
+<blockquote>
+<p>节点处理时延</p>
+</blockquote>
+<p>检查分组首部和决定分组导向何处所需的时间是节点处理时延的主要部分。当然还包括其他因素，比如检查比特级差错所用的时间。</p>
+<blockquote>
+<p>排队时延</p>
+</blockquote>
+<p>在队列中，分组在链路上等待传输的时间。实际排队时延通常在毫秒到微妙级。</p>
+<blockquote>
+<p>传输时延</p>
+</blockquote>
+<p>假定分组以先到先服务方式传输，仅当所有已经到达的分组被传输完后才能传输后面的分组。实际的传输时延通常在毫秒到微秒级。</p>
+<blockquote>
+<p>传播时延</p>
+</blockquote>
+<p>一旦一个比特被推向链路，该比特要向下一个路由器传播。从该链路的起点到下一个路由器传播所需要的时间被称为传播时延。该比特是以该链路的传播速率传播的。</p>
+<blockquote>
+<p>传输时延 和 传播时延 的比较</p>
+</blockquote>
+<p>传输时延是路由器将分组推出所需要的时间，它是分组长度和链路传输速率的函数，与两台路由器之间的距离无关。</p>
+<p>传播时延是一个比特从一台路由器向另一台路由器传播所需要的时间，是两台路由器之间距离的函数，与分组的长度无关。</p>
+<h3 id="排队时延"><a href="#排队时延" class="headerlink" title="排队时延"></a>排队时延</h3><p>排队时延的长短很大程度取决于流量到达该队列的速率、链路的传输速率和到达流量的性质。</p>
+<p>// 过于数学讨论的部分忽略了…</p>
+<h3 id="丢包"><a href="#丢包" class="headerlink" title="丢包"></a>丢包</h3><p>排队容量是有限的，新到达的分组将发现一个满的队列，此时路由器没有地方存储这个分组，就会 <strong>丢弃 drop</strong> 这个分组，那么这个分组就会 <strong>丢失 lost</strong> 。</p>
+<h3 id="吞吐量"><a href="#吞吐量" class="headerlink" title="吞吐量"></a>吞吐量</h3><p>任何瞬间的 <strong>瞬时吞吐量 instantaneous throughput</strong> 是主机接受到某个文件的速率。如果文件由 F 比特组成，主机接收所有的 F 比特用了 T 秒，则文件的 <strong>平均吞吐量 average throughput</strong> 是 F/T bps 。</p>
+<p>单条链路中流动速率最小者限制了瞬时吞吐量的大小。</p>
+<h2 id="协议层次和它们的服务模型"><a href="#协议层次和它们的服务模型" class="headerlink" title="协议层次和它们的服务模型"></a>协议层次和它们的服务模型</h2><p>利用分层的体系结构，可以讨论一个定义良好的、大而复杂的系统的特定部分。</p>
+<p>为了给网络协议的设计提供一个结构，网络设计者以 <strong>分层 layer</strong> 的方式组织协议亦即实现这些协议的网络硬件和软件。</p>
+<p>每个协议属于一层，这层通过在该层中执行某些动作，或使用直接下层的服务，来为上一层提供本层的服务。</p>
+<p>一个协议层能给用软件、硬件或两者结合的方式来实现。HTTP 和 SMTP 等应用层协议通常都是在端系统中用软件来实现。运输层的协议也是如此，因为物理层和数据链路曾负责处理跨特定链路的通信，它们通常在与给定链路相关的网络接口卡（以太网卡、Wi-Fi 接口卡）中实现。网络层经常是硬件和软件的混合体。</p>
+<p>协议分层具有概念化和结构化的优点。分层提供了一种结构化方式来讨论系统组件。模块化使得更新系统组件更为容易。</p>
+<p>不过分层的一个潜在缺点是某层可能重复其较低层的功能。另一种潜在的缺点就是某层的功能可能需要仅在其他某层才出现的信息，这违反了层次分离的目的。</p>
+<p>将这些综合起来，各层的所有协议被称为 <strong>协议栈 protocol stack</strong> 。因特网的协议栈由 5 个层次组成：物理层、链路层、网络层、运输层和应用层。</p>
+<div style="text-align: center;">
+<img data-src="./imgs/ch01f11.png">
+</div>
+
+<blockquote>
+<p>应用层</p>
+</blockquote>
+<p>应用层是网络应用程序及其应用层协议存留的地方。例如 HTTP 协议， SMTP 协议， FTP 协议， DNS 协议。应用层协议分布在多个端系统上，一个端系统中的应用程序使用协议与另一个端系统中的应用程序交换信息分组。这中位于应用层的信息分组称为 <strong>报文 message</strong> 。</p>
+<blockquote>
+<p>运输层</p>
+</blockquote>
+<p>运输层提供了在应用程序端点之间传送应用层报文的服务。在因特网中主要由两个运输层协议， TCP 和 UDP 。</p>
+<p>TCP 向它的应用程序提供了面向连接的服务，包括了应用层报文向目的地的确保传递和流量控制（发送方与接收方速率匹配）。 TCP 能将长报文划分为短报文，并提供拥塞控制机制，当网络拥塞时，源抑制其传输速率。</p>
+<p>UDP 协议向它的应用策划个逆袭提供无连接服务。这是一种不提供不必要服务的服务，不提供可靠性，没有流量控制，也没有拥塞控制。在本书中，将运输层的分组称为 <strong>报文段 segment</strong> 。</p>
+<blockquote>
+<p>网络层</p>
+</blockquote>
+<p>因特网的网络层负责将称为 **数据报 datagram ** 的网络层分组从一台主机移动到另一台主机。源主机中的因特网运输层协议（TCP、UDP）向网络层递交运输层报文段和目的地址。</p>
+<p>因特网网络层包括著名的 IP 协议，该协议定义了数据报中段各个字段以及端系统和路由器如何作用域这些字段。仅有一个 IP 协议，所有具有网络层的因特网组件都必须运行 IP 协议。</p>
+<p>因特网的网络层也包括决定路由的选路协议，数据报根据该路由从源传输到目的地。选路协议有许多个。</p>
+<blockquote>
+<p>链路层</p>
+</blockquote>
+<p>因特网的网络层通过一系列路由器在源和目的地之间发送分组。为了将分组从一个节点（主机或路由器）移动到路径上的下一个节点，网络层必须依靠链路层的服务。</p>
+<p>特别是在每个节点，网络层将数据报下传给链路层，链路层沿着路径将数据包传递给下一个节点。在下一个节点，链路层将数据报上传给网络层。</p>
+<p>链路层提供的服务取决于应用于该链路的特定链路层协议。链路层段例子包括以太网、Wi-Fi 和点对点协议（PPP）。数据报从源到目的地传送通常需要经过几条链路，所以它可能被沿途不同链路上的不同链路层协议处理。</p>
+<p>链路层中的分组称为 <strong>帧 frame</strong> 。</p>
+<blockquote>
+<p>物理层</p>
+</blockquote>
+<p>链路层的任务是将整个帧从一个网络元素移动到邻近的网络元素，而物理层的任务是将该帧中的一个一个 比特 从一个节点移动到下一个节点。该层中的协议仍然是链路相关段，并且进一步与链路的时机传输媒体相关（双绞铜线、单模光纤等）。、、</p>
+<div style="text-align: center;">
+<img data-src="./imgs/ch01f11.png">
+</div>
+
+<p>还有一种协议栈，是 ISO 提出的七层的 <strong>开发系统互连模型 OSI</strong> 。</p>
+<p>OSI 参考模型的七层是：应用层、表示层、会话层、运输层、网络层、链路层、物理层。</p>
+<p>简述多出来的两层，表示层和会话层。</p>
+<p>表示层的作用是使通信的应用程序能够解释交换数据的含义，它提供的服务包括数据压缩、数据加密以及数据描述。</p>
+<p>会话层提供了数据交换的定界和同步功能，包括建立检查点和恢复方案的方法。</p>
+<p>因特网没有这两层，那么这两层重要么？如果应用程序需要使用这两层里面的服务与功能，则开发者需要在自己的应用程序中构建类似的功能。</p>
+<h3 id="报文、报文段、数据段、帧"><a href="#报文、报文段、数据段、帧" class="headerlink" title="报文、报文段、数据段、帧"></a>报文、报文段、数据段、帧</h3><div style="text-align: center;">
+<img data-src="./imgs/ch01f12.png">
+</div>
+
+<p>如上图，数据从发送端系统的协议栈向下，上下中间的链路层交换机和路由器的协议栈、进而向上达到接收端系统的协议栈。</p>
+<p>可以看到，路由器和链路层交换机都是分组交换机，它们都以层的方式组织它们的网络硬件和软件。链路层交换机实现了物理层、链路层，而路由器实现了物理层、链路层、网络层。主机实现了所有的五层。</p>
+<p>上图还说明了 <strong>封装 encapsulation</strong> 。</p>
+<ol>
+<li><p>在发送主机中， <strong>应用层报文 application-layer message</strong> 被传送给运输层。</p>
+</li>
+<li><p>在最简单的情况下，运输层收取报文并附上附加信息（运输层首部信息， H<sub>t</sub>），该首部将被接收端的运输层使用。应用层报文和运输层的首部信息共同构成了 <strong>运输层报文段 transport-layer segment</strong> 。运输层报文段封装了应用层的报文。附加的信息可能包括下列信息：允许接收端运输层向上向适当的应用程序交付报文的信息；差错检测比特信息，利用该信息接收方能够判断报文中的比特是否在传输途中发生了改变。</p>
+</li>
+<li><p>运输层然后向网络层传递该报文，网络层增加了如源和目的地址等网络层首部信息（图中的 H<sub>n</sub>）形成 <strong>网络层数据报 network-layer datagram</strong> 。</p>
+</li>
+<li><p>该数据报接下来被传递给链路层，链路层增加它自己的链路层首部信息，创建 <strong>链路帧 link-layer frame</strong> 。</p>
+</li>
+</ol>
+<p>于是我们看到在每一层，分组由两种类型的字段，首部字段 和 <strong>有效载荷字段 payload field</strong> 。有效载荷通常来自于上一层的分组。</p>
+<h2 id="网络安全"><a href="#网络安全" class="headerlink" title="网络安全"></a>网络安全</h2><p>不好的东西统称为 <strong>恶意软件 malware</strong> 。</p>
+<ol>
+<li><p><strong>病毒 virus</strong> 是一种需要某种形式的用户交互来感染用户设备的恶意软件。比如包含恶意可执行代码的电子邮件附件。</p>
+</li>
+<li><p><strong>蠕虫 worm</strong> 是一种无需任何明显用户交互就能进入设备的恶意软件。</p>
+</li>
+<li><p><strong>特洛伊木马 Trojan horse</strong> 是隐藏在有用软件中的恶意软件。</p>
+</li>
+</ol>
+<p><strong>拒绝服务 Denial-of-Service， DoS</strong> 攻击是一种宽泛类型的安全性威胁。 DoS 使得合法用户不能使用网络、主机或其他基础设施部分。</p>
+<p>大多数因特网 DoS 攻击属于下列三种之一：</p>
+<ul>
+<li><p>弱点攻击。涉及向目标主机上运行的易受攻击的应用程序或操作发送制作精细的报文。可能导致停止运行、崩溃。</p>
+</li>
+<li><p>带宽洪泛。攻击者向目标的主机发送大量的分组，导致目标的介入链路变得拥塞，从而是合法的分组无法到达服务器。</p>
+</li>
+<li><p>连接洪泛。攻击者在目标主机中创建大量的半开或全开 TCP 连接。目标主机因为这些伪造的连接而陷入困境，从而停止合法的连接。</p>
+</li>
+</ul>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

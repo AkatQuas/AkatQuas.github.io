@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="There is one general techniques for expert programmers to control the complexity of sophisticated systems:  Combining primitive elements to form compound objects  Abstracting compound objects to form">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Metalinguistic Abstraction">
+<meta property="og:url" content="https://akatquas.github.io/sicp/04-metalinguistic-abstraction.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="There is one general techniques for expert programmers to control the complexity of sophisticated systems:  Combining primitive elements to form compound objects  Abstracting compound objects to form">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-01-15T10:21:08.426Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.426Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="sicp">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://akatquas.github.io/sicp/04-metalinguistic-abstraction.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>Metalinguistic Abstraction | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#the-metacircular-evaluator"><span class="nav-text">The Metacircular Evaluator</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#the-core-of-the-evaluator"><span class="nav-text">The Core of the Evaluator</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#eval"><span class="nav-text">Eval</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#apply"><span class="nav-text">Apply</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#evaluator-data-structures"><span class="nav-text">Evaluator Data Structures</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#running-the-evaluator-as-a-program"><span class="nav-text">Running the Evaluator as a Program</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#data-as-programs"><span class="nav-text">Data as Programs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#internal-definitions"><span class="nav-text">Internal Definitions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#separating-syntactic-analysis-from-execution"><span class="nav-text">Separating Syntactic Analysis from Execution</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#variations-on-a-scheme%E2%80%93lazy-evaluation"><span class="nav-text">Variations on a Scheme–Lazy Evaluation</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#normal-order-and-applicative-order"><span class="nav-text">Normal Order and Applicative Order</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#an-interpreter-with-lazy-evaluation"><span class="nav-text">An Interpreter with Lazy Evaluation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#streams-as-lazy-lists"><span class="nav-text">Streams as Lazy Lists</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#variations-on-a-scheme%E2%80%93nondeterministic-computing"><span class="nav-text">Variations on a Scheme–Nondeterministic Computing</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#amb-and-search"><span class="nav-text">Amb and Search</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#implementing-the-amb-evaluator"><span class="nav-text">Implementing the Amb Evaluator</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#logic-programming"><span class="nav-text">Logic Programming</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#deductive-information-retrieval"><span class="nav-text">Deductive Information Retrieval</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#how-the-query-system-works"><span class="nav-text">How the Query System Works</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#is-logic-programming-mathematical-logic"><span class="nav-text">Is Logic Programming Mathematical Logic?</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#quick-contents"><span class="nav-text">Quick Contents</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">Metalinguistic Abstraction
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <p>There is one general techniques for expert programmers to control the complexity of sophisticated systems:</p>
+<ul>
+<li><p>Combining primitive elements to form compound objects</p>
+</li>
+<li><p>Abstracting compound objects to form higher-level building blocks,</p>
+</li>
+<li><p>Perserving modularity by adopting appropriate large-scale views of system structure.</p>
+</li>
+</ul>
+<p><em>Metalinguistic abstraction</em> - establishing new languages - plays an important role in all branches of engineering design.</p>
+<p>In programming not only can programmers formulate new languages, but they can also implement these languages by constructing evaluators.</p>
+<blockquote>
+<p>An <em>evaluator</em> (or <em>interpreter</em>) for a programming language is a procedure that, when applied to an expression of the language, performs the actions required to evaluate that expression.</p>
+</blockquote>
+<p>It is no exaggeration to regard this as the most fundamental idea in programming:</p>
+<pre><code>The evaluator, which determines the meaning of expressions in a programming language, is just another program.</code></pre>
+<h2 id="the-metacircular-evaluator"><a href="#the-metacircular-evaluator" class="headerlink" title="The Metacircular Evaluator"></a>The Metacircular Evaluator</h2><p>Evaluation is a process, so it is appropriate to describe teh evaluation process using Lisp, which is the tool for describing processes.</p>
+<blockquote>
+<p>An evaluator that is written in the same language that it evaluates is said to be <em>metacircular</em>.</p>
+</blockquote>
+<p>The metacircular evaluator is essentially a Scheme formulation of the environment model of evaluation. The model has two basic parts:</p>
+<ol>
+<li><p>To evaluate a combination (a compound expression other than a special form), evaluate the subexpressions and then apply the value of the operator subexpression to the values of the operand subexpressions.</p>
+</li>
+<li><p>To apply a compound procedure to a set of arguments, evaluate the body of the procedure in a new environment. To construct this environment, extend the environment part of the procedure object by a frame in which the formal parameters of the procedure are bound to the arguments to which the procedure is applied.</p>
+</li>
+</ol>
+<p>These two rules describe the essence of the evaluation process, a basic cycle in which expressions to be evaluated in environments are reduced to procedures to be applied to arguments, which in turn are reduced to new expressions to be evaluated in new environments, and so on, until we get down to symbols, whose values are looked up in the environment, and to primitive procedures, which are applied directly.</p>
+<p>This evaluation cycle will be embodied by the interplay between the two critical procedures in the evaluator, <code>eval</code> and <code>apply</code>.</p>
+<p>The implementation of the evaluator will depend upon procedures that define the <em>syntax</em> of the expressions to be evaluated.</p>
+<h3 id="the-core-of-the-evaluator"><a href="#the-core-of-the-evaluator" class="headerlink" title="The Core of the Evaluator"></a>The Core of the Evaluator</h3><h4 id="eval"><a href="#eval" class="headerlink" title="Eval"></a>Eval</h4><p><code>eval</code> takes as arguments an expression and an environment. It classifies the expression and directs its evaluation. <code>eval</code> is structured as a case analysis of the syntactic type of the expression to be evaluated.</p>
+<p>In order to keep the procedure general, we express the determination of the type of an expression abstractly, making no commitment to any particular representation for the various types of expressions. Each type of expression has a predicate that tests for it and an abstract means for selecting its parts. This <em>abstract syntax</em> makes it easy to see how we can change the syntax of the language by using the same evaluator, but with a different collection of syntax procedures.</p>
+<p><strong>Primitive expressions</strong></p>
+<ul>
+<li><p>For self-evaluating expressions, such as numbers, <code>eval</code> returns the expression itself.</p>
+</li>
+<li><p><code>eval</code> must look up variables in the environment to find their values.</p>
+</li>
+</ul>
+<p><strong>Special forms</strong></p>
+<ul>
+<li><p>For quoted expressions, <code>eval</code> returns the expression that was quoted.</p>
+</li>
+<li><p>An assignment to (or a definition of) a variable must recursively call <code>eval</code> to compute the new value to be associated with the variable. The environment must be modified to change (or create) the binding of the variable.</p>
+</li>
+<li><p>An <code>if</code> expression requires special processing of its parts, so as to evaluate the consequent if the predicate is true, and otherwise to evaluate the alternative.</p>
+</li>
+<li><p>A <code>lambda</code> expression must be transformed into an applicable procedure by packaging together teh parameters and body specified by the <code>lambda</code> expression with the environment of the evaluation.</p>
+</li>
+<li><p>A <code>begin</code> expression requires evaluating its sequence of expressions in the order in which they appear.</p>
+</li>
+<li><p>A case analysis (<code>cond</code>) is transformed into a nest of <code>if</code> expressions and then evaluated.</p>
+</li>
+</ul>
+<p><strong>Combinations</strong></p>
+<ul>
+<li>For a procedure application, <code>eval</code> must evaluate the operator part and the operands of the combination. The resulting procedure and arguments are passed to <code>apply</code>, which handles the actual procedure application.</li>
+</ul>
+<blockquote>
+<p>In most Lisp implementations, dispatching on the type of an expression is done in a <em>data-directed style</em>. This allows a programmer to add new types of expressions that <code>eval</code> can distinguish, without modifying the definition of <code>eval</code> itself.</p>
+</blockquote>
+<h4 id="apply"><a href="#apply" class="headerlink" title="Apply"></a>Apply</h4><p><code>apply</code> takes two arguments, a procedure and a list of arguments to which the procedure should be applied.</p>
+<p><code>apply</code> classifies procedures into two kinds:</p>
+<ul>
+<li><p>It calls <code>apply-primitive-procedure</code> to apply primitives;</p>
+</li>
+<li><p>It applies compound procedures by sequentially evaluating the expressions that make up the body of the procedure.</p>
+</li>
+</ul>
+<p>The environment for the evaluation of the body of a compound procedure is constructed by extending the base environment carried by the procedure to include a frame that binds the parameters of the procedure to the arguments to which the procedure is to be applied.</p>
+<p><strong>Procedure arguments</strong></p>
+<p>When <code>eval</code> processes a procedure application, it uses some helper procedure to produce the list of arguments to which the procedure is to be applied.</p>
+<p><strong>Conditionals</strong></p>
+<p>First, we would use some helper procedure to evaluate the predicate part of an <code>if</code> expression in the given environment. If the result is true, we continue to evaluate the consequent, otherwise it evaluates the alternative:</p>
+<p><strong>Sequences</strong></p>
+<p>This is used by <code>apply</code> to evaluate the sequence of expressions in a procedure body and by <code>eval</code> te evaluate the sequence of expressions is a <code>begin</code> expression. It takes as arguments a sequence of expressions and an environment, and evaluates the expressions in the order in which they occur. The value returned is the value of the final expression.</p>
+<blockquote>
+<p>The sequence-evaluation is done by recursivly: evaluate the first expression and use the sequence-evaluation on the rest part of the expressions, until we reached the final expression.</p>
+</blockquote>
+<p><strong>Assignments and definitions</strong></p>
+<p>This procedure calls <code>eval</code> to find the value to be assigned and transmits the variable and the resulting value to set to variable, which is installed in the designated environment.</p>
+<h3 id="evaluator-data-structures"><a href="#evaluator-data-structures" class="headerlink" title="Evaluator Data Structures"></a>Evaluator Data Structures</h3><p>In addition to defining the external syntax of expressions, the evaluator implementation must also define the data structures that the evaluator manipulates internally, as part of the execution of a program, such as the representation of procedures and environments and the representation of true and false.</p>
+<p>We use data abstraction to isolate the rest of the evaluator from the detailed choice of representation, we could change the environment representation as we wish. In a production-quality Lisp system, the speed of the evaluator’s environment operations, especially that of variable lookup, has a major impact on the performance of the system.</p>
+<h3 id="running-the-evaluator-as-a-program"><a href="#running-the-evaluator-as-a-program" class="headerlink" title="Running the Evaluator as a Program"></a>Running the Evaluator as a Program</h3><p>Givent the evaluator, we have a description of the process by which Lisp expressions are evaluated. One advantage of expressing the evaluator as a program is that we can run the program. This gives us, running within Lisp, a working model of how Lisp itself evaluates expressions. This can serve as a framework for experimenting with evaluation rules.</p>
+<p>The evaluator program reduces expressions ultimately to the application of primitive procedures. Therefore, all that we need to run the evaluator is to create a mechanism that calls on the underlying Lisp system to model the application of primitive procedures.</p>
+<p>There must be a binding for each primitive procedure name, so that when <code>eval</code> evaluates the operator of an application of a primitive, it will find an object to pass to <code>apply</code>. We thus set up a global environment that associates unique objects with the names of the primitive procedures that can appear in the expressions we will be evaluating. The global environment also includes bindings for the symbols <code>true</code> and <code>false</code>, so they can be used as variables in expressions to be evaluated.</p>
+<p>For convenience in running the metacircular evaluator, we provide a <em>driver loop</em> that models the read-eval-print loop of the underlying Lisp system. It prints a prompt, reads an input expression, evaluates this expression in the global environment, and prints the result. We precede each printed result by an output prompt so as to distinguish the value of the expression from other output that may be printed.</p>
+<h3 id="data-as-programs"><a href="#data-as-programs" class="headerlink" title="Data as Programs"></a>Data as Programs</h3><p>One operational view of the meaning of a program is that a program is a description of an abstract machine.</p>
+<p>In a similar way, we can regard the evaluator as a very special machine that takes as input <em>a description of a machine</em>. Given this input, the evaluator configures itself to emulate the machine described.</p>
+<p>From this perspective, the evaluator is seen to be a <em>universal machine</em>. It mimics other machines when these are described as Lisp programs.</p>
+<p>One striking aspect of the evaluator is that it acts as a bridge between the data objects that are manipulated by our programming language and the programming language itself.</p>
+<blockquote>
+<p>Imagine that the evaluator program is running, and that a user is typing expressions to the evaluator and observing the results. From the perspective of the user, an input expression such as <code>(* x x)</code> is an expression in the programming language, which the evaluator should execute. From the perspective of the evaluator, however, the expression is simply a list (in this case, <em>a list of three symbols: <code>*</code>, <code>x</code>, and <code>x</code></em>) that is to be manipulated according to a well-defined set of rules.</p>
+</blockquote>
+<h3 id="internal-definitions"><a href="#internal-definitions" class="headerlink" title="Internal Definitions"></a>Internal Definitions</h3><p>The environment model of evaluation and our metacircular evaluator execute definitions in sequence, extending the environment frame one definition at a time.</p>
+<p>However, when it comes to the internal definitions used to implement block structure, no calls to these procedures will be evaluated until all of them have been defined. In fact, the sequential evaluation mechanism will give the same result as a mechanism that directly implements simultaneous definition for any procedure in which the internal definitions come first in a body and evaluation of the value expressions for teh defined variables doesn’t actually use any of the defined variables.</p>
+<p>There is a simple way to treat definitions so that internally defined names have truly simultaneous scope–just create all local variables that will be in the current environment before evaluating any of the value expressions. One way to do this is by a syntax transformation on <code>lambda</code> expressions. Before evaluating the body of a <code>lambda</code> expression, we <em>scan out</em> and eliminate all the internal definitions in the body. The internally defined variables will be created with a declaration and then set to their values by assignment.</p>
+<pre class="line-numbers language-none"><code class="language-none">(lambda ⟨vars⟩
+  (define u ⟨e1⟩)
+  (define v ⟨e2⟩)
+  ⟨e3⟩)
+
+# would be transformed into
+(lambda ⟨vars⟩
+  (let ((u &#39;*unassigned*)
+        (v &#39;*unassigned*))
+        (set! u ⟨e1⟩)
+        (set! v ⟨e2⟩)
+        ⟨e3⟩))<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="separating-syntactic-analysis-from-execution"><a href="#separating-syntactic-analysis-from-execution" class="headerlink" title="Separating Syntactic Analysis from Execution"></a>Separating Syntactic Analysis from Execution</h3><p>The evaluator implemented above is simple, but it is very inefficient, because the syntactic analysis of expressions is interleaved with their execution. Thus if a program is executed many times, its syntax is analyzed many times.</p>
+<p>We can transform the evaluator to be significantly more efficient by arranging things so that syntactic analysis is performed only once.</p>
+<p>We split <code>eval</code>, which takes an expression and an environment, into two parts.</p>
+<ol>
+<li><p>The procedure <code>analyze</code> takes only the expression. It performs the syntactic analysis and returns a new procedure, the <em>execution procedure</em>, that encapsulates the work to be done in executing the analyzed expression.</p>
+</li>
+<li><p>The <code>execution</code> procedure takes an environment as its argument and completes the evaluation. Looking up a variable value must still be done in the execution phase, since this depends upon knowing the environment.</p>
+</li>
+</ol>
+<p>This saves work because <code>analyze</code> will be called only once on an expression, while the execution procedure may be called many times.</p>
+<h2 id="variations-on-a-scheme–lazy-evaluation"><a href="#variations-on-a-scheme–lazy-evaluation" class="headerlink" title="Variations on a Scheme–Lazy Evaluation"></a>Variations on a Scheme–Lazy Evaluation</h2><p>Indeed, new languages are often invented by first writing an evaluator that embeds the new language within an existing high-level language.</p>
+<p>For example, if we wish to discuss some aspect of a proposed modification to Lisp with another member of the Lisp community, we can supply an evaluator that embodies the change. The recipient can then experiment with the new evaluator and send back comments as further modifications.</p>
+<p>Not only does the high-level implementation base make it easier to test and debug the evaluator; in addition, the embedding enables the designer to snarf features from the underlying language, just as our embedded Lisp evaluator uses primitives and control structure from the underlying Lisp. Only later (if ever) need the designer go to the trouble of building a complete implementation in a low-level language or in hardware.</p>
+<h3 id="normal-order-and-applicative-order"><a href="#normal-order-and-applicative-order" class="headerlink" title="Normal Order and Applicative Order"></a>Normal Order and Applicative Order</h3><p><strong>applicative-order language</strong>: all the arguments to procedures are evaluated when the procedure is applied.</p>
+<p><strong>normal-order language</strong>: delay the evaluation of procedure arguments until the actual argument values are needed.</p>
+<p>Delaying evaluation of procedure arguments until the last possible moment is called <em>lazy evaluation</em>. An advantage of lazy evaluation is that some procedures can do useful computation even if evaluation of some of their arguments would produce errors or would not terminate.</p>
+<p>If the body of a procedure is entered before an argument has been evaluated we say that the procedure is <em>non-strict</em> in that argument. If the argument is evaluated before the body of the procedure is entered we say that the procedure is <em>strict</em> in that argument.</p>
+<blockquote>
+<p>The <em>strict</em> versus <em>non-strict</em> terminology means essentially the same thing as <em>applicative-order</em> versus <em>normal-order</em>, except that it refers to individual procedures and arguments rather than to the language as a whole.</p>
+</blockquote>
+<p>In a purely applicative- order language, all procedures are strict in each argument. In a purely normal-order language, all compound procedures are non-strict in each argument, and primitive procedures may be either strict or non-strict. There are also languages that give programmers detailed control over the strictness of the procedures they define.</p>
+<blockquote>
+<p>One can do useful computation, combining elements to form data structures and operating on the resulting data structures, even if the values of the elements are not known. It makes perfect sense, for instance, to compute the length of a list without knowing the values of the individual elements in the list.</p>
+</blockquote>
+<h3 id="an-interpreter-with-lazy-evaluation"><a href="#an-interpreter-with-lazy-evaluation" class="headerlink" title="An Interpreter with Lazy Evaluation"></a>An Interpreter with Lazy Evaluation</h3><p>The basic idea is that, when applying a procedure, the interpreter must determine which arguments are to be evaluated and which are to be delayed. The delayed arguments are not evaluated; instead, they are transformed into objects called <em>thunks</em>.</p>
+<blockquote>
+<p>The word thunk was invented by an informal working group that was discussing the implementation of call-by-name in Algol 60. They observed that most of the analysis of (“thinking about”) the expression could be done at compile time; thus, at run time, the expression would already have been “thunk” about.</p>
+</blockquote>
+<p>The thunk must contain the information required to produce the value of the argument when it is needed, as if it had been evaluated at the time of the application. Thus, the thunk must contain the argument expression and the environment in which the procedure appliaction is being evaluated. We need to pass the environment to construct thunks when the arguments are to be delayed.</p>
+<p>The process of evaluating the expression in a thunk is called <em>forcing</em>. In general, a thunk will beforce only when its value is needed:</p>
+<ul>
+<li>when it is passed to a primitive procedure that will use the value of the thunk;</li>
+<li>when it is the value of a predicate of a conditional;</li>
+<li>when it is the value of an operator that is about to be applied as a procedure;</li>
+</ul>
+<p>One design choice we have available is whether or not to memoize thunks: with memoization, the first time a thunk is forced, it stores the value that is computed. Subsequent forcings simply return the stored value without repeating the computation. This design is more efficient in most applications.</p>
+<p><strong>Representing thunks</strong></p>
+<p>The evaluator must arrange to create thunks when procedures are applied to arguments and to force these thunks later.</p>
+<p>A thunk must package an expression together with the environment, so that the argument can be produced later.</p>
+<p>To force the thunk, we simply extract the expression and environment from the thunk and evaluate the expression in the environment.</p>
+<p>Considering memoization: When a thunk is forced, we will turn it into an evaluated thunk by replacing the stored expression with its value and changing the thunk tag so that it can be recognized as already evaluated.</p>
+<h3 id="streams-as-lazy-lists"><a href="#streams-as-lazy-lists" class="headerlink" title="Streams as Lazy Lists"></a>Streams as Lazy Lists</h3><p>With lazy evaluation, streams and lists can be identical.</p>
+<blockquote>
+<p>Lists could be view as iterators with already evaluated objects, whilst streams the generators with thunk to be evaluated in the future.</p>
+</blockquote>
+<h2 id="variations-on-a-scheme–nondeterministic-computing"><a href="#variations-on-a-scheme–nondeterministic-computing" class="headerlink" title="Variations on a Scheme–Nondeterministic Computing"></a>Variations on a Scheme–Nondeterministic Computing</h2><p><em>Nondeterministic computing</em> is a programming paradigm, and is useful for <em>generate and test</em> applications.</p>
+<p>The key idea is that expressions in a nondeterministic language can have more than one possible value. The nondeterministic program evaluator will work by automatically choosing a possible value and keeping track of the choice. If a subsequent requirement is not met, the evaluator will try a different choice, and it will keep trying new choices until the evaluation succeeds, or until we run out of choices.</p>
+<p>Just as the lazy evaluator frees the programmer from the details of how values are delayed and forced, the nondeterministic program evaluator will free the programmer from the details of how choices are made.</p>
+<p>It is instructive to contrast the different images of time evoked by nondeterministic evaluation and stream processing:</p>
+<ul>
+<li><p>Stream processing uses lazy evaluation to decouple the time when the stream of possible answers is assembled from the time when the actual stream elements are produced. The evaluator supports the illusion that all the possible answers are laid out before us in a timeless sequence.</p>
+</li>
+<li><p>With nondeterministic evaluation, an expression represents the exploration of a set of possible worlds, each determined by a set of choices. Some of the possible worlds lead to dead ends, while others have useful values. The nondeterministic program evaluator supports the illusion that time branches, and that our programs have different possible execution histories. When we reach a dead end, we can revisit a previous choice point and proceed along a different branch.</p>
+</li>
+</ul>
+<h3 id="amb-and-search"><a href="#amb-and-search" class="headerlink" title="Amb and Search"></a>Amb and Search</h3><p>To support nondeterminism, a special form called <code>amb</code> is introduced.</p>
+<pre class="line-numbers language-none"><code class="language-none">(amb &lt;e1&gt; &lt;e2&gt; ... &lt;en&gt;)<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>The expression returns the value of one of the n expressions <em>ambiguously</em>.</p>
+<p><code>amb</code> with a single choice produces an ordinary (single) value.</p>
+<p><code>amb</code> with no choices is an expression with no acceptable values. It’s the responsibility of the designer to decide whether <code>amb</code> should fail on no acceptable values.</p>
+<p>Abstractly, we can imagine that evaluating an <code>amb</code> expression causes time to split into branches, where the computation continues on each branch with one of the possible values of the expression. We say that <code>amb</code> represents a <em>nondeterministic choice point</em>.</p>
+<p>If we had a machine with a sufficient number of processors that could be dynamically allocated, we could implement the search in a straightforward way. Execution would proceed as in a sequential machine, until an <code>amb</code> expression is encountered. At this point, more processors would be allocated and initialized to continue all of the parallel executions implied by the choice. Each processor would proceed sequentially as if it were the only choice, until it either terminates by encountering a failure, or it further subdivides, or it finishes.</p>
+<p>If we have a machine with only one processor, or a few concurrent processes, we must consider the alternatives sequentially. One could imagine modifying an evaluator to pick at random a branch to follow whenever it encounters a choice point. Random choice, however, can easily lead to failing values. We might try running the evaluator over and over, making random choices and hoping to find a non-failing value, but it is better to <em>systematically search</em> all possible execution paths.</p>
+<p>The <code>amb</code> evaluator could be implemented with a systematic search as follows:</p>
+<p>When the evaluator encounters an application of <code>amb</code>, it initially selects the first alternative. This selection may itself lead to a further choice. The evaluator will always initially choose the first alternative at each choice point. If a choice results in a failure, then the evaluator automagically <em>backtracks</em> to the most recent choice point and tries the next alternative. If it runs out of alternatives at any choice point, the evaluator will back up to the previous choice point and resume from there. This process leads to a search strategy known as <em>depth-first search</em> or <em>chronological backtracking</em>.</p>
+<p>The advantage of nondeterministic programming is that we can suppress the details of how search is carried out, thereby expressing the programs at a higher level of abstraction.</p>
+<h3 id="implementing-the-amb-evaluator"><a href="#implementing-the-amb-evaluator" class="headerlink" title="Implementing the Amb Evaluator"></a>Implementing the Amb Evaluator</h3><p>The execution procedures in the <code>amb</code> evaluator take three arguments: the environment, and two procedures called <em>continuation procedures</em>. The evaluation of an expression will finish by calling one of these two continuations: If the evaluation results in a value, the <em>success continuation</em> is called with that value; if the evaluation results in the discovery of a dead end, the <em>failure continuation</em> is called. Constructing and calling appropriate continuations is the mechanism by which the nondeterministic evaluator implements backtracking.</p>
+<p>It is the job of the success continuation to receive a value and proceed with the computation. Along with that value, the success continuation is passed another failure continuation, which is to be called subsequently if the use of that value leads to a dead end.</p>
+<p>It is the job of the failure continuation to try another branch of the nondeterministic process. The essence of the nondeterministic language is in the fact that expressions may represent choices among alternatives. The evaluation of such an expression must proceed with one of the indicated alternative choices, even though it is not known in advance which choices will lead to acceptable results. To deal with this, the evaluator picks one of the alternatives and passes this value to the success continuation. Together with this value, the evaluator constructs and passes along a failure continuation that can be called later to choose a different alternative.</p>
+<p>In addition, if a side-effect operation (such as assignment to a variable) occurs on a branch of the process resulting from a choice, it may be necessary, when the process finds a dead end, to undo the side effect before making a new choice. This is accomplished by having the side-effect operation produce a failure continuation that undoes the side effect and propagates the failure.</p>
+<p>In summary, failure continuations are constructed by:</p>
+<ul>
+<li><code>amb</code> expressions: to provide a mechanism to make alternative choices if the current choice made by the <code>amb</code> expression leads to a dead end;</li>
+<li>the top-level driver: to provide a mechanism to report failure when the choices are exhausted;</li>
+<li>assignments: to intercept failures and undo assignments during backtracking</li>
+</ul>
+<p>Failure continuations are also called during processing of a failure:</p>
+<ul>
+<li>When the failure continuation created by an assignment finishes undoing a side effect, it calls the failure continuation it intercepted, in order to propagate the failure back to the choice point that led to this assignment or to the top level.</li>
+<li>When the failure continuation for an <code>amb</code> runs out of choices, it calls the failure continuation that was originally given to the <code>amb</code>, in order to propagate the failure back to the previous choice point or to the top level.</li>
+</ul>
+<h2 id="logic-programming"><a href="#logic-programming" class="headerlink" title="Logic Programming"></a>Logic Programming</h2><p>Indeed, programming languages require that the programmer express knowledge in a form that indicates the step-by-step methods for solving particular problems. On the other hand, high-level languages prodive, as part of the language implementation, a substantial amount of methodological knowledge that frees the user from concern with numerous details of how a specified computation will progress.</p>
+<p>Most programming languages are organized around computing the values of mathematical functions. Expression-oriented languages (such as Lisp, Fortran, and Algol) capitalize on the <em>pun</em> that an expression that describes the value of a function may also be interpreted as a means of computing that value. Because of this, most programming languages are strongly biased toward unidirectional computations (computations with well-defined inputs and outputs).</p>
+<p>In a constraint system the direction and the order of computation are not so well specified; in carrying out a computation the system must therefore provide more detailed <em>how to</em> knowledge than would be the case with an ordinary arithmetic computation. This does not mean that the user is released altogether from the the responsibility of providing imperative knowledge. There are many constraint networks that implement the same set of constraints, and the user must choose from the set of mathematically equivalent networks a suitable network to specify a particular computation.</p>
+<p>The nondeterministic program evaluator also moves away from the view that programming is about constructing algorithms for computing unidirectional functions. In a nondeterministic language, expressions can have more than one value, and, as a result, the computation is dealing with relations rather than with single-valued functions. Logic programming extends this idea by combining a relational vision of programming with a powerful kind of symbolic pattern matching called <strong>unification</strong>.</p>
+<p>This approach, when it works, can be very powerful way to write programs. Part of the power comes from the fact that a single <em>what is</em> fact can be used to solve a number of different problems that would have different <em>how to</em> components.</p>
+<p>Contemporary logic programming languages have substantial deficiencies, in that their general <em>how to</em> methods can lead them into spurious infinite loops or other undesirable behavior.</p>
+<h3 id="deductive-information-retrieval"><a href="#deductive-information-retrieval" class="headerlink" title="Deductive Information Retrieval"></a>Deductive Information Retrieval</h3><p>Logic programming excels in providing interfaces, something such as pattern-directed access, to data bases for information retrieval.</p>
+<blockquote>
+<p>Something like Regular Expression which also use a pattern to test strings.</p>
+</blockquote>
+<h3 id="how-the-query-system-works"><a href="#how-the-query-system-works" class="headerlink" title="How the Query System Works"></a>How the Query System Works</h3><p>The query system is organized around two central operations called pattern matching and unification.</p>
+<p><strong>Pattern matching</strong></p>
+<p>A <em>pattern matcher</em> is a program that tests whether some datum fits a specific pattern. The pattern matcher used by the query system takes as inputs a pattern, a datum, and a frame that specifies bindings for various pattern variables. It checks whether the datum matches the pattern in a way that is consistent with the bindings already in the frame. If so, it returns the given frame augmented by any bindings that may have been determined by the match. Otherwise, it indicates that the match has failed.</p>
+<p><strong>Streams of frames</strong></p>
+<p>The testing of patterns against frames is organized through the use of streams. Given a single frame, the matching process runs through the data-base entries one by one. For each data-base entry, the matcher generates either a special symbol indicating that the match has failed or an extension to the frame. The results for all the data-base entries are collected into a stream, which is passed through a filter to weed out the failures. The result is a stream of all the frames that extend the given frame via a match to some assertion in the data base .</p>
+<p><strong>Unification</strong></p>
+<p>In order to handle rules in the query language, we must be able to find the rules whose conclusions match a given query pattern. Rule conclusions are like assertions except that they can contain variables, so we will need a generalization of pattern matching-—called <em>unification_——in which both the _pattern</em> and the <em>datum</em> may contain variables.</p>
+<p>A unifier takes two patterns, each containing constants and variables, and determines whether it is possible to assign values to the variables that will make the two patterns equal. With complex patterns, performing unification may seem to require deduction. We may think of this process as solving a set of equations among the pattern components. In general, these are simultaneous equations, which may require substantial manipulation to solve.</p>
+<p>In a successful pattern match, all pattern variables become bound, and the values to which they are bound contain only constants. This is also true of all the examples of unification we have seen so far. In general, however, a successful unification may not completely determine the variable values; some variables may remain unbound and others may be bound to values that contain variables.</p>
+<p><strong>Applying rules</strong></p>
+<p>Unification is the key to the component of the query system that makes inferences from rules.</p>
+<p>In general, the query evaluator uses the following method to apply a rule when trying to establish a query pattern in a frame that specifies bindings for some of the pattern variables:</p>
+<ul>
+<li>Unify the query with the conclusion of the rule to form, if successful, an extension of the original frame.</li>
+<li>Relative to the extended frame, evaluate the query formed by the body of the rule.</li>
+</ul>
+<blockquote>
+<p>Just as procedure definitions are the means of abstraction in Lisp, rule definitions are the means of abstraction in the query language. In each case, we unwind the abstraction by creating appropriate bindings and evaluating the rule or procedure body relative to these.</p>
+</blockquote>
+<h3 id="is-logic-programming-mathematical-logic"><a href="#is-logic-programming-mathematical-logic" class="headerlink" title="Is Logic Programming Mathematical Logic?"></a>Is Logic Programming Mathematical Logic?</h3><p>The identification of the query language with mathematical logic is not really valid, though, because the query language provides a <em>control structuer</em> that interprets the logical statments procedurally.</p>
+<p>The aim of logic programming is to provide the programmer with techniques for decomposing a computational problem into two separate problems: <em>what is to be computed</em>, and <em>how this should be computed</em>.</p>
+<p>This is accomplished by selecting a subset of the statements of mathematical logic that is powerful enough to be able to describe anything one might want to compute, yet weak enough to have a controllable procedural interpretation.</p>
+<p>The intention here is that, on the one hand, a program specified in a logic programming language should be an effective program that can be carried out by a computer. Control (<em>how to compute</em>) is effected by using the order of evaluation of the language. We should be able to arrange the order of clauses and the order of subgoals within each clause so that the computation is done in an order deemed to be effective and efficient. At the same time, we should be able to view the result of the computation (<em>what to compute</em>) as a simple consequence of the laws of logic.</p>
+<h2 id="quick-contents"><a href="#quick-contents" class="headerlink" title="Quick Contents"></a>Quick Contents</h2><ol>
+<li><p><a href="/sicp/01-building-abstractions-with-procedures.html">Building Abstractions with Procedures</a></p>
+</li>
+<li><p><a href="/sicp/02-building-abstractions-with-data.html">Building Abstractions with Data</a></p>
+</li>
+<li><p><a href="/sicp/03-modularity-objects-state.html">Modularity, Objects, and State</a></p>
+</li>
+<li><p><a href="/sicp/04-metalinguistic-abstraction.html">Metalinguistic Abstraction</a></p>
+</li>
+<li><p><a href="/sicp/05-computing-with-register-machines.html">Computing with Register Machines</a></p>
+</li>
+</ol>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

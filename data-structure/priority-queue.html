@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="优先队列针对于在队列基础上，有些元素具有更高优先级的情况。据称，优先队列的数据结构是计算机科学中最雅致对一种。 Implementation优先队列基础两种操作：insert（入队，等价于enqueue）和deleteMin（找出、返回和删除队列中最小的元素，出队）。 简单的实现：  使用简单链表，在表头以 O(1)执行插入操作，遍历该表以 O(N)删除最小元。 使用简单链表，始终保持表对排序状态">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Priority Queue 优先队列">
+<meta property="og:url" content="https://akatquas.github.io/data-structure/priority-queue.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="优先队列针对于在队列基础上，有些元素具有更高优先级的情况。据称，优先队列的数据结构是计算机科学中最雅致对一种。 Implementation优先队列基础两种操作：insert（入队，等价于enqueue）和deleteMin（找出、返回和删除队列中最小的元素，出队）。 简单的实现：  使用简单链表，在表头以 O(1)执行插入操作，遍历该表以 O(N)删除最小元。 使用简单链表，始终保持表对排序状态">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-01-15T10:21:08.374Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.374Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="akat,programmer,frontend,node,javascript,golang,python">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://akatquas.github.io/data-structure/priority-queue.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>Priority Queue 优先队列 | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#implementation"><span class="nav-text">Implementation</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#basic-operation"><span class="nav-text">Basic Operation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#other-operation"><span class="nav-text">Other Operation</span></a></li></ol></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">Priority Queue 优先队列
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <p>优先队列针对于在队列基础上，有些元素具有更高优先级的情况。据称，优先队列的数据结构是计算机科学中最雅致对一种。</p>
+<h1 id="implementation"><a href="#implementation" class="headerlink" title="Implementation"></a>Implementation</h1><p>优先队列基础两种操作：<code>insert</code>（入队，等价于<code>enqueue</code>）和<code>deleteMin</code>（找出、返回和删除队列中最小的元素，出队）。</p>
+<p><strong>简单的实现：</strong></p>
+<ul>
+<li>使用简单链表，在表头以 O(1)执行插入操作，遍历该表以 O(N)删除最小元。</li>
+<li>使用简单链表，始终保持表对排序状态，插入操作代价为 O(N)，删除代价为 O(1)。</li>
+<li>使用二叉查找树，对于插入和删除对操作均为 O(logN)。不过它支持大量不需要对操作，似乎有点冗余。</li>
+</ul>
+<p><strong>二叉堆</strong></p>
+<p>堆的结构性质和堆序性质。</p>
+<p>堆是一棵被完全填满对二叉树，可能的例外是在底层，底层上的元素从左到右填入。</p>
+<p>数学上，一棵高为 h 的完全二叉树有 2<sup>h</sup>到 2<sup>h+1</sup>-1 个结点，即二叉树对高为[logN]。</p>
+<p>观察上，完全二叉树可以用数组表示，不需要链表。</p>
+<p>对于数组中，任一位置<code>i</code>上的元素，其左儿子在位置<code>2i</code>，其右儿子在位置<code>2i+1</code>，就在左儿子后面，其父亲在位置<code>[i/2]</code>上。</p>
+<p>堆序性质：除根结点外，对于堆中其他任一结点 X，其父亲的键小于（或等于）X 中的键。因此最小元总可以在根处找到，得以常数时间得到附加操作<code>findMin</code>。</p>
+<pre class="line-numbers language-C#" data-language="C#"><code class="language-C#"># 优先队列
+class BinaryHeap
+&#123;
+    public:
+        explicit BinaryHeap( int capacity &#x3D; 100 );
+
+        explicit BinaryHeap( const vector&lt;Comparable&gt; &amp; items ): array( items.size( ) + 10), currentSize ( items.size( ))
+        &#123;
+            for( int i &#x3D; 0; i &lt; items.size( ); i++ )
+                array[ i + 1 ] &#x3D; items[ i ];
+            buildHeap( );
+        &#125;
+
+        bool isEmpty( ) const;
+        const Comparable &amp; findMin( ) const;
+
+        void insert( const Comparable &amp; x )
+        &#123;
+            if ( currentSize &#x3D;&#x3D; array.size( ) - 1 )
+                array.resize( array.size( ) * 2 );
+
+            int hole &#x3D; ++currentSize;
+            for ( ; hole &gt; 1 &amp;&amp; x &lt; array[ hole &#x2F; 2 ]; hole &#x2F; 2)
+                array [ hole ] &#x3D; array[ hole &#x2F; 2 ];
+
+            array[ hole ] &#x3D; x;
+        &#125;
+
+        void deleteMin( )
+        &#123;
+            if ( isEmpty( ) )
+                throw UnderflowException( );
+
+            array[ 1 ] &#x3D; array[ currentSize-- ];
+            percolateDown( 1 );
+        &#125;
+
+        void deleteMin( Comparable &amp; minItem )
+        &#123;
+            if ( isEmpty( ) )
+                throw UnderflowException( );
+
+            minItem &#x3D; array[ 1 ];
+            array[ 1 ] &#x3D; array[ currentSize-- ];
+            percolateDown( 1 );
+
+        &#125;
+
+        void makeEmpty( );
+
+    private:
+        int currentSize;
+        vector&lt;Comparable&gt; array;
+
+        void buildHeap( )
+        &#123;
+            for ( int i &#x3D; currentSize &#x2F; 2; i &gt; 2 ; i-- )
+                percolateDown( i );
+        &#125;
+
+        void percolateDown( int hole )
+        &#123;
+            int child;
+            Comparable tmp &#x3D; array[ hole ];
+
+            for ( ; hole * 2 &lt;&#x3D; currentSize; hole &#x3D; child )
+            &#123;
+                # find the children index
+                child &#x3D; hole * 2;
+                # find the smaller child
+                if ( child !&#x3D; currentSize &amp;&amp; array[ child + 1 ] &lt; array[ child ] )
+                    child++;
+                # check the child is small enough
+                if ( array[ child ] &lt; tmp )
+                    array[ hole ] &#x3D; array[ child ];
+                else
+                    break;
+            &#125;
+            array[ hole ] &#x3D; tmp;
+        &#125;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="basic-operation"><a href="#basic-operation" class="headerlink" title="Basic Operation"></a>Basic Operation</h2><p><strong>insert</strong></p>
+<p>为了将一个元素 X 插入到堆中，需要在下一个空闲位置创建一个空穴。</p>
+<ul>
+<li>如果 X 能放入空穴而不破坏堆序，那么插入完成。</li>
+<li>如果不能直接插入空穴，需要把空穴的父节点上的元素移入空穴，再次检测 X 是否能插入空穴，重复该过程直到 X 能被正确放入空穴为止。</li>
+</ul>
+<p>上面这种策略称为上滤，<code>percolate up</code>。数学证明，执行一次插入平均需要 2.607 次比较，insert 操作将元素平均上移 1.607 层。</p>
+<p><strong>deleteMin</strong>  最小元就在根结点。</p>
+<p>当删除最小元之后，在根结点出现了一个空穴。直观地，将堆中最后一个元素 X 移动到堆的某个地方。</p>
+<ul>
+<li>如果 X 能被放入空穴，那么直接放入，deleteMin 完成。</li>
+<li>不能直接放入时，可以把空穴中，较小的儿子放入空穴，这样就把空穴向下推了一层，重复这样对步骤，直到 X 能够被放入到空穴中。</li>
+</ul>
+<p>上面这种策略称为下滤，<code>percolate down</code>。平均运行时间为 O(logN)。实际情况中，将出现一个结点只有一个儿子的情况，所以附加了一个测试，检查儿子的情况。</p>
+<p>另一种巧妙对解法是当堆大小为偶数对时候，从每个下滤开始处，可将其值大于堆中任何元素对标记放到堆的终端后面对位置上，这样做就不再需要测试右儿子存在与否，不过还是需要测试何时到达底层，对于每一个树叶，算法需要一个标记。这种方法需要慎重选择。</p>
+<h2 id="other-operation"><a href="#other-operation" class="headerlink" title="Other Operation"></a>Other Operation</h2><p><strong>decreaseKey</strong></p>
+<p><code>decreaseKey(p,Δ)</code>操作用于减小位置 p 处元素的值，减小幅度为正的 Δ。这有可能破坏堆序性质，需要通过<em>上滤</em>操作来调整。</p>
+<p><strong>increaseKey</strong></p>
+<p><code>increaseKey(p,Δ)</code>操作增加位置 p 处元素的值，增加幅度为正的 Δ。需要用<em>下滤</em>来调整。</p>
+<p><strong>remove</strong></p>
+<p><code>remove(p)</code>操作删除堆中位置 p 上的结点。先执行<code>decreaseKey(p,Δ)</code>，再执行<code>deleteMin()</code>。</p>
+<p><strong>buildHeap</strong></p>
+<p>有时候二叉堆通过项的原始集合来构造。直观地，可以通过 N 次连续的 insert 来完成。算法的总运行时间为 O(N)平均时间，最坏情形时间为 O(NlogN)。</p>
+<p>通常的构造过程是将 N 项以任意顺序放入树中，然后进行下滤过程，既可以生成堆序的树。</p>
+<p>todo 6.4</p>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

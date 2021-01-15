@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="描述模式的方法有很多种，文章分别利用了“自动机”这种图中路径标号的图论方式，和正则表达式的代数方式。现在学习第三种描述模式的方式，称为“上下文无关文法”的递归定义。 除特殊说明，下面到文法均指“上下文无关文法”。 上下文无关文法文法中会出现 3 种符号。  “元符号 meta symbol”，扮演特殊角色却并不代表他们自身的符号。 “语法分类 syntactic category”，要定义的字符串">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Recursive Description of Patterns 模式的递归描述">
+<meta property="og:url" content="https://akatquas.github.io/compiler/recursive-description-of-patterns.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="描述模式的方法有很多种，文章分别利用了“自动机”这种图中路径标号的图论方式，和正则表达式的代数方式。现在学习第三种描述模式的方式，称为“上下文无关文法”的递归定义。 除特殊说明，下面到文法均指“上下文无关文法”。 上下文无关文法文法中会出现 3 种符号。  “元符号 meta symbol”，扮演特殊角色却并不代表他们自身的符号。 “语法分类 syntactic category”，要定义的字符串">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://akatquas.github.io/compiler/img/example-on-grammar-of-expressions.png">
+<meta property="og:image" content="https://akatquas.github.io/compiler/img/productions-defining-some-of-the-statement-forms-of-c.png">
+<meta property="og:image" content="https://akatquas.github.io/compiler/img/example-on-parse-tree.png">
+<meta property="og:image" content="https://akatquas.github.io/compiler/img/parsing-tree.png">
+<meta property="og:image" content="https://akatquas.github.io/compiler/img/how-parse-tree-work-1.png">
+<meta property="og:image" content="https://akatquas.github.io/compiler/img/how-parse-tree-work-2.png">
+<meta property="og:image" content="https://akatquas.github.io/compiler/img/how-parse-tree-work-1.png">
+<meta property="article:published_time" content="2021-01-15T10:21:08.370Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.370Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="compiler">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://akatquas.github.io/compiler/img/example-on-grammar-of-expressions.png">
+
+
+<link rel="canonical" href="https://akatquas.github.io/compiler/recursive-description-of-patterns.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>Recursive Description of Patterns 模式的递归描述 | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8A%E4%B8%8B%E6%96%87%E6%97%A0%E5%85%B3%E6%96%87%E6%B3%95"><span class="nav-text">上下文无关文法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BA%90%E8%87%AA%E6%96%87%E6%B3%95%E7%9A%84%E8%AF%AD%E8%A8%80"><span class="nav-text">源自文法的语言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E6%9E%90%E6%A0%91"><span class="nav-text">分析树</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E6%9E%90%E6%A0%91%E7%9A%84%E6%9E%84%E5%BB%BA"><span class="nav-text">分析树的构建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E6%9E%90%E6%A0%91%E4%B8%BA%E4%BD%95-%E2%80%9C%E8%A1%8C%E5%BE%97%E9%80%9A%E2%80%9D"><span class="nav-text">分析树为何 “行得通”</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E4%B9%89%E6%80%A7%E5%92%8C%E6%96%87%E6%B3%95%E8%AE%BE%E8%AE%A1"><span class="nav-text">二义性和文法设计</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E6%9E%90%E6%A0%91%E7%9A%84%E6%9E%84%E9%80%A0"><span class="nav-text">分析树的构造</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">Recursive Description of Patterns 模式的递归描述
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <p>描述模式的方法有很多种，<a href="./pattern-automata-regex.html">文章</a>分别利用了“自动机”这种图中路径标号的图论方式，和正则表达式的代数方式。现在学习第三种描述模式的方式，称为“上下文无关文法”的递归定义。</p>
+<p>除特殊说明，下面到文法均指“上下文无关文法”。</p>
+<h2 id="上下文无关文法"><a href="#上下文无关文法" class="headerlink" title="上下文无关文法"></a>上下文无关文法</h2><p>文法中会出现 3 种符号。</p>
+<ol>
+<li>“元符号 meta symbol”，扮演特殊角色却并不代表他们自身的符号。</li>
+<li>“语法分类 syntactic category”，要定义的字符串集合。</li>
+<li>“终结符 terminal”，可以是 ‘+’ ，也可以是 ‘数字’ 这样的抽象符号。</li>
+</ol>
+<p>文法是由 <em>产生式 production</em> 组成的。一般而言，产生式有以下 3 部分：</p>
+<ol>
+<li>左部 head，元符号左侧的语法分类。</li>
+<li>元符号，</li>
+<li>右部 body，元符号右侧 0 个或以上的语法分类和（或）终结符。</li>
+</ol>
+<blockquote>
+<p>关于文法的例子</p>
+<div style="text-align: center">
+<img data-src="./img/example-on-grammar-of-expressions.png"/>
+</div>
+</blockquote>
+<blockquote>
+<p>定义了 C 语言中某些语句形成方式的产生式</p>
+<div style="text-align: center">
+<img data-src="./img/productions-defining-some-of-the-statement-forms-of-c.png"/>
+</div>
+</blockquote>
+<h2 id="源自文法的语言"><a href="#源自文法的语言" class="headerlink" title="源自文法的语言"></a>源自文法的语言</h2><p>文法从本质上讲，是设计字符串集合的归纳定义。一种文法定义若干语法分类的情况很常见。对于某文法的各语法分类 <em>&lt; S &gt;</em> 而言，可以按照如下方式定义语言 <em>L(&lt; S &gt;)</em> 。</p>
+<p><strong>依据。</strong> 首先假设对文法中的各语法分类 <em>&lt; S &gt;</em> 而言， 语言 <em>L(&lt; S &gt;)</em> 为空。</p>
+<p><strong>归纳。</strong> 假设该文法具有产生式 <em>&lt; S &gt; → X<sub>1</sub>X<sub>2</sub>…X<sub>n</sub></em> ，其中对于 <em>i=1,2,…,n</em> ，各个 <em>X<sub>i</sub></em> 要么是语法分类，要么是终结符。并且对 <em>i=1,2,…,n</em> ，按照如下方式为各个 <em>X<sub>i</sub></em> 选择一个字符串 <em>s<sub>i</sub></em> ：</p>
+<ol>
+<li>如果 <em>X<sub>i</sub></em> 是终结符，就可以只使用 <em>X<sub>i</sub></em> 作为字符串 _s<sub>i</sub>_。</li>
+<li>如果 <em>X<sub>i</sub></em> 是语法分类，就可以选择任何一个已知在 <em>L(X<sub>i</sub>)</em> 中的字符串作为 <em>s<sub>i</sub>_。如果若干个 _X<sub>i</sub></em> 是相同的语法分类，就可以从各次出现的 <em>L(X<sub>i</sub>)</em> 中分别选不同的字符串作为 _s<sub>i</sub>_。</li>
+</ol>
+<p>那么所选的这些字符串的串接 <em>s<sub>1</sub>s<sub>2</sub>…s<sub>n</sub></em> 就是语言 <em>L(&lt; S &gt;)</em> 中的字符串。如果 <em>n==0</em>,就把 є 放到该语言中。</p>
+<p>实现这一定义的一种系统化就是经过 该文法各产生式 若干轮。在每轮中，要以所有的可能方式利用归纳规则更新各语法分类的语言。也就是说，对于各个属于语法分类的 <em>X<sub>i</sub>_，要以所有可能的方式从 _L(X<sub>i</sub>)</em> 中选出字符串。</p>
+<h2 id="分析树"><a href="#分析树" class="headerlink" title="分析树"></a>分析树</h2><p>可以通过反复应用产生式，为某语法分类 <em>&lt; S &gt;</em> 得出字符串 <em>s</em> 属于语言 <em>L(&lt; S &gt;)</em> 的结论。</p>
+<p>从由右部不含语法分类的依据产生式得到的字符串开始，然后对已经从各语法分类得到的字符串“应用”产生式。每次应用都要用字符串替换产生式右部中出现的各语法分类，并构造处属于产生式左部中语法分类的字符串。最终通过应用左部为 <em>&lt; S &gt;</em> 的产生式来构造字符串。</p>
+<p>把 <em>s</em> 在 <em>L(&lt; S &gt;)</em> 中的 “证明” 化成一棵称作 <em>分析树 parse tree</em> 的对于帮助语法分类很有用。分析树的节点都是带标号的，要么是终结符，要么是语法分类，要么是 є 。叶子节点只会被标记为终结符或者符号 є ，内部节点只能用语法分类作为标号。</p>
+<p>每个内部节点 <em>v</em> 都是表示产生式的应用。亦即，一定存在某个产生式，同时满足下列条件：</p>
+<ol>
+<li>标号 <em>v</em> 的语法分类是该产生式的左部</li>
+<li><em>v</em> 的子节点的标号从左往右构成了该产生式的右部</li>
+</ol>
+<blockquote>
+<p>例子： 下面的分析树表示的字符串是 <em>3*(2+14)_。 _&lt;表达式 expression&gt;、&lt;数字 number&gt;、&lt;数码 digit&gt;</em> 分别简记为 _<E>、<N>、<D>_。</p>
+<div style="text-align: center">
+<img data-src="./img/example-on-parse-tree.png"/>
+</div>
+</blockquote>
+<h2 id="分析树的构建"><a href="#分析树的构建" class="headerlink" title="分析树的构建"></a>分析树的构建</h2><p>每棵分析树都表示某一终结符串 <em>s</em> ，可以称该串为这棵树的产出(yield)。串 <em>s</em> 由相应分析树的所有叶子节点的标号按照从左到右的次序排列而成。此外对分析树进行前序遍历并只依次列出那些属于终结符的标号，也可以得到产出。</p>
+<p>如果树只有一个节点，那么该节点的标号只能是某个终结符或者 є 。如果树不止一个节点，根节点的标号就是语法分类，根节点必然是个内部节点。而且该语法分类的字符串中总会包含该树的产出。递归定义如下：</p>
+<p><strong>依据。</strong> 对文法中的每个终结符 <strong>x</strong> 来说，存在一棵树只含一个标号为 <strong>x</strong> 的节点的树。当然该树的产出就是 <strong>x</strong>。</p>
+<p><strong>归纳。</strong> 假设我们有产生式 <em>&lt; S &gt; → X<sub>1</sub>X<sub>2</sub>…X<sub>n</sub>_，其中各种 _X<sub>i</sub></em> 要么是终结符，要么是语法分类。如果 <em>n == 0</em> ，则该产生式实际上为 <em>&lt; S &gt; → є _ ，那么就有下左图的树，产出为 є ，根节点为 _&lt; S &gt;_。因此 є 显然是在 _L&lt; S &gt;</em> 中的。</p>
+<div style="text-align: center">
+<img data-src="./img/parsing-tree.png"/>
+</div>
+
+<p>现假设 <em>&lt; S &gt; → X<sub>1</sub>X<sub>2</sub>…X<sub>n</sub></em> ，且 n &gt;= 1 。对每个 i = 1、2、…、n 而言，按如下方式为每个 <em>X<sub>i</sub></em> 选择树 <em>T<sub>i</sub></em> ：</p>
+<ol>
+<li><p>如果 <em>X<sub>i</sub></em> 是终结符，就必须选择标号为 <em>X<sub>i</sub></em> 的单节点树。如果有两个或多个 X 是同一终结符，就必须为该终结符的每次出现选择具有相同标号的不同节点树。</p>
+</li>
+<li><p>如果 <em>X<sub>i</sub></em> 是语法分类，可以选择任何已经构建好的以 <em>X<sub>i</sub></em> 为根节点标号的分析树。然后构建上面右边图的树。亦即，创建的根节点标号是该产生式左部的语法分类 <em>&lt; S &gt;</em> ，而这棵树的根节点的子节点从左到右依次是 <em>X<sub>1</sub>, X<sub>2</sub>, … , X<sub>n</sub></em> 选择的树的根节点。如果由两个或多个 X 是相同的语法分类， 也许要为各语法分类选择相同的树，但必须在该树每次被选中时为其生成不同的副本。还可以为同一语法分类的不同出现选择不同的树。</p>
+</li>
+</ol>
+<h2 id="分析树为何-“行得通”"><a href="#分析树为何-“行得通”" class="headerlink" title="分析树为何 “行得通”"></a>分析树为何 “行得通”</h2><p>分析树的构建与字符串属于某语法分类的归纳定义非常相似。我们可以通过两次简单的归纳来证明，对任意语法分类 &lt; S &gt; 来说，以 &lt; S &gt; 为根节点的分析树的产出刚好是 L(&lt; S &gt;) 中的字符串。亦即：</p>
+<ol>
+<li><p>如果 T 是根节点标号为 &lt; S &gt; 且产出为 s 的分析树，那么字符串 s 在语言 L(&lt; S &gt;) 中。</p>
+</li>
+<li><p>如果字符串 s 在语言 L(&lt; S &gt;) 中，那么存在产出为 s 且根节点标号为 &lt; S &gt; 的分析树。</p>
+</li>
+</ol>
+<p>粗略的讲，分析树是由更小的分析树，按照由较短的字符串够长长字符串的方式，对产生式右部中的语法分类进行替换构成的。</p>
+<p>用对树 T 高度的完全归纳证明第 1 部分。</p>
+<p><strong>依据。</strong> 假设分析树的高度是 1，这棵树就像下图一样， n == 0 时是 є ，构建这种树第唯一方法是，若存在产生式 <em>&lt; S &gt; → X<sub>1</sub>X<sub>2</sub>…X<sub>n</sub></em> ，其中各 <strong>x</strong> 都是终结符。因此 <strong>x<sub>1</sub>x<sub>2</sub>…x<sub>n</sub></strong> 是 L(&lt; S &gt;) 中第字符串。</p>
+<div style="text-align: center">
+<img data-src="./img/how-parse-tree-work-1.png"/>
+</div>
+
+<p><strong>归纳。</strong> 假设命题对所有高度不超过 k 的树都成立。现在考虑下面的高度为 k+1 的树。对 i = 1,2,…,n ，各子树 T<sub>i</sub> 的高度至多为 k 。如果这些子树中有任何一棵的高度达到或超过 k+1 ，那么整棵树对高度就至少是 k+2 。因此，归纳假设适用于各棵树 T<sub>i</sub> 。另根据归纳假设，如果子树 T<sub>i</sub> 的根节点 X<sub>i</sub> 是语法分类，那么 T<sub>i</sub> 产出 s<sub>i</sub> 就在语言 L(X<sub>i</sub>) 中。如果 X<sub>i</sub> 是终结符，就定义字符串 s<sub>i</sub> 是 X<sub>i</sub> 。整棵树的产出就是 s<sub>1</sub>s<sub>2</sub>…s<sub>n</sub> 。根据分析树的定义，可知 <em>&lt; S &gt; → X<sub>1</sub>X<sub>2</sub>…X<sub>n</sub></em> 是产生式。假设只要 X<sub>i</sub> 是语法分类就是 s<sub>i</sub> 替换 X<sub>i</sub> 。根据定义，如果 X<sub>i</sub> 是终结符， X<sub>i</sub>就是 s<sub>i</sub> 。这样一来，替换后对右部就变成了 s<sub>1</sub>s<sub>2</sub>…s<sub>n</sub>， 与该树对产出是相同的。根据 &lt; S &gt; 的语言的归纳规则， s<sub>1</sub>s<sub>2</sub>…s<sub>n</sub> 是在 L(&lt; S &gt;) 中的。</p>
+<div style="text-align: center">
+<img data-src="./img/how-parse-tree-work-2.png"/>
+</div>
+
+<p>现在必须证命题 2 ，语法分类 L&lt; S &gt; 中的每个字符串 s 都具有以 &lt; S &gt; 为根节点且以 s 为产出的分析树。首先要注意到，对每个终结符 x ，存在根节点和产出都是 x 的分析树。现在我们要对得出 s 在 L(&lt; S &gt;) 中时的归纳步骤（下面证明过程中加引号的 “归纳步骤” 就表示该归纳步骤）的应用次数进行完全归纳。</p>
+<p><strong>依据。</strong> 假设证明 s 在 L(&lt; S &gt;) 中需要应用 “归纳步骤” 一次。则一定存在 <em>&lt; S &gt; → X<sub>1</sub>X<sub>2</sub>…X<sub>n</sub></em> ，其中所有的 <strong>x</strong> 都是终结符，而去 <em>&lt; S &gt; = X<sub>1</sub>X<sub>2</sub>…X<sub>n</sub></em> 。对 i = 1,2,…, n ，都有标号为 x<sub>i</sub> 的单节点分析树。因此，存在产出为 s 且根节点标号为 &lt; S &gt; 的分析树。该树的结构类似如下，在 n == 0 的特例中， s 为空字符串。</p>
+<div style="text-align: center">
+<img data-src="./img/how-parse-tree-work-1.png"/>
+</div>
+
+<p><strong>归纳。</strong> 假设应用 “归纳步骤” 不超过 k 次所发现的任意语法分类 &lt; T &gt; 中，任何字符串 t 都具有以 t 为产出而且以 &lt; T &gt; 为根节点的分析树。考虑通过 k+1 次应用 “归纳步骤” 找到的在语法分类 &lt; S &gt; 的语言中的字符串 s 。那么存在产生式 <em>&lt; S &gt; → X<sub>1</sub>X<sub>2</sub>…X<sub>n</sub></em> ，且 s = s<sub>1</sub>s<sub>2</sub>…s<sub>n</sub>， 其中每个子串 s<sub>i</sub> 都会是 如下两种可能之一。</p>
+<ol>
+<li><p>为 X<sub>i</sub>， 此时 X<sub>i</sub> 为终结符。</p>
+</li>
+<li><p>某个至多应用 k 次 “归纳步骤” 就可知在 L(X<sub>i</sub>) 中的字符串，此时 X<sub>i</sub> 是语法分类。</p>
+</li>
+</ol>
+<p>因此，对每个 i ，都可以找到一棵具有产出 s<sub>i</sub> 而且根节点标号为 X<sub>i</sub> 的树 T<sub>i</sub> 。如果 X<sub>i</sub> 是语法分类，那么就利用归纳假设声明 T<sub>i</sub> 存在，如果 X<sub>i</sub> 是终结符，则不需要归纳假设就可以声明存在标号为 X<sub>i</sub> 的单节点树。</p>
+<h2 id="二义性和文法设计"><a href="#二义性和文法设计" class="headerlink" title="二义性和文法设计"></a>二义性和文法设计</h2><p>如果文法中有两棵或多棵分析树具有相同产出，且根节点标号是相同的语法分类，就说该文法是具有二义性的 ambiguous 。不一定要每个字符串都是若干分析树的产出，只要有一个这样的字符串就足够让文法具有二义性。</p>
+<p>不具有二义性的文法叫做 无二义 unambiguous 文法。在无二义文法中，对每个字符串 s 和语法分类 &lt; S &gt; 而言，至多存在一棵产出为 s 且根节点标号固定的分析树。</p>
+<p>证明文法的无二义性相当困难，唯一方法就是证明语言中每个字符串都具有唯一的分析树。</p>
+<p>对于编译器来说，文法的 <strong>无二义性</strong> 非常重要，无二义性意味着明确指定机器语言程序该做什么。</p>
+<h2 id="分析树的构造"><a href="#分析树的构造" class="headerlink" title="分析树的构造"></a>分析树的构造</h2><p>一般而言，根本不可能把文法转换成确定自动机。</p>
+<p>下面介绍一种简单的却不是很强大的分析技术—— <strong>递归下降分析</strong> 。在该分析中，文法会被一系列相互递归的函数代替，每个递归函数都对应文法中的一个语法分类。对应语法分类 &lt; S &gt; 的函数 S 的目标是读入构成语言 L(&lt; S &gt;) 中的字符串的字符序列，并返回指向该字符串分析树根节点的指针。</p>
+<p>产生式的右部可以看作找到左部的语法分类中的字符串所必须满足的一系列目标 —— 终结符和语法分类。</p>
+<p>一般而言，如果发现下一个输入符号是终结符，终结符的目标就得到满足了。但是下一个输入符号是其他内容，这个目标就不会被满足。要弄清右部中的语法分类是否得到满足，可以调用对应该语法分类的函数。</p>
+<p>假设需要确定终结符序列 X<sub>1</sub>X<sub>2</sub>…X<sub>n</sub> 是否为语法分类 &lt; S &gt; 中的字符串，而且如果是，则需要给出它的分析树。然输入序列为 X<sub>1</sub>X<sub>2</sub>…X<sub>n</sub> ENDM ，其中 ENDM 是一个不输入终结符的特殊符号，称为 端记号 endmarker ，作用表示待检查的整个字符串已经被读入完成。</p>
+<p>输入游标 input cursor 标记了当前正在被处理的终结符，如果输入是字符串，那么游标可以是指向字符的指针。分析程序首先要调用对应语法分类 &lt; S &gt; 的函数 S ，而且输入游标是在输入的开头位置。</p>
+<p>每当处理产生式的右部，并在产生式中遇到终结符 a 的时候，就要在输入游标指示的位置查找相匹配的终结符 a 。如果找到了 a ，就把输入游标移至下一个终结符。如果没有找到，匹配失败，就不能为该输入字符串给出分析树。</p>
+<p>如果当前处理的产生式是语法分类 <T> ，就要调用对应 <T> 的函数 T 。如果 T 失败了，就表示整个分析失败了。如果 T 成功了，就会 “消灭” 输入，把输入游标向后移动对应输入的 0 个或更多个 偏移位置。 T 还会返回一棵树，就是被消灭部分的分析树。</p>
+<p>处理完各个符号之后，就要为该产生式表示的那部分输入生成分析树。要完成这一工作，就需要创建一个新的根节点，并以该产生式的左部作为其标号。该根节点的子节点是成功调用与右部中语法分类对应的函数所返回的树的根节点，而且要为右部中的每个终结符创建相应的叶子节点。</p>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

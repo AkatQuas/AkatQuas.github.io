@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="Security is all about layers. # Docker Platform technologies Secrets Management Docker Content Trust Image Scanning Swarm Mode  # OS (Linux) technologies seccomp Mandatory Access Control Capabilities">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Security in Docker">
+<meta property="og:url" content="https://akatquas.github.io/docker/security.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="Security is all about layers. # Docker Platform technologies Secrets Management Docker Content Trust Image Scanning Swarm Mode  # OS (Linux) technologies seccomp Mandatory Access Control Capabilities">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-01-15T10:21:08.374Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.374Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="akat,programmer,frontend,node,javascript,golang,python">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://akatquas.github.io/docker/security.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>Security in Docker | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#linux-security-technologies"><span class="nav-text">Linux security technologies</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#docker-platform-security-technologies"><span class="nav-text">Docker platform security technologies</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">Security in Docker
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <p>Security is all about layers.</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># Docker Platform technologies</span>
+Secrets Management
+Docker Content Trust
+Image Scanning
+Swarm Mode
+
+<span class="token comment"># OS (Linux) technologies</span>
+seccomp
+Mandatory Access Control
+Capabilities
+Control <span class="token function">groups</span> <span class="token punctuation">(</span>cgroups<span class="token punctuation">)</span>
+Kernel namespaces<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<ul>
+<li><p><strong>Docker Swarm Mode</strong> is secure by default. You get all of the following with zero configuration required; <em>cryptographic node IDs</em>, <em>mutual authentication</em>, <em>automatic CA configuration</em>, <em>automatic certificate rotation</em>, <em>encrypted cluster store</em>, <em>encrypted networks</em>, and more.</p>
+</li>
+<li><p><strong>Docker Content Trust (DCT)</strong> lets you sign your images and verify the integrity and publisher of images you consume.</p>
+</li>
+<li><p><strong>Image security</strong> scanning analyses images, detects known vulnerabilities, and provides detailed reports.</p>
+</li>
+<li><p><strong>Docker secrets</strong> are a way to securely share sensitive data and are first-class objects in Docker. They’re stored in the encrypted cluster store, encrypted in-flight when delivered to containers, stored in in-memory filesystems when in use, and operate a least-privilege model.</p>
+</li>
+</ul>
+<h3 id="linux-security-technologies"><a href="#linux-security-technologies" class="headerlink" title="Linux security technologies"></a>Linux security technologies</h3><p>All good container platforms use <em>namespaces</em> and <em>cgroups</em> to build containers.</p>
+<p>The best container platforms will also integrate with other Linux security technologies such as <em>capabilities</em>, <em>Mandatory Access Control</em> systems like SELinux and AppArmor, and seccomp.</p>
+<p>Docker integrates with them all.</p>
+<p><strong>Namespaces</strong></p>
+<p>Kernel namespaces are at the very heart of containers. They slice up an operating system (OS) so that it looks and feels like multiple <em>isolated</em> operating systems.</p>
+<p>This lets us do really cool things like run multiple web servers on the same OS without having port conflicts.</p>
+<blockquote>
+<p>Namespaces let you run multiple web servers, each on port 443, on a single OS. To do this you just run each web server app inside of its own <em>network namespace</em>. This works because each network namespace gets its own IP address and full range of ports.</p>
+<p>You can run multiple applications, each requiring their own version of a shared library or configuration file. To do this you run each application inside of its own <em>mount namespace</em>.</p>
+</blockquote>
+<p>Docker on Linux currenty utilizes the following kernel namespaces:</p>
+<ul>
+<li>ProcessID(pid)</li>
+<li>Network(net)</li>
+<li>Filesystem/mount(mnt)</li>
+<li>Inter-process Communication(ipc)</li>
+<li>User(user)</li>
+<li>UTS(uts)</li>
+</ul>
+<p>Docker containers are an organized collection of namespaces. This means that you get all of this OS isolation for free with every container.</p>
+<blockquote>
+<p>Every container has its own <em>pid</em>, <em>net</em>, <em>mnt</em>, <em>ipc</em>, <em>uts</em>, and potentially <em>user</em> namespace. In fact, an organized collection of these namespaces is what we call a <em>container</em>.</p>
+</blockquote>
+<p>Let’s briefly look at how Docker uses each namespace:</p>
+<ul>
+<li><strong>Process ID namespace</strong>: Docker uses the <em>pid</em> namespace to provide isolated process trees for each container. This means every container gets its own PID 1. PID namespaces also mean that one container cannot see or access to the process tree of other containers. Nor can it see or access the process tree of the host it’s running on.</li>
+<li><strong>Network namespace</strong>: Docker uses the <em>net</em> namespace to provide each container its own isolated network stack. This stack includes; interfaces, IP addresses, port ranges, and routing tables. For example, every container gets its own <em>eth0</em> interface with its own unique IP and range of ports.</li>
+<li><strong>Mount namespace</strong>: Every container gets its own unique isolated root (/) filesystem. This means every container can have its own <em>/etc</em>, <em>/var</em>, <em>/dev</em> and other important filesystem constructs. Processes inside of a container cannot access the mount namespace of the Linux host or other containers — they can only see and access their own isolated filesystem.</li>
+<li><strong>Inter-process Communication namespace</strong>: Docker uses the <em>ipc</em> namespace for shared memory access within a container. It also isolates the container from shared memory outside of the container.</li>
+<li><strong>User namespace</strong>: Docker lets you use <em>user</em> namespaces to map users inside of a container to different users on the Linux host. A common example is mapping a container’s root user to a non-root user on the Linux host.</li>
+<li><strong>UTS namespace</strong>: Docker uses the <em>uts</em> namespace to provide each container with its own hostname.</li>
+</ul>
+<p><strong>Control Groups</strong></p>
+<p>If namespaces are about isolation, control groups (cgroups) are about setting limits.</p>
+<blockquote>
+<p>Think of containers as similar to rooms in a hotel. While each room might appear isolated, every room shares a common set of infrastructure resources — things like water supply, electricity supply, shared swimming pool, shared gym, shared breakfast bar etc. Cgroups let us set limits so that (sticking with the hotel analogy) no single container can use all of the water or eat everything at the breakfast bar.</p>
+</blockquote>
+<p>In the real world, not the hotel analogy, containers are isolated from each other but all share a common set of OS resources — things like CPU, RAM, network bandwidth, and disk I/O. Cgroups let us set limits on each of these so a single container cannot consume everything and cause a denial of service (DoS) attack.</p>
+<p><strong>Capabilities</strong></p>
+<p>It’s a bad idea to run containers as root — root is all-powerful and therefore very dangerous.</p>
+<p><em>capabilities</em> is a technology that lets us pick and choose which root powers a container needs in order to run.</p>
+<p>Under the hood, the Linux root user is a combination of a long list of <em>capabilities</em>.</p>
+<p>Docker works with capabilities so that you can run containers as root, but strip out all the capabilities you don’t need.</p>
+<p>This is an excellent example of implementing least privilege — you get a container running with only the capabilities required. Docker also imposes restrictions so that containers cannot re-add the dropped capabilities.</p>
+<p><strong>Mandatory Access Control systems</strong></p>
+<p>Docker works with major Linux MAC technologies such as AppArmor and SELinux.</p>
+<p>Depending on your Linux distribution, Docker applies a default AppArmor profile to all new containers. According to the Docker documentation, this default profile is “moderately protective while providing wide application compatibility”.</p>
+<p>Docker also lets you start containers without a policy applied, as well as giving you the ability to customize policies to meet specific requirements. This is also very powerful, but can also be prohibitively complex.</p>
+<p><strong>seccomp</strong></p>
+<p>Docker uses seccomp, in filter mode, to limit the syscalls a container can make to the host’s kernel.</p>
+<p>As per the Docker security philosophy, all new containers get a default seccomp profile configured with sensible defaults. This is intended to provide moderate security without impacting application compatibility.</p>
+<p>As always, you can customize seccomp profiles, and you can pass a flag to Docker so that containers can be started without a seccomp profile.</p>
+<h3 id="docker-platform-security-technologies"><a href="#docker-platform-security-technologies" class="headerlink" title="Docker platform security technologies"></a>Docker platform security technologies</h3><p><strong>Security in Swarm Mode</strong></p>
+<p>Docker Swarm allows you to cluster multiple Docker hosts and deploy applications declaratively. Every Swarm is comprised of <em>managers</em> and <em>workers</em> that can be Linux or Windows:</p>
+<ul>
+<li>Managers host the control plane of the cluster and are responsible for configuring the cluster and dispatching work tasks.</li>
+<li>Workers are the nodes that run your application code as containers.</li>
+</ul>
+<p>As expected, <em>swarm mode</em> includes many security features that are enabled out-of-the-box with sensible defaults. These include:</p>
+<ul>
+<li>Cryptographic node IDs</li>
+<li>TLS for mutual authentication</li>
+<li>Secure join tokens</li>
+<li>CA configuration with automatic certificate rotation</li>
+<li>Encrypted cluster store(config DB)</li>
+<li>Encrypted networks</li>
+</ul>
+<p><strong><em>Swarm join tokens</em></strong></p>
+<p><a target="_blank" rel="noopener" href="https://docs-stage.docker.com/engine/reference/commandline/swarm_join-token/">reference</a></p>
+<p>The only thing that is needed to join new managers and workers to an existing swarm is the relevant join token. Join tokens are stored in the cluster store which is encrypted by default.</p>
+<p>Every swarm maintains two distinct join tokens:</p>
+<ul>
+<li>One for joining new managers</li>
+<li>One for joining new workers</li>
+</ul>
+<p>Every join token is comprised of 4 distinct fields separated by dashes (-):</p>
+<pre><code>PREFIX - VERSION - SWARM ID - TOKEN</code></pre>
+<p>The <em>PREFIX</em> is always <em>SWMTKN</em>. This allows you to pattern-match against it and prevent people from accidentally posting it publicly.</p>
+<p>The <em>VERSION</em> field indicates the version of the swarm.</p>
+<p>The <em>Swarm ID</em> field is a hash of the swarm’s certificate.</p>
+<p>The <em>TOKEN</em> field is the part that determines whether it can join nodes as managers or workers.</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># revokes the existing manager join token and issues a new one.</span>
+docker swarm join-token --rotate worker
+
+docker swarm join-token --rotate manager<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Existing managers do not need updating, however, you’ll need to use the new token to add new managers.</p>
+<p><strong><em>TLS and mutual authentication</em></strong></p>
+<p>Every manager and worker that joins a swarm is issued a client certificate. This certificate is used for mutual authentication. It identifies the node, the swarm that it’s a member of, and role the node performs in the swarm (manager or worker).</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># inspect a node's client certificate</span>
+<span class="token function">sudo</span> openssl x509 <span class="token punctuation">\</span>
+  -in /var/lib/docker/swarm/certificates/swarm-node.cert <span class="token punctuation">\</span>
+  -text
+
+docker system info<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">docker swarm update --cert-expiry 720h
+
+docker swarm ca --help<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p><strong><em>The cluster store</em></strong></p>
+<p>The cluster store is the brains of a swarm and is where cluster config and state are stored.</p>
+<p>The store is currently based on the popular <code>etcd</code> distributed database and is automatically configured to replicate itself to all managers in the swarm. It is also encrypted by default.</p>
+<p><strong>Detecting vulnerabilities with image security scanning</strong></p>
+<p>Image scanners work by inspecting images and searching for packages that have known vulnerabilities. Image scanning is focussed on images and does not detect security problems with networks, nodes, or orchestrators.</p>
+<p><strong>Signing and verifying images with Docker Content Trust</strong></p>
+<p>Docker Content Trust (DCT) makes it simple and easy to verify the integrity and the publisher of images that you download and run.</p>
+<p>At a high level, DCT allows developers to sign images when they are pushed to Docker Hub or other container registries. These images can then be verified when they are pulled and ran.</p>
+<p>DCT can also be used to provide important <em>context</em>. This includes:</p>
+<ul>
+<li>whether or not an image has been signed for use in a particular environment such as “prod” or “dev”,</li>
+<li>whether an image has been superseded by a newer version and is therefore stale.</li>
+</ul>
+<p>You can force a Docker host to always sign and verify image push and pull operations by exporting the <code>DOCKER_CONTENT_TRUST </code>environment variable with a value of 1. Once DCT is enabled, you’ll no longer be able to pull and work with unsigned images.</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">export</span> <span class="token assign-left variable">DOCKER_CONTENT_TRUST</span><span class="token operator">=</span><span class="token number">1</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><strong>Docker Secrets</strong></p>
+<p>Behind the scenes, secrets are encrypted at rest, encrypted in-flight, mounted in containers to in-memory filesystems, and operate under a least-privilege model where they are only made available to services that have been explicitly granted access to them.</p>
+<p>The reason that secrets are surfaced in their un-encrypted form in running containers is so applications can use them without requiring methods to decrypt them.</p>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

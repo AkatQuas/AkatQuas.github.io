@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="元素个数特别多，无法在主存储器中完成时，必须在磁盘或磁带上完成的排序，叫做外部排序。  插入排序 一些简单排序的下界 ShellSort  insertion sort插入排序由N-1趟排序组成。在第 p 趟，将位置 p 上多元素向左移动至它在前 p+1 个元素中正确的位置上。 tempalte &lt;typename Comparable&gt; void insertionSort( vec">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Sort 排序">
+<meta property="og:url" content="https://akatquas.github.io/data-structure/sort.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="元素个数特别多，无法在主存储器中完成时，必须在磁盘或磁带上完成的排序，叫做外部排序。  插入排序 一些简单排序的下界 ShellSort  insertion sort插入排序由N-1趟排序组成。在第 p 趟，将位置 p 上多元素向左移动至它在前 p+1 个元素中正确的位置上。 tempalte &lt;typename Comparable&gt; void insertionSort( vec">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-01-15T10:21:08.374Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.374Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="akat,programmer,frontend,node,javascript,golang,python">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://akatquas.github.io/data-structure/sort.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>Sort 排序 | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#insertion-sort"><span class="nav-text">insertion sort</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%92%E5%85%A5%E6%8E%92%E5%BA%8F%E7%9A%84-stl-%E5%AE%9E%E7%8E%B0"><span class="nav-text">插入排序的 STL 实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%92%E5%85%A5%E6%8E%92%E5%BA%8F%E7%9A%84%E5%88%86%E6%9E%90"><span class="nav-text">插入排序的分析</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E7%AE%80%E5%8D%95%E6%8E%92%E5%BA%8F%E7%9A%84%E4%B8%8B%E7%95%8C"><span class="nav-text">一些简单排序的下界</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#shellsort"><span class="nav-text">Shellsort</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">Sort 排序
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <p>元素个数特别多，无法在主存储器中完成时，必须在磁盘或磁带上完成的排序，叫做外部排序。</p>
+<ul>
+<li><a href="#insertion-sort">插入排序</a></li>
+<li><a href="#%E4%B8%80%E4%BA%9B%E7%AE%80%E5%8D%95%E6%8E%92%E5%BA%8F%E7%9A%84%E4%B8%8B%E7%95%8C">一些简单排序的下界</a></li>
+<li><a href="#shellsort">ShellSort</a></li>
+</ul>
+<h1 id="insertion-sort"><a href="#insertion-sort" class="headerlink" title="insertion sort"></a>insertion sort</h1><p>插入排序由<code>N-1</code>趟排序组成。在第 p 趟，将位置 p 上多元素向左移动至它在前 p+1 个元素中正确的位置上。</p>
+<pre class="line-numbers language-C#" data-language="C#"><code class="language-C#">tempalte &lt;typename Comparable&gt;
+void insertionSort( vector&lt;Comparable&gt; &amp; a)
+&#123;
+    int j;
+
+    for( int p &#x3D; 1; p &lt; a.size( ); p++ )
+    &#123;
+        Comparable tmp &#x3D; a[ p ];
+        for( j &#x3D; p; j &gt; 0 &amp;&amp; tmp &lt; a[ j - 1]; j-- )
+            a[ j ] &#x3D; a[ j - 1 ];
+
+        a[ j ] &#x3D; tmp;
+    &#125;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="插入排序的-stl-实现"><a href="#插入排序的-stl-实现" class="headerlink" title="插入排序的 STL 实现"></a>插入排序的 STL 实现</h2><p>STL 中，排序例程不采用具有可比性的项所组成的数组作为单一参数，而是接受一对迭代器来代表在某范围内的起始和终止标志。一个双参数排序例程使用一对迭代器，并假设所有项均可排序。一个三参数的排序例程则还需要有个函数对象作为比较使用。</p>
+<pre class="line-numbers language-C#" data-language="C#"><code class="language-C#"># 写一个双参数的排序和一个三参数的排序例程。双参数排序将调用三参数，同时使用less&lt;Object&gt;()作为第三个参数
+# 数组访问必须转换为迭代器访问。
+
+template &lt;typename Iterator&gt;
+void insertionSort( const Iterator &amp; begin, const Iterator &amp; end )
+&#123;
+    if ( begin !&#x3D; end )
+        insertionSortHelp(begin, end, *begin );
+&#125;
+
+template &lt;typename Iterator, typename Object&gt;
+void insertionSortHelp( const Iterator &amp; begin, const Iterator &amp; end, const Object &amp; obj )
+&#123;
+    insertionSort( begin, end, less&lt;OBject&gt;( ) );
+&#125;
+
+# 双参数排序通过使用一个辅助例程来调用三参数排序，该辅助例程将Object作为泛型类型处理
+# 三参数排序只有Iterator和Comparator是泛型类型，需要使用相同的技巧来得到一个四参数例程，将一个Object类型的项作为第四个参数，仅仅是为添加一个辅助的泛型类型。
+
+# 下面代码中使用迭代器来取代数组的索引，使用lessThan函数对象类取代operator&lt;的调用
+
+template &lt;typename Iterator, typename Comparator&gt;
+void insertionSort( const Iterator &amp; begin, const Iterator &amp; end, Comparator lessThan)
+&#123;
+    if ( begin !&#x3D; end)
+        insertionSort( begin, end, lessThan, *begin );
+&#125;
+
+template &lt;typename Iterator, typename Comparator, typename Object&gt;
+void insertionSort( const Iterator &amp; begin, const Iterator &amp; end, Comparable lessThan, const Object &amp; obj )
+&#123;
+    Iterator j;
+
+    for ( Iterator p &#x3D; begin+1; p !&#x3D; end; p++ )
+    &#123;
+        Object tmp &#x3D; *p;
+        for ( j &#x3D; p; j !&#x3D; begin &amp;&amp; lessThan( tmp, *( j - 1)); --j )
+            *j &#x3D; *(j-1);
+
+        *j &#x3D; tmp;
+    &#125;
+&#125;
+
+# STL程序直接迭代器和函数对象。<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="插入排序的分析"><a href="#插入排序的分析" class="headerlink" title="插入排序的分析"></a>插入排序的分析</h2><p>每个嵌套循环都花费 N 次迭代，为 O(N<sup>2</sup>)。如果输入数据已预先排序，那么运行时间为 O(N)</p>
+<h1 id="一些简单排序的下界"><a href="#一些简单排序的下界" class="headerlink" title="一些简单排序的下界"></a>一些简单排序的下界</h1><p>数组的逆序指具有性质<code>i&lt;j</code>但是<code>a[i]&gt;a[j]</code>的序偶<code>(i,j)</code>。</p>
+<p>交换两个不按顺序排列的相邻元素消除一个逆序。经过排序的数组没有逆序。</p>
+<p>由于算法中还有 O(N)项其他工作，插入排序的运行时间是 O(I+N)，其中 I 是原始的逆序数。</p>
+<p>于是若逆序是 O(N)，则插入排序以线性时间运行。</p>
+<p>数学上的定理有</p>
+<ul>
+<li>N 个互异元素的数组的平均逆序数是 N(N-1)/4</li>
+<li>通过交换相邻元素进行排序的任何算法平均需要 Ω(N<sup>2</sup>)时间</li>
+</ul>
+<p>为了使一个排序算法以亚二次或者 o(N<sup>2</sup>)的时间运行，必须执行一些比较，特别是要对相距较远的元素进行交换。</p>
+<p>排序算法通过消除逆序得以继续进行，而为了有效的进行，还必须每次交换删除多个逆序。</p>
+<h1 id="shellsort"><a href="#shellsort" class="headerlink" title="Shellsort"></a>Shellsort</h1><p>谢尔排序通过比较相距一定间隔的元素来工作，各趟比较所用的距离随着算法的进行而减小，直到只比较相邻元素的最后一趟排序为止。有时也叫做缩减增量排序。</p>
+<p>// todo</p>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

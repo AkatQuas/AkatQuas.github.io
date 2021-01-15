@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="In this chapter we will describe processes in terms of the step-by-step operation of a traditional computer. Such a computer, or register machine, sequentially executes instructions that manipulate th">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Computing with Register Machines">
+<meta property="og:url" content="https://akatquas.github.io/sicp/05-computing-with-register-machines.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="In this chapter we will describe processes in terms of the step-by-step operation of a traditional computer. Such a computer, or register machine, sequentially executes instructions that manipulate th">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-01-15T10:21:08.426Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.426Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="sicp">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://akatquas.github.io/sicp/05-computing-with-register-machines.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>Computing with Register Machines | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#designing-register-machines"><span class="nav-text">Designing Register Machines</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#a-language-for-describing-register-machines"><span class="nav-text">A Language for Describing Register Machines</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#abstraction-in-machine-design"><span class="nav-text">Abstraction in Machine Design</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#subroutines"><span class="nav-text">Subroutines</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#using-a-stack-to-implement-recursion"><span class="nav-text">Using a Stack to Implement Recursion</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#a-register-machine-simulator"><span class="nav-text">A Register-Machine Simulator</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#the-machine-model"><span class="nav-text">The Machine Model</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#the-assembler"><span class="nav-text">The Assembler</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#generating-execution-procedures-for-instructions"><span class="nav-text">Generating Execution Procedures for Instructions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#monitoring-machine-performance"><span class="nav-text">Monitoring Machine Performance</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#storage-allocation-and-garbage-collection"><span class="nav-text">Storage Allocation and Garbage Collection</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#memory-as-vectors"><span class="nav-text">Memory as Vectors</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#maintaining-the-illusion-of-infinite-memory"><span class="nav-text">Maintaining the Illusion of Infinite Memory</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#the-explicit-control-evaluator"><span class="nav-text">The Explicit-Control Evaluator</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#the-core-of-the-explicit-control-evaluator"><span class="nav-text">The Core of the Explicit-Control Evaluator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sequence-evaluation-and-tail-recursion"><span class="nav-text">Sequence Evaluation and Tail Recursion</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#conditionals-assignments-and-definitions"><span class="nav-text">Conditionals, Assignments, and Definitions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#running-the-evaluator"><span class="nav-text">Running the Evaluator</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#compilation"><span class="nav-text">Compilation</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#structure-of-the-compiler"><span class="nav-text">Structure of the Compiler</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#compiling-expressions"><span class="nav-text">Compiling Expressions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#compiling-combinations"><span class="nav-text">Compiling Combinations</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#combining-instruction-sequences"><span class="nav-text">Combining Instruction Sequences</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#an-example-of-compiled-code"><span class="nav-text">An Example of Compiled Code</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lexical-addressing"><span class="nav-text">Lexical Addressing</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#interfacing-compiled-code-to-the-evaluator"><span class="nav-text">Interfacing Compiled Code to the Evaluator</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#quick-contents"><span class="nav-text">Quick Contents</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">Computing with Register Machines
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <p>In this chapter we will describe processes in terms of the step-by-step operation of a traditional computer. Such a computer, or <em>register machine</em>, sequentially executes <em>instructions</em> that manipulate the contents of a fixed set of storage elements called <em>registers</em>.</p>
+<p>A typical register machine instruction applies a primitive operation to the contents of some registers and assigns the result to another register. The descriptions of processes executed by register machines will look very much like <em>machine-language</em> programs for traditional computers.</p>
+<h2 id="designing-register-machines"><a href="#designing-register-machines" class="headerlink" title="Designing Register Machines"></a>Designing Register Machines</h2><p>To design a register machine, we must design its <em>data paths</em> (registers and operations) and the <em>controller</em> that sequences these operations.</p>
+<p>An operation that computes a value from constants and the contents of registers is represented in a data-path diagram by a trapezoid containing a name for the operation.</p>
+<p>Overall, the data-path diagram shows the registers and operations that are required for the machine and how they must be connected.</p>
+<h3 id="a-language-for-describing-register-machines"><a href="#a-language-for-describing-register-machines" class="headerlink" title="A Language for Describing Register Machines"></a>A Language for Describing Register Machines</h3><p>To make it possible to deal with complex machines, we will create a language that presents, in textual form, all the information given by the data-path and controller diagrams.</p>
+<p>We define the data paths of a machine by describing the registers and the operations:</p>
+<ul>
+<li><p>To describe a register, we give it a name and specify the buttons that control assignment to it. We give each of the buttons a name and specify the source of the data that enters the register under the button’s control. (The source is a register, a constant, or an operation.)</p>
+</li>
+<li><p>To describe an operation, we give it a name and specify its inputs (registers or constants).</p>
+</li>
+</ul>
+<p>We define the controller of a machine as a sequence of <em>instructions</em> together with <em>labels</em> that identify <em>entry points</em> in the sequence. An instruction is one of the following:</p>
+<ul>
+<li><p>The name of a data-path button to push to assign a value to a register.</p>
+</li>
+<li><p>A <em>test</em> instruction to perform a specified test, or assertion.</p>
+</li>
+<li><p>A conditional branch to location indicated by a controller label, based on the result of the previous test. If the test is false, the controller should continue with the next instruction in the sequence. Otherwise, the controller should continue with the instruction after the label.</p>
+</li>
+</ul>
+<p>The machine starts at the beginning of the controller instruction sequence and stops when execution reaches the end of the sequence. Except when a branch changes the flow of control, instructions are executed in the order in which they are listed.</p>
+<p>Unfortunately, it is difficult to read such a description. In order to understand the controller instructions we must constantly refer back to the definitions of the button names and the operation names, and to understand what the buttons do we may have to refer to the definitions of the operation names. We will thus transform our notation to combine the information from the data-path and controller descriptions so that we see it all together.</p>
+<p>We will omit the data-path description, leaving only the controller sequence.</p>
+<p>This form of description is easier to read, but it also has disadvantages:</p>
+<ul>
+<li><p>It is more verbose for large machines, because complete descriptions of the data-path elements are repeated whenever the elements are mentioned in the controller instruction sequence. Moreover, repeating the data-path descriptions obscures the actual data-path structure of the machine; it is not obvious for a large machine how many registers, operations, and buttons there are how they are interconnected.</p>
+</li>
+<li><p>Because the controller instructions in a machine definition look like Lisp expressions, it is easy to forget that they are not arbitrary Lisp expressions. They can notate only legal machine operations. For example, operations can operate directly only on constants and the contents of registers, not on the results of other operations.</p>
+</li>
+</ul>
+<p>In spite of these disadvantages, we will use this register-machine language throughout this chapter, because we will be more concerned with understanding controllers than with understanding the elements and connections in data paths.</p>
+<blockquote>
+<p>However, that data-path design is crucial in designing real machines.</p>
+</blockquote>
+<h3 id="abstraction-in-machine-design"><a href="#abstraction-in-machine-design" class="headerlink" title="Abstraction in Machine Design"></a>Abstraction in Machine Design</h3><p>We will often define a machine to include <em>primitive</em> operations that are actually very complex. The fact that we have swept a lot of complexity under the rug, however, does not mean that a machine design is unrealistic. We can always replace the complex <em>primitives</em> by simpler primitive operations.</p>
+<h3 id="subroutines"><a href="#subroutines" class="headerlink" title="Subroutines"></a>Subroutines</h3><p>When designing a machine to perform a computation, we would often prefer to arrange for components to be shared by different parts of the computation rather than duplicate the components.</p>
+<blockquote>
+<p>Something looks like interrupts, sub-procedure invokation, etc.</p>
+</blockquote>
+<blockquote>
+<p>This might be useful in compiler optimaztion.</p>
+</blockquote>
+<p>A more powerful method for implementing subroutines is to have the continue register hold the label of the entry point in the controller sequence at which execution should continue when the subroutine is finished. Implementing this strategy requires a new kind of connection between the data paths and the controller of a register machine: there must be a way to assign to a register a label in the controller sequence in such a way that this value can be fetched from the register and used to continue execution at the designated entry point. However, it might lead to some problem if we assgin different value to the same continue register in every subroutine, just think about nested subroutine calls, which is recursion.</p>
+<h3 id="using-a-stack-to-implement-recursion"><a href="#using-a-stack-to-implement-recursion" class="headerlink" title="Using a Stack to Implement Recursion"></a>Using a Stack to Implement Recursion</h3><p>With the ideas illustrated so far, we can implement any iterative process by specifying a register machine that has a register corresponding to each state variable of the process. The machine repeatedly executes a controller loop, changing the contents of the registers, until some termination condition is satisfied. At each point in the controller sequence, the state of the machine (representing the state of the iterative process) is completely determined by the contents of the registers (the values of the state variables).</p>
+<p>Implementing recursive processes, however, requires an additional mechanism.</p>
+<p>Nevertheless, we can implement the recursive process as a register machine if we can arrange to use the same components for each nested instance of the machine. This is plausible because, <em>although the recursive process dictates that an unbounded number of copies of the same machine are needed to perform a computation, only one of these copies needs to be active at any given time</em>. So when the machine encounters a recursive subproblem, it can suspend work on the main problem, reuse the same physical parts to work on the subproblem, then continue the suspended computation.</p>
+<p>In the subproblem, the contents of the registers will be different than they were in the main problem. (In this case the n register is decremented.) In order to be able to continue the suspended computation, the machine must save the contents of any registers that will be needed after the subproblem is solved so that these can be restored to continue the suspended computation.</p>
+<p>Since there is no a <em>priori</em> limit on the depth of nested recursive calls, we may need to save an arbitrary number of register values. These values must be restored in the reverse of the order in which they were saved, since in a nest of recursions the last subproblem to be entered is the first to be finished.</p>
+<p>This dictates the use of a stack, or <em>last in, first out</em> data structure, to save register values. We can extend the register-machine language to include a stack by adding two kinds of instructions: Values are placed on the stack using a <code>save</code> instruction and restored from the stack using a <code>restore</code> instruction. After a sequence of values has been <code>saved</code> on the stack, a sequence of <code>restores</code> will retrieve these values in reverse order.</p>
+<h2 id="a-register-machine-simulator"><a href="#a-register-machine-simulator" class="headerlink" title="A Register-Machine Simulator"></a>A Register-Machine Simulator</h2><p>The simulator is a Scheme program with four interface procedures. The first uses a description of a register machine to construct a model of the machine (a data structure whose parts correspond to the parts of the machine to be simulated), and the other three allow us to simulate the machine by manipulating the model:</p>
+<ul>
+<li><p><code>(make-machine ⟨register-names⟩ ⟨operations⟩ ⟨controller⟩)</code> constructs and returns a model of the machine with the given registers, operations, and controller.</p>
+</li>
+<li><p><code>(set-register-contents! ⟨machine-model⟩ ⟨register-name⟩ ⟨value⟩)</code> stores a value in a simulated register in the given machine.</p>
+</li>
+<li><p><code>(get-register-contents ⟨machine-model⟩ ⟨register-name⟩)</code> returns the contents of a simulated register in the given machine.</p>
+</li>
+<li><p><code>(start ⟨machine-model⟩)</code> simulates the execution of the given machine, starting from the beginning of the controller sequence and stopping when it reaches the end of the sequence.</p>
+</li>
+</ul>
+<h3 id="the-machine-model"><a href="#the-machine-model" class="headerlink" title="The Machine Model"></a>The Machine Model</h3><p>To build this model, <code>make-machine</code> begins by calling the procedure <code>make-new-machine</code> to construct the parts of the machine model that are common to all register machines. This basic machine model constructed by <code>make-new-machine</code> is essentially a container for <em>some registers</em> and <em>a stack</em>, together with <em>an execution mechanism</em> that processes the controller instructions one by one.</p>
+<p><code>make-machine</code> then extends this basic model (by sending it messages) to include the registers, operations, and controller of the particular machine being defined. First it allocates a register in the new machine for each of the supplied register names and installs the designated operations in the machine. Then it uses an <em>assembler</em> to transform the controller list into instructions for the new machine and installs these as the machine’s instruction sequence. <code>make-machine</code> returns as its value the modified machine model.</p>
+<p><strong>Registers</strong></p>
+<p>Register would be a procedure with local state, which is used to hold a value that can be accessed or changed.</p>
+<p><strong>The stack</strong></p>
+<p>Stack would be a procedure with local state, whose local state consists of a list of the items on the stack.</p>
+<p>A stack accepts requests to <code>push</code> and item onto the stack, to <code>pop</code> the top item off the stack and return it, and to <code>initialize</code> the stack to empty.</p>
+<p><strong>The basic machine</strong></p>
+<p>The <code>make-new-machine</code> procedure constructs an object whose local state consists of a stack, an initially empty instruction sequence, a list of operations that initially contains an operation to initialize the stack, and a register table that initially contains two registers, named <code>flag</code> and <code>pc</code> (for <em>program counter</em>).</p>
+<p>The internal procedure <code>allocate-register</code> adds new entries to the register table, and the internal procedure <code>lookup-register</code> looks up registers in the table.</p>
+<p>The <code>flag</code> register is used to control branching in the simulated machine.</p>
+<p>The <code>pc</code> register determines the sequencing of instructions as the machine runs. In the simulation model, each machine instruction is a data structure that includes a procedure of no arguments, called the <code>instruction execution procedure</code>, such that calling this procedure simulates executing the instruction. As the simulation runs, <code>pc</code> points to the place in the instruction sequence beginning with the next instruction to be executed. <code>execute</code> gets that instruction, executes it by calling the instruction execution procedure, and repeats this cycle until there are no more instructions to execute.</p>
+<p>Notice that starting the machine is accomplished by setting <code>pc</code> to the beginning of the instruction sequence and calling <code>execute</code>.</p>
+<h3 id="the-assembler"><a href="#the-assembler" class="headerlink" title="The Assembler"></a>The Assembler</h3><p>The assembler transforms the sequence of controller expressions for a machine into a corresponding list of machine instructions, each with its execution procedure.</p>
+<p>To speed up the execution procedure, we could separate the analysis from runtime execution, aka AOT compilation.</p>
+<p>Before it can generate the instruction execution procedures, the assembler must know what all the labels refer to, so it begins by scanning the controller texte to separate the labels from the instructions. As it scans the text, it constructs both a list of instructions and a table that associates each label with a pointer into that list. Then the assembler augments the instruction list by inserting the execution procedure for each instruction.</p>
+<p>The machine instruction data structure simply pairs the instruction text with the corresponding execution procedure.</p>
+<h3 id="generating-execution-procedures-for-instructions"><a href="#generating-execution-procedures-for-instructions" class="headerlink" title="Generating Execution Procedures for Instructions"></a>Generating Execution Procedures for Instructions</h3><p>The assembler calls <code>make-execution-procedure</code> to generate the execution procedure for an instruction. This dispatches on the type of instruction to generate the appropriate execution procedure.</p>
+<p>For each type of instruction in the register-machine language, there is a generator that builds an appropriate execution procedure. The details of these procedures determine both the syntax and meaning of the individual instructions in the register-machine language.</p>
+<h3 id="monitoring-machine-performance"><a href="#monitoring-machine-performance" class="headerlink" title="Monitoring Machine Performance"></a>Monitoring Machine Performance</h3><p>Simulation is useful not only for verifying the correctness of a proposed machine design but also for measuring the machine’s performance.</p>
+<p>To do this, we modify our simulated stack to keep track of the number of times registers are saved on the stack and the maximum depth reached by the stack, and add a message to the stack’s interface that prints the statistics.</p>
+<h2 id="storage-allocation-and-garbage-collection"><a href="#storage-allocation-and-garbage-collection" class="headerlink" title="Storage Allocation and Garbage Collection"></a>Storage Allocation and Garbage Collection</h2><p>We will assume that our register machines can be equipped with a <em>list-structured memory</em>, in which the basic operations for manipulating list-structured data are primitive.</p>
+<p>There are two considerations in implementation list structure.</p>
+<ul>
+<li><p>how to represent the <em>box-and-pointer</em> structure of Lisp pairs, using only the storage and addressing capabilities of typical computer memories</p>
+</li>
+<li><p>the management of memory as the computation proceeds, such as storage allocation and recycling.</p>
+</li>
+</ul>
+<h3 id="memory-as-vectors"><a href="#memory-as-vectors" class="headerlink" title="Memory as Vectors"></a>Memory as Vectors</h3><p>A conventional computer memory can be thought of as an array of cubbyholes, each of which can contain a piece of information. Each cubbyhole has a unique name, called its <em>address</em> or <em>location</em>.</p>
+<p>Typical memory systems provide two primitive operations: one that fetches the data stored in a specified location and one that assigns new data to a specified location. Memory addresses can be incremented to support sequential access to some set of the cubbyholes. More generally, many important data operations require that memory addresses be treated as data, which can be stored in memory locations and manipulated in machine registers. The representation of list structure is one application of such <em>address arithmetic</em>.</p>
+<p>To model computer memory, we use a new kind of data structure called <em>vector</em>.</p>
+<p>Abstractly, a vector is a compound data object whose individual elements can be accessed by means of an integer index in an amount of time that is independent of the index.</p>
+<p>For computer memory, this access can be implemented through the use of address arithmetic to combine a <em>base address</em> that specifies the beginning location of a vector in memory with an <em>index</em> that specifies the offset of a particular element of the vector.</p>
+<p>We alse need a representation for objects and a way to distinguish one kind of data from another. There are many methods of accomplishing this, but they all reduce to using <em>typed pointers</em>, that is, to extending the notion of pointer to include information on data type. Two data objects are considered to be the same if their pointers are identical.</p>
+<h3 id="maintaining-the-illusion-of-infinite-memory"><a href="#maintaining-the-illusion-of-infinite-memory" class="headerlink" title="Maintaining the Illusion of Infinite Memory"></a>Maintaining the Illusion of Infinite Memory</h3><p>With a real computer we will eventually run out of free space in which to construct new dat objects. However, most of the data objects generated in a typical computation are used only to hold intermediate results. After these results are accessed, the data objects are no longer needed – they are <em>garbage</em>.</p>
+<p>If we can arrange to collect all the garbage periodically, and if this turns out to recycle memory at about the same rate at which we construct new data objects, we will have preserved the illusion that there is an infinite amount of memory.</p>
+<p>Garbage collection is based on the observation that, at any moment in procedure execution, the only objects that can affect the future of the computation are those that can be reached by some operations starting from the pointers that are currently in the machine registers. Any memory cell that this not so accessible may be recycled.</p>
+<p>The method used here to perform garbage collection is called <em>stop-and-copy</em>. When working memory is full, we perform garbage collection by locating all the useful pairs in working memory and copying these into consecutive locations in free memory. Since we do not copy the garbage, there will presumably be additional free memory that we can use to allocate new pairs. In addition, nothing in the working memory is needed, since all the useful pairs in it have been copied. Thus, if we interchange the roles of working memory and free memory, we can continue processing; new pairs will be allocated in the new working memory (which was the old free memory). When this is full, we can copy the useful pairs into the new free memory (which was the old working memory).</p>
+<h2 id="the-explicit-control-evaluator"><a href="#the-explicit-control-evaluator" class="headerlink" title="The Explicit-Control Evaluator"></a>The Explicit-Control Evaluator</h2><blockquote>
+<p>It’s much like an interpreter for interpretive language, except the runtime is register-machine, rather than a VM such as V8/JVM.</p>
+</blockquote>
+<h3 id="the-core-of-the-explicit-control-evaluator"><a href="#the-core-of-the-explicit-control-evaluator" class="headerlink" title="The Core of the Explicit-Control Evaluator"></a>The Core of the Explicit-Control Evaluator</h3><h3 id="sequence-evaluation-and-tail-recursion"><a href="#sequence-evaluation-and-tail-recursion" class="headerlink" title="Sequence Evaluation and Tail Recursion"></a>Sequence Evaluation and Tail Recursion</h3><h3 id="conditionals-assignments-and-definitions"><a href="#conditionals-assignments-and-definitions" class="headerlink" title="Conditionals, Assignments, and Definitions"></a>Conditionals, Assignments, and Definitions</h3><h3 id="running-the-evaluator"><a href="#running-the-evaluator" class="headerlink" title="Running the Evaluator"></a>Running the Evaluator</h3><h2 id="compilation"><a href="#compilation" class="headerlink" title="Compilation"></a>Compilation</h2><p>The explicit-control evaluator machine is universal—it can carry out any computational process that can be described in Scheme.</p>
+<p>Thus, the evaluator’s data paths are universal: they are sufficient to perform any computation we desire, given an appropriate controller.</p>
+<p>Commercial general-purpose computers are register machines organized around a collection of registers and operations that constitute an efficient and convenient set of data paths. The controller for a general-purpose machine is an interpreter for a register-machine language like the one we have been using. This language is called the <em>native language</em> of the machine, or simply <em>machine language</em>. Programs written in machine language are sequences of instructions that use the machine’s data paths.</p>
+<p>There are two common strategies for bridging the gap between higher-level languages and register-machine languages. The explicit-control evaluator illustrates the strategy of interpretation. An interpreter written in the native language of a machine configures the machine to execute programs written in a language (called the <em>source language</em>) that may differ from the native language of the machine performing the evaluation. The primitive procedures of the source language are implemented as a library of subroutines written in the native language of the given machine. A program to be interpreted (called the <em>source program</em>) is represented as a data structure. The interpreter traverses this data structure, analyzing the source program. As it does so, it simulates the intended behavior of the source program by calling appropriate primitive subroutines from the library.</p>
+<p>The alternative strategy is <em>compilation</em>. A compiler for a given source language and machine translates a source program into an equivalent program (called the <em>object program</em>) written in the machine’s native language.</p>
+<p>Compared with interpretation, compilation can provide a great increase in the efficiency of program execution.</p>
+<blockquote>
+<p>On the other hand, an interpreter provides a more powerful environment for interactive program development and debugging, because the source program being executed is available at run time to be examined and modified. In addition, because the entire library of primitives is present, new programs can be constructed and added to the system during debugging.</p>
+</blockquote>
+<p><strong>An overview of the compiler</strong></p>
+<blockquote>
+<p>In general, the compiler translates a source program into an object program that performs essentially the same register operations as would the interpreter in evaluating the same source program.</p>
+</blockquote>
+<p>This description suggests a strategy for implementing a rudimentary compiler: We traverse the expression in the same way the interpreter does. When we encounter a register instruction that the interpreter would perform in evaluating the expression, we do not execute the instruction but instead accumulate it into a sequence. The resulting sequence of instructions will be the object code.</p>
+<blockquote>
+<p>With a compiler, the expression is analyzed only once, when the instruction sequence is generated at compile time.</p>
+</blockquote>
+<p>But there are further opportunities to gain efficiency in compiled code. As the interpreter runs, it follows a process that must be applicable to any expression in the language. In contrast, a given segment of compiled code is meant to execute some particular expression:</p>
+<pre><code>This can make a big difference, for example in the use of the stack to save registers. When the interpreter evaluates an expression, it must be prepared for any contingency. Before evaluating a subexpression, the interpreter saves all registers that will be needed later, because the subexpression might require an arbitrary evaluation. A compiler, on the other hand, can exploit the structure of the particular expression it is processing to generate code that avoids unnecessary stack operations.</code></pre>
+<p>A compiler can also optimize access to the environment. Having analyzed the code, the compiler can in many cases know in which frame a particular variable will be located and access that frame directly, rather than performing the <code>lookup-variable-value</code> search.</p>
+<h3 id="structure-of-the-compiler"><a href="#structure-of-the-compiler" class="headerlink" title="Structure of the Compiler"></a>Structure of the Compiler</h3><p>In the compiler, we will do essentially the some necessary analysis. Instead of producing execution procedures, however, we will generate <em>sequences of instructions</em> to be run by our register machine.</p>
+<h3 id="compiling-expressions"><a href="#compiling-expressions" class="headerlink" title="Compiling Expressions"></a>Compiling Expressions</h3><h3 id="compiling-combinations"><a href="#compiling-combinations" class="headerlink" title="Compiling Combinations"></a>Compiling Combinations</h3><h3 id="combining-instruction-sequences"><a href="#combining-instruction-sequences" class="headerlink" title="Combining Instruction Sequences"></a>Combining Instruction Sequences</h3><h3 id="an-example-of-compiled-code"><a href="#an-example-of-compiled-code" class="headerlink" title="An Example of Compiled Code"></a>An Example of Compiled Code</h3><h3 id="lexical-addressing"><a href="#lexical-addressing" class="headerlink" title="Lexical Addressing"></a>Lexical Addressing</h3><h3 id="interfacing-compiled-code-to-the-evaluator"><a href="#interfacing-compiled-code-to-the-evaluator" class="headerlink" title="Interfacing Compiled Code to the Evaluator"></a>Interfacing Compiled Code to the Evaluator</h3><h2 id="quick-contents"><a href="#quick-contents" class="headerlink" title="Quick Contents"></a>Quick Contents</h2><ol>
+<li><p><a href="/sicp/01-building-abstractions-with-procedures.html">Building Abstractions with Procedures</a></p>
+</li>
+<li><p><a href="/sicp/02-building-abstractions-with-data.html">Building Abstractions with Data</a></p>
+</li>
+<li><p><a href="/sicp/03-modularity-objects-state.html">Modularity, Objects, and State</a></p>
+</li>
+<li><p><a href="/sicp/04-metalinguistic-abstraction.html">Metalinguistic Abstraction</a></p>
+</li>
+<li><p><a href="/sicp/05-computing-with-register-machines.html">Computing with Register Machines</a></p>
+</li>
+</ol>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

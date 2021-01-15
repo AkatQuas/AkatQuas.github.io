@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="Fun facts about imagesA Docker image is physically stored as lots of small files, and Docker assembles them together to create the container’s filesystem. When all the layers have been pulled, the ful">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Docker">
+<meta property="og:url" content="https://akatquas.github.io/docker/docker.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="Fun facts about imagesA Docker image is physically stored as lots of small files, and Docker assembles them together to create the container’s filesystem. When all the layers have been pulled, the ful">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-01-15T10:21:08.374Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.374Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="akat,programmer,frontend,node,javascript,golang,python">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://akatquas.github.io/docker/docker.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>Docker | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#fun-facts-about-images"><span class="nav-text">Fun facts about images</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#images-the-commands"><span class="nav-text">Images - The commands</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#fun-facts-about-containers"><span class="nav-text">Fun facts about containers</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#containerizing-an-app"><span class="nav-text">Containerizing an app</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#fun-facts-about-dockerfile"><span class="nav-text">Fun facts about Dockerfile</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#squashing"><span class="nav-text">Squashing</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#use-no-install-recommends"><span class="nav-text">Use no-install-recommends</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#how-docker-runs-containers"><span class="nav-text">How Docker runs containers</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">Docker
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <h2 id="fun-facts-about-images"><a href="#fun-facts-about-images" class="headerlink" title="Fun facts about images"></a>Fun facts about images</h2><p>A Docker image is physically stored as lots of small files, and Docker assembles them together to create the container’s filesystem. When all the layers have been pulled, the full image is available to use.</p>
+<p>A Docker image is a logical collection of image layers. Layers are the files that are physically stored in the Docker Engine’s cache. Here’s why that’s important: image layers can be shared between different images and different containers.</p>
+<p>If image layers are shared around, they can’t be edited – otherwise a change in one image would cascade to all the other images that share the changed layer. <em>Docker enforces that by making image layers read-only</em>.</p>
+<p>In some ways, the image itself is just a configuration file that lists the layers and some metadata.</p>
+<p>The layers are where the data lives (files and code etc.). Each layer is fully independent, and has no concept of being part of an overall bigger image. Each image is identified by a crypto ID that is a hash of the config file. Each layer is identified by a crypto ID that is a hash of the layer content. we call these “content hashes”.</p>
+<p>Docker and Docker Hub have a slick way of supporting multi-arch images. This means a single image, such as golang:latest, can have an image for Linux on x64, Linux on PowerPC, Windows x64, Linux on different versions of ARM, and more. To make this happen, the Registry API supports two important constructs: <strong>manifestlists</strong>, <strong>manifests</strong>. The manifest list is exactly what it sounds like: a list of architectures supported by a particular image tag. Each supported architecture then has its own manifest detailing the layers that make it up.</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">docker manifest inspect IMAGE
+
+docker manifest inspect IMAGE <span class="token operator">|</span> <span class="token function">grep</span> <span class="token string">'architecture\|os'</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<h3 id="images-the-commands"><a href="#images-the-commands" class="headerlink" title="Images - The commands"></a>Images - The commands</h3><ul>
+<li><p><code>docker image pull</code> is the command to download images. We pull images from repositories inside of remote registries. By default, images will be pulled from repositories on Docker Hub. This command will pull the image tagged as latest from the alpine repository on Docker Hub: <code>docker image pull alpine:latest</code>.</p>
+</li>
+<li><p><code>docker image ls</code> lists all of the images stored in your Docker host’s local image cache. To see the SHA256 digests of images add the <code>--digests</code> flag.</p>
+</li>
+<li><p><code>docker image inspect</code> is a thing of beauty! It gives you all of the glorious details of an image — layer data and metadata.</p>
+</li>
+<li><p><code>docker manifest inspect</code> allows you to inspect the manifest list of any image stored on Docker Hub. This will show the manifest list for the redis image: <code>docker manifest inspect redis</code>.</p>
+</li>
+<li><p><code>docker buildx</code> is a Docker CLI plugin that extends the Docker CLI to support multi-arch builds.</p>
+</li>
+<li><p><code>docker image rm</code> is the command to delete images. This command shows how to delete the alpine:latest image — <code>docker image rm alpine:latest</code>. You cannot delete an image that is associated with a container in the running (Up) or stopped (Exited) states.</p>
+</li>
+</ul>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># delete all images</span>
+docker image <span class="token function">rm</span> <span class="token variable"><span class="token variable">$(</span>docker image <span class="token function">ls</span> -q<span class="token variable">)</span></span> -f<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<h2 id="fun-facts-about-containers"><a href="#fun-facts-about-containers" class="headerlink" title="Fun facts about containers"></a>Fun facts about containers</h2><p>Containers are running only while the application inside the container is running. As soon as the application process ends, the container goes into the exited state. Exited containers don’t use any CPU time or memory. The interactive container we were connected to exited as soon as we exited the terminal application.</p>
+<blockquote>
+<p>Container exits when the main process in it exits.</p>
+</blockquote>
+<p>Containers don’t disappear when they exit. Containers in the exited state still exist, which means you can start them again, check the logs, and copy files to and from the container’s filesystem. You only see running containers with <code>docker container ls</code>, but Docker doesn’t remove exited containers unless you explicitly tell it to do so. Exited containers still take up space on disk because their filesystem is kept on the computer’s disk.</p>
+<p>Stopping a container does not destroy the container or the data inside of it.</p>
+<p><code>docker container stop</code> sends a <em>SIGTERM</em> signal to the main application process inside the container. This gives the process a chance to clean things up and gracefully shut itself down. If it doesn’t exit within 10 seconds, it will receive a <em>SIGKILL</em>.</p>
+<p><code>docker container rm &lt;container&gt; -f</code> only send <em>SIGKILL</em> signal.</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># delete all containers</span>
+docker container <span class="token function">rm</span> <span class="token variable"><span class="token variable">$(</span>docker container <span class="token function">ls</span> -aq<span class="token variable">)</span></span> -f<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<h2 id="containerizing-an-app"><a href="#containerizing-an-app" class="headerlink" title="Containerizing an app"></a>Containerizing an app</h2><p>The process of taking an application and configuring it to run as a container is called “containerizing”.</p>
+<p>Containers are all about making apps simple to <em>build</em>, <em>ship</em>, and <em>run</em>. The process of containerizing an app looks like this:</p>
+<ol>
+<li><p>Start with the application code and dependencies.</p>
+</li>
+<li><p>Create a <em>Dockerfile</em> that describes the app, its dependencies, and how to run it.</p>
+</li>
+<li><p>Feed the <em>Dockerfile</em> into the <code>docker image build</code> command.</p>
+</li>
+<li><p>Push the new image to a registry (optional)</p>
+</li>
+<li><p>Run container from the image</p>
+</li>
+</ol>
+<h2 id="fun-facts-about-dockerfile"><a href="#fun-facts-about-dockerfile" class="headerlink" title="Fun facts about Dockerfile"></a>Fun facts about Dockerfile</h2><p>Comment lines start with the <code>#</code> character.</p>
+<p>All non-comment lines are <strong>Instructions</strong> and take the format INSTRUCTION argument. Instruction names are not case sensitive, but it’s normal practice to write them in UPPERCASE. This makes reading the Dockerfile easier.</p>
+<p>Some instructions create new layers, whereas others just add metadata to the image config file.</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># show the build history</span>
+docker image <span class="token function">history</span> IMAGE<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>A common example is that every <code>RUN</code> instruction adds a new layer. As a result, it’s usually considered a best practice to include multiple commands as part of a single <code>RUN</code> instruction — all glued together with double-ampersands (&amp;&amp;) and backslash () line-breaks. While this isn’t rocket science, it requires time and discipline.</p>
+<p>This is called a <em>multi-stage</em> Dockerfile, because there are several stages to the build. Each stage starts with a <code>FROM</code> instruction, and you can optionally give stages a name with the AS parameter. Although there are multiple stages, the output will be a single Docker image with the contents of the <em>final stage</em>.</p>
+<p>Each stage runs independently, but you can copy files and directories from previous stages.</p>
+<p>The <code>RUN</code> instruction executes a command inside a container during the build, and any output from that command is saved in the image layer. You can execute anything in a <code>RUN</code> instruction, but the commands you want to run need to exist in the Docker image.</p>
+<p>multi-stage mechanism provide us with:</p>
+<ul>
+<li><p><strong>standardization</strong>: this hugely simplifies on-boarding for new developers, eliminates the maintenance burden for build servers, and removes the potential for breakages where users have different versions of tools.</p>
+</li>
+<li><p><strong>performance</strong>: Each stage in a multi-stage build has its own cache. Docker looks for a match in the image layer cache for each instruction; if it doesn’t find one, the cache is broken and all the rest of the instructions are executed – but only for that stage. The next stage starts again from the cache.</p>
+</li>
+<li><p><strong>lightness</strong>: it helps to fine-tune your build so the final application image is as lean as possible. Any tooling you need can be isolated in earlier stages, so the tool itself isn’t present in the final image.</p>
+</li>
+</ul>
+<details>
+<summary>
+Specifying image labels ond build arguments in the Dockerfile
+</summary>
+
+<p>The <code>LABEL</code> instruction just applies the key/value pair from the Dockerfile to the image when it gets built.</p>
+<p><code>ARG</code> is very similar to the <code>ENV</code> instruction, except that it works at build time on the image, rather than at run time in the container. They both set the value of an environment variable, but for <code>ARG</code> instructions that setting only exists for the duration of the build, so any containers you run from the image don’t see that variable.</p>
+<pre class="line-numbers language-Dockerfile" data-language="Dockerfile"><code class="language-Dockerfile"># ...
+ARG BUILD_NUMER&#x3D;0
+ARG BUILD_TAG&#x3D;local
+
+LABEL version&#x3D;&quot;3.0&quot;
+LABEL build_number&#x3D;$&#123;BUILD_NUMBER&#125;
+LABEL build_tag&#x3D;$&#123;BUILD_TAG&#125;
+# ...<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</details>
+
+<details>
+
+<summary>
+Any Dockerfile you write should be optimized so that the instructions are ordered by how frequently they change -- with instructions that are unlikely to change at the start of the Dockerfile, and instructions most likely to change at the end.
+</summary>
+
+<pre class="line-numbers language-Dockerfile" data-language="Dockerfile"><code class="language-Dockerfile">FROM diamol&#x2F;node
+
+ENV TARGET&#x3D;&quot;blog.sixeyed.com&quot;
+ENV METHOD&#x3D;&quot;HEAD&quot;
+ENV INTERVAL&#x3D;&quot;3000&quot;
+
+WORKDIR &#x2F;web-ping
+COPY app.js .&#x2F;
+
+CMD [&quot;node&quot;, &quot;&#x2F;web-ping&#x2F;app.js&quot;]<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>The above docker would generate 7 layers, and when the <code>app.js</code> file change, the last layer also will rebuild even though its content doesn’t change.</p>
+<p>The following docker has 5 layers, and the only the last layer would rebuild when the <code>app.js</code> is modified.</p>
+<pre class="line-numbers language-Dockerfile" data-language="Dockerfile"><code class="language-Dockerfile">FROM diamol&#x2F;node
+
+CMD [&quot;node&quot;, &quot;&#x2F;web-ping&#x2F;app.js&quot;]
+
+ENV TARGET&#x3D;&quot;blog.sixeyed.com&quot; \
+    METHOD&#x3D;&quot;HEAD&quot; \
+    INTERVAL&#x3D;&quot;3000&quot;
+
+WORKDIR &#x2F;web-ping
+COPY app.js .<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</details>
+
+<h3 id="squashing"><a href="#squashing" class="headerlink" title="Squashing"></a>Squashing</h3><p>Squashing can be good in situations where images are starting to have a lot of layers and this isn’t ideal. An example might be when creating a new base image that you want to build other images from in the future — this base is much better as a single-layer image.</p>
+<p>On the negative side, squashed images do not share image layers. This can result in storage inefficiencies and larger push and pull operations.</p>
+<p>Add the <code>--squash</code> flag to the <code>docker image build</code> command if you want to create a squashed image.</p>
+<h3 id="use-no-install-recommends"><a href="#use-no-install-recommends" class="headerlink" title="Use no-install-recommends"></a>Use no-install-recommends</h3><p>If you are building Linux images, and using the apt package manager, you should use the <code>no-install-recommends</code> flag with the <code>apt-get install</code> command. This makes sure that apt only installs main dependencies (packages in the Depends field) and not recommended or suggested packages. This can greatly reduce the number of unwanted packages that are downloaded into your images.</p>
+<h2 id="how-docker-runs-containers"><a href="#how-docker-runs-containers" class="headerlink" title="How Docker runs containers"></a>How Docker runs containers</h2><ul>
+<li><p>The Docker Engine is the management component of Docker. It looks after the local image cache, downloading images when you need them, and reusing them if they’re already downloaded. It also works with the operating system to create containers, virtual networks, and all the other Docker resources. The Engine is a background process that is always running.</p>
+</li>
+<li><p>The Docker Engine makes all the features available through the Docker API, which is just a standard HTTP-based REST API. You can configure the Engine to make the API accessible only from the local computer (which is the default), or make it available to other remote computers on your network.</p>
+</li>
+<li><p>The Docker command-line interface (CLI) is a client of the Docker API. When you run Docker commands, the CLI actually sends them to the Docker API, and the Docker Engine does the work.</p>
+</li>
+</ul>
+<p>The Docker Engine uses a component called <code>containerd</code> to actually manage containers, and containerd in turn makes use of operating system features to create the virtual environment that is the container.</p>
+<blockquote>
+<p>Internally, the daemon instructed <code>containerd</code> and <code>runc</code> to create and start the container.</p>
+</blockquote>
+<p>Restart policies are applied per-container, and can be configured imperatively on the command line as part of <code>docker-container run</code> commands, or declaratively in YAML files for use with higher-level tools such as Docker Swarm, Docker Compose, and Kubernetes.</p>
+<p>There are three kinds of restart policies:</p>
+<ul>
+<li>always</li>
+<li>unless-stopped</li>
+<li>on-failed</li>
+</ul>
+<p>The <em>always</em> policy is the simplest. It always restarts a stopped container unless it has been explicitly stopped, such as via a <code>docker container stop</code> command.</p>
+<blockquote>
+<p>An interesting feature of the <code>--restart always</code> policy is that if you stop a container with <code>docker container stop</code> and the restart the Docker daemon, the container will be restarted. To be clear… you start a new container with the <code>--restart always</code> policy and then stop it with the docker container stop command. At this point the container is in the Stopped (Exited) state. However, if you restart the Docker daemon, the container will be automatically restarted when the daemon comes back up. You need to be aware of this.</p>
+</blockquote>
+<p>The main difference between the <em>always</em> and <em>unless-stopped</em> policies is that containers with the <code>--restart unless-stopped</code> policy will <em>not be restarted</em> when the daemon restarts if they were in the Stopped (Exited) state.</p>
+<p>The <em>on-failure</em> policy will restart a container if it exits with a non-zero exit code. It will also restart containers when the Docker daemon restarts, even containers that were in the stopped state.</p>
+<p>Publishing ports needs a little more explanation. When you install Docker, it injects itself into your computer’s networking layer. Traffic coming into your computer can be intercepted by Docker, and then Docker can send that traffic into a container.</p>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

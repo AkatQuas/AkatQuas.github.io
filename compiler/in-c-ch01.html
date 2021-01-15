@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="程序设计语言转换成可执行代码时使用的技术、数据结构和算法。     |阶段|描述| |:-:|:-:| |词法分析|将源文件分解为一个个独立的单词符号| |语法分析|分析程序的短语结构| |语义动作|建立每个短语对应的抽象语法树| |语义分析|确定每个短语的含义，建立变量和其声明的关系，检查表达式的类型，翻译每个短语| |栈桢布局|按照机器要求的方式将变量、函数参数等分配于活跃记录内（即栈桢）|">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Chapter 01 - 绪论">
+<meta property="og:url" content="https://akatquas.github.io/compiler/in-c-ch01.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="程序设计语言转换成可执行代码时使用的技术、数据结构和算法。     |阶段|描述| |:-:|:-:| |词法分析|将源文件分解为一个个独立的单词符号| |语法分析|分析程序的短语结构| |语义动作|建立每个短语对应的抽象语法树| |语义分析|确定每个短语的含义，建立变量和其声明的关系，检查表达式的类型，翻译每个短语| |栈桢布局|按照机器要求的方式将变量、函数参数等分配于活跃记录内（即栈桢）|">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://akatquas.github.io/compiler/img/in-c-ch01f01.png">
+<meta property="og:image" content="https://akatquas.github.io/compiler/img/in-c-ch01f02.png">
+<meta property="article:published_time" content="2021-01-15T10:21:08.370Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.370Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="compiler">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://akatquas.github.io/compiler/img/in-c-ch01f01.png">
+
+
+<link rel="canonical" href="https://akatquas.github.io/compiler/in-c-ch01.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>Chapter 01 - 绪论 | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A0%91%E8%AF%AD%E8%A8%80%E7%9A%84%E6%95%B0%E6%8D%AE%E6%9C%BA%E6%9E%84"><span class="nav-text">树语言的数据机构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BE%E4%BE%8B%EF%BC%9A%E7%9B%B4%E7%BA%BF%E5%9E%8B%E7%A8%8B%E5%BA%8F%E8%AF%AD%E8%A8%80%E7%9A%84%E6%A0%91%E8%A1%A8%E7%A4%BA"><span class="nav-text">举例：直线型程序语言的树表示</span></a></li></ol></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">Chapter 01 - 绪论
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <p>程序设计语言转换成可执行代码时使用的技术、数据结构和算法。</p>
+<div style="text-align: center">
+<img data-src="./img/in-c-ch01f01.png"/>
+</div>
+
+<p>|阶段|描述|</p>
+<p>|:-:|:-:|</p>
+<p>|词法分析|将源文件分解为一个个独立的单词符号|</p>
+<p>|语法分析|分析程序的短语结构|</p>
+<p>|语义动作|建立每个短语对应的<em>抽象语法树</em>|</p>
+<p>|语义分析|确定每个短语的含义，建立变量和其声明的关系，检查表达式的类型，翻译每个短语|</p>
+<p>|栈桢布局|按照机器要求的方式将变量、函数参数等分配于活跃记录内（即栈桢）|</p>
+<p>|翻译|生成<em>中间表示树</em>，IR Tree，这是一种与任何特定程序设计语言和目标机体系结构无关的表示|</p>
+<p>|规范化|提取表达式中的副作用，整理条件分支，以方便下一阶段处理|</p>
+<p>|指令选择|将 IR 树结点组合成与目标机指令相应的块|</p>
+<p>|控制流分析|分析指令的顺序并建立<em>控制流图</em>，此图表示程序执行时可能流经的所有控制流|</p>
+<p>|数据流分析|收集程序变量的数据流分析，如<em>活跃分析</em>计算每个变量仍需使用其值的地点即<em>活跃点</em>|</p>
+<p>|寄存器分配|为程序中的每一个变量和临时数据选择一个寄存器，不在同一点活跃的两个变量可以共享同一个寄存器|</p>
+<p>|代码流出|用机器寄存器替代每一条指令中出现的临时变量名|</p>
+<p>编译器分解成多个阶段是为了能复用其各个构件。<code>抽象语法 Abstract Syntax</code>、<code>IR 树 IR Tree</code>和<code>汇编 Assem</code>之类的接口是数据结构的形式。<code>翻译</code>接口是一组可由<em>语义分析</em>阶段调用的函数，<code>单词符号 Token</code>接口是函数形式，分析器通过调用它而得到输入程序中的下一个单词符号。</p>
+<h1 id="树语言的数据机构"><a href="#树语言的数据机构" class="headerlink" title="树语言的数据机构"></a>树语言的数据机构</h1><p>编译器中使用的许多重要数据结构在编译程序中都有<em>中间表示</em>，通常采用树的形式，树的节点有若干类型，对应含有不同的属性。</p>
+<h2 id="举例：直线型程序语言的树表示"><a href="#举例：直线型程序语言的树表示" class="headerlink" title="举例：直线型程序语言的树表示"></a>举例：直线型程序语言的树表示</h2><table>
+<thead>
+<tr>
+<th align="center"></th>
+<th align="center"></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">Stm → Stm ; Stm (<em>CompoundStm</em>)</td>
+<td align="center">ExpList → Exp, ExpList (<em>PairExpList</em>)</td>
+</tr>
+<tr>
+<td align="center">Stm → id:= Exp (<em>AssignStm</em>)</td>
+<td align="center">ExpList → Exp (<em>LastExpList</em>)</td>
+</tr>
+<tr>
+<td align="center">Stm → print( ExpList ) (<em>PrintStm</em>)</td>
+<td align="center">Binop → + (<em>Plus</em>)</td>
+</tr>
+<tr>
+<td align="center">Exp → id (<em>IdExp</em>)</td>
+<td align="center">Binop → - (<em>Minus</em>)</td>
+</tr>
+<tr>
+<td align="center">Exp → num (<em>NumExp</em>)</td>
+<td align="center">Binop → x (<em>Times</em>)</td>
+</tr>
+<tr>
+<td align="center">Exp → Exp Binop Exp (<em>OpExp</em>)</td>
+<td align="center">Binop → / (<em>Division</em>)</td>
+</tr>
+<tr>
+<td align="center">Exp → ( Stm, Exp ) (<em>EseqExp</em>)</td>
+<td align="center"></td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>标识符表达式</strong>，表示变量的当前内容。</li>
+<li><strong>数</strong>，按命名它的整数计值。</li>
+<li><strong>操作符表达式 e<sub>1</sub> op e<sub>2</sub>**，表示先计算</strong>e<sub>1</sub><strong>，再计算</strong>e<sub>2</sub>**，然后按给定的二元操作符计算表达式结果</li>
+<li><strong>表达式序列 (s,e)**，类似与 C 语言中的逗号操作符，在计算表达式</strong>e<strong>（并返回其结果）之前先计算语句</strong>s**的副作用。</li>
+</ul>
+<blockquote>
+<p>程序：</p>
+<p>a := 5 + 3; b := (print(a, a-1), 10*a); print(b)</p>
+<p>运行结果：</p>
+<p>8 7</p>
+<p>80</p>
+<div style="text-align: center">
+<img data-src="./img/in-c-ch01f02.png"/>
+</div>
+
+<p>用下面提供的原型来书写上树时，可得到程序</p>
+</blockquote>
+<pre class="line-numbers language-C" data-language="C"><code class="language-C">A_stm program &#x3D;
+A_CompoundStm(
+    A_AssignStm(&quot;a&quot;, A_OpExp(A_NumExp(5), A_plus, A_NumExp(3))),
+    A_CompoundStm(
+        A_AssignStm(&quot;b&quot;, A_EseqExp(A_PrintStm(A_PairExpList(A_IdExp(&quot;a&quot;), A_LastExpList(A_OpExp(A_IdExp(&quot;a&quot;), A_minus, A_NumExp(1))))), A_OpExp(A_NumExp(10), A_times, A_IdExp(&quot;a&quot;)))),
+    ),
+    A_PrintStm(A_LastExpList(A_IdExp(&quot;b&quot;)))
+);<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-C" data-language="C"><code class="language-C"># 每个文法符号对应于一种typedef的数据结构，在这里给出每种文法规则的构造函数原型。
+
+typedef char *string;
+typedef struct A_stm_ *A_stm;
+typedef struct A_exp_ *A_exp;
+typedef struct A_expList_ *A_expList;
+typedef enum &#123; A_plus, A_minus, A_times, A_div &#125; A_binop;
+
+struct A_stm_ &#123; enum &#123;A_compoundStm, A_assignStm, A_printStm &#125; kind;
+                union &#123; struct &#123; A_stm stm1, stm2; &#125; compound;
+                        struct &#123; string id; A_exp exp; &#125; assign;
+                        struct &#123; A_expList exps; &#125; print;
+                &#125; u;
+    &#125;;
+
+A_stm A_CompoundStm(A_stm stm1, A_stm stm2);
+A_stm A_AssignStm(string id, A_exp exp);
+A_stm A_PrintStm(A_expList exps);
+
+struct A_exp_ &#123; enum &#123; A_idExp, A_numExp, A_opExp, A_eseqExp &#125; kind;
+                union &#123; string id;
+                        int num;
+                        struct &#123; A_exp left; A_binop oper; A_exp right; &#125; op;
+                        struct &#123; A_stm stm; A_exp exp; &#125; eseq;
+                &#125; u;
+    &#125;;
+A_exp A_IdExp(string id);
+A_exp A_NumExp(int num);
+A_exp A_OpExp(A_exp left, A_binop oper, A_exp right);
+A_exp A_EseqExp(A_stm stm, A_exp exp);
+
+struct A_expList_ &#123; enum &#123; A_pairExpList, A_lastExpList &#125; kind;
+                    union &#123; struct &#123; A_exp head; A_expList tail; &#125; pair;
+                            A_exp last;
+                    &#125; u;
+    &#125;;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><a href="../compiler-implementation-c.md">Back to Preface</a></p>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

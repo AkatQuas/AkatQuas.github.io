@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="Declarative ConfigurationThe notion of _declarative configuration_—when a user declares a desired state of the world to produce a result—is one of the primary drivers behind the development of Kuberne">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Kubernetes Architecture">
+<meta property="og:url" content="https://akatquas.github.io/kubernetes/architecture.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="Declarative ConfigurationThe notion of _declarative configuration_—when a user declares a desired state of the world to produce a result—is one of the primary drivers behind the development of Kuberne">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-01-15T10:21:08.390Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.390Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="akat,programmer,frontend,node,javascript,golang,python">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://akatquas.github.io/kubernetes/architecture.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>Kubernetes Architecture | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#declarative-configuration"><span class="nav-text">Declarative Configuration</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reconciliation-or-controllers"><span class="nav-text">Reconciliation or Controllers</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#implicit-or-dynamic-grouping"><span class="nav-text">Implicit or Dynamic Grouping</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#structure"><span class="nav-text">Structure</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#unix-philosophy"><span class="nav-text">Unix Philosophy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#api-driven-interactions"><span class="nav-text">API-Driven Interactions</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#components"><span class="nav-text">Components</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#head-node-components"><span class="nav-text">Head Node Components</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#components-on-all-nodes"><span class="nav-text">Components On All Nodes</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#scheduled-components"><span class="nav-text">Scheduled Components</span></a></li></ol></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">Kubernetes Architecture
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <h2 id="declarative-configuration"><a href="#declarative-configuration" class="headerlink" title="Declarative Configuration"></a>Declarative Configuration</h2><p>The notion of _declarative configuration_—when a user declares a desired state of the world to produce a result—is one of the primary drivers behind the development of Kubernetes.</p>
+<p>Kubernetes, takes that declarative statement and takes responsibility for ensuring that it is true.</p>
+<p>Because Kubernetes understands your desired state, it can take autonomous action, independent of user interaction. This means that it can implement automatic self-correcting and self-healing behaviors.</p>
+<h2 id="reconciliation-or-controllers"><a href="#reconciliation-or-controllers" class="headerlink" title="Reconciliation or Controllers"></a>Reconciliation or Controllers</h2><p>To achieve these self-healing or self-correcting behaviors, Kubernetes is structured based on a large number of <em>independent reconciliation</em> or <em>control loops</em>.</p>
+<p>When designing a system like Kubernetes, there are generally two different approaches that you can take:</p>
+<ul>
+<li><p><strong>a monolithic state-based approach</strong>: the system is aware of the entire state of the world and uses this complete view to move everything forward in a coordinated fashion. The problem with the monolithic approach is that it is not particularly stable. If anything unexpected happens, the entire system can come crashing down.</p>
+</li>
+<li><p><strong>a decentralized controller–based approach</strong>: the system is composed of a large number of controllers, each performing its own independent reconciliation loop. Each individual loop is only responsible for a small piece of the system (e.g., updating the list of endpoints for a particular load balancer), and each small controller is wholly unaware of the rest of the world. This focus on a small problem and the corresponding ignorance of the broader state of the world makes the entire system significantly more stable. The downside of this distributed approach is that the overall behavior of the system can be harder to understand, since there is no single location to look for an explanation of why the system is behaving the way that it is. Instead, it is necessary to look at the interoperation of a large number of independent processes.</p>
+</li>
+</ul>
+<p>The control loop design pattern makes Kubernetes more flexible and stable and is repeated throughout Kubernetes’ system components.</p>
+<p>The basic idea behind a control loop is that it is continually repeating the following steps:</p>
+<ol>
+<li><p>Obtain the desired state of the world.</p>
+</li>
+<li><p>Observe the world.</p>
+</li>
+<li><p>Find differences between the observation of the world and the desired state of the world.</p>
+</li>
+<li><p>Take actions to make the observation of the world match the desired state.</p>
+</li>
+</ol>
+<h2 id="implicit-or-dynamic-grouping"><a href="#implicit-or-dynamic-grouping" class="headerlink" title="Implicit or Dynamic Grouping"></a>Implicit or Dynamic Grouping</h2><p>It is necessary and common to identify a set of things in Kubernetes. When grouping things together into a set, there are two possible approaches:</p>
+<ul>
+<li><p><strong>explicit/static grouping</strong>: every group is definde by a concrete list. The list explicitly calls out the name of each member of the group, and the list is static—that is, the membership doesn’t change unless the list itself changes. Static grouping is very inflexible.</p>
+</li>
+<li><p><strong>implicit/dynamic grouping</strong>: instead of the list of members, the group is defined by a implicitly statement. The members are implied by evaluating the group definition. The memebership of the group is likewise dynamic and changing. Dynamic grouping is more flexible and stable, and it can handle a changing environment without requiring constant adjustments to static lists.</p>
+</li>
+</ul>
+<p>In Kubernetes, this implicit grouping is achieved via labels and label queries or label selectors.</p>
+<blockquote>
+<p>Every API object in Kubernetes can have an arbitrary number of key/value pairs called <em>labels</em> than are associated with the object. You can then use a label query or label selector to identify a set of objects that matches that query.</p>
+</blockquote>
+<blockquote>
+<p>Every Kubernetes object has both labels and annotations. Initially they might seem redundant, but their uses are different. Labels can be queried and should provide information that serves to identify the object in some way. Annotations cannot be queried and should be used for general metadata about the object—metadata that doesn’t represent its identity.</p>
+</blockquote>
+<h2 id="structure"><a href="#structure" class="headerlink" title="Structure"></a>Structure</h2><h3 id="unix-philosophy"><a href="#unix-philosophy" class="headerlink" title="Unix Philosophy"></a>Unix Philosophy</h3><p>Kubernetes ascribes to the general Unix philosophy of modularity and of small pieces that do their jobs well.</p>
+<p>Kubernetes is a collection of different applications that all work together, largely ignorant of each other, to implement the overall system.</p>
+<blockquote>
+<p>Even when there is a binary (e.g., the controller manager) that groups together a large number of different functions, those functions are held almost entirely independently from each other in that binary. Sometimes these pieces are compiled into a single binary executable, but even when this occurs, they still communicate through the API server rather than directly within the running process.</p>
+</blockquote>
+<p>The advantage of this modular approach is that Kubernetes is flexible. Large pieces of functionality can be ripped out and replaced without the rest of the system noticing or caring.</p>
+<p>The downside is the complexity, since deploying, monitoring, and understanding the system requires integrating information and configuration across a number of different tools.</p>
+<h3 id="api-driven-interactions"><a href="#api-driven-interactions" class="headerlink" title="API-Driven Interactions"></a>API-Driven Interactions</h3><p>All interaction among components is driven through a centralized API surface area. An important corollary of this design is that the API that the components use is the exact same API used by every other cluster user.</p>
+<p>This brings two important consequences for Kubernetes:</p>
+<ul>
+<li><p>no part of the system is more privileged or has more direct access to internals than any other. Indeed, with the exception of the API server that implements the API, no one has access to the internals at all.</p>
+</li>
+<li><p>every component can component can be swapped for an alternative implementation, and new functionality can be added without rearchitecting the core components. Even core components like the scheduler can be swapped out and replaced with alternative implementations.</p>
+</li>
+</ul>
+<h2 id="components"><a href="#components" class="headerlink" title="Components"></a>Components</h2><p>The implementation of Kubernetes actually subdivides the set of machines into two groups: worker nodes and head nodes.</p>
+<p>Most of the components that make up the Kubernetes infrastructure run on <em>head</em> or <em>control plane</em> nodes. There are a limited number of such nodes in a cluster, generally one, three or five. These nodes run the components that implement Kubernetes, like <code>etcd</code> and the API server. There is an odd number of these nodes, since they need to keep quorum in a shared state using a Raft/Paxos algorithm for quorum.</p>
+<p>The cluster’s actual work is done on the worker nodes. These nodes also run a more limited selection of Kubernetes components. Finally, there are Kubernetes components that are scheduled to the Kubernetes cluster after it is created. From a Kubernetes perspective, these components are indistinguishable from other workloads, but they do implement part of the overall Kubernetes API.</p>
+<h3 id="head-node-components"><a href="#head-node-components" class="headerlink" title="Head Node Components"></a>Head Node Components</h3><p>A head node is the brain of the Kubernetes cluster. Typically, only these components run on head nodes; there are no user containers that share these nodes.</p>
+<p><strong><code>etcd</code></strong></p>
+<p>The <code>etcd</code> system is at the heart of any Kubernetes cluster. It implements the key-value stores where all of the objects in a Kubernetes cluster are persisted.</p>
+<p>The <code>etcd</code> servers implement a distributed consensus algorithm, namely Raft, which ensures that even if one of the storage servers fails, there is sufficient replication to maintain the data stored in <code>etcd</code> and to recover data when an <code>etcd</code> server becomes healthy again and readds itself to the cluster.</p>
+<p>The etcd servers also provide two other important pieces of functionality that Kubernetes makes heavy use of:</p>
+<p><em>optimistic concurrency</em></p>
+<p>Every value stored in etcd has a corresponding resource version. When a key-value pair is written to an etcd server, it can be conditionalized on a particular resource version. This means that, using etcd, you can implement <em>compare and swap</em>, which is at the core of any concurrency system.</p>
+<p>Compare and swap enables a user to read a value and update it knowing that no other component in the system has also updated the value. These assurances enable the system to safely have multiple threads manipulating data in etcd without the need for pessimistic locks, which can significantly reduce throughput to the server.</p>
+<p><em>watch protocol</em></p>
+<p>The value of watch is that it enables clients to efficiently watch for changes in the key-value stores for an entire directory of values. As an example, all objects in a Namespace are stored within a directory in etcd. The use of a watch enables a client to efficiently wait for and react to changes without continuous polling of the etcd server.</p>
+<p><strong>API server</strong></p>
+<p>There is actually only a single server that is allowed to have direct access to the Kubernetes cluster, and that is the API server.</p>
+<p>The API server is the hub of the Kubernetes cluster; it mediates all interactions between clients and the API objects stored in etcd. Consequently, it is the central meeting point for all of the various components. <a href="./api-server.md">More on here</a>.</p>
+<p><strong>Scheduler</strong></p>
+<p>With etcd and the API server operating correctly, a Kubernetes cluster is, in some ways, functionally complete. You can create all of the different API objects, like Deployments and Pods. However, you will find that it never begins to run. <a href="./scheduler.md">More on here</a>.</p>
+<p>Finding a location for a Pod to run is the job of the Kubernetes scheduler. The scheduler scans the API server for unscheduled Pods and then determines the best nodes on which to run them. TBC.</p>
+<p><strong>Controller manager</strong></p>
+<p>After etcd, the API server, and the scheduler are operational, you can successfully create Pods and see them scheduled out onto nodes, but you will find that ReplicaSets, Deployments, and Services don’t work as you expect them to.</p>
+<p>This is because all of the reconciliation control loops needed to implement this functionality are not currently running. Executing these loops is the job of the controller manager. The controller manager is the most varied of all of the Kubernetes components, since it has within it numerous different reconciliation control loops to implement many parts of the overall Kubernetes system.</p>
+<h3 id="components-on-all-nodes"><a href="#components-on-all-nodes" class="headerlink" title="Components On All Nodes"></a>Components On All Nodes</h3><p>These pieces implement essential functionality that is required on all nodes.</p>
+<p><strong>kubelet</strong></p>
+<p>The kubelet is the node daemon for all machines that are part of a Kubernetes cluster.</p>
+<p>The kubelet is the bridge that joins the available CPU, disk, and memory for a node into the large Kubernetes cluster.</p>
+<p>The kubelet communicates with the API server to find containers that should be running on its node. Likewise, the kubelet communicates the state of these containers back up to the API server so that other reconciliation control loops can observe the current state of these containers.</p>
+<p>In addition to scheduling and reporting the state of containers running in Pods on their machines, kubelets are also responsible for health checking and restarting the containers that are supposed to be executing on their machines.</p>
+<p>Also, the kubelet runs the reconciliation loop itself. If a container being run by the kubelet dies or fails its health check, the kubelet restarts it, while also communicating this health state (and the restart) back up to the API server.</p>
+<p><strong>kube-proxy</strong></p>
+<p>The kube-proxy is responsible for implementing the Kubernetes <code>Service</code> load-balancer networking model.</p>
+<p>The kube-proxy is always watching the endpoint objects for all Services in the Kubernetes cluster. The kube-proxy then programs the network on its node so that network requests to the virtual IP address of a Service are, in fact, routed to the end‐ points that implement this Service.</p>
+<p>Every Service in Kubernetes gets a virtual IP address, and the kube-proxy is the daemon responsible for defining and implementing the local load balancer that routes traffic from Pods on the machine to Pods, anywhere in the cluster, that implement the Service.</p>
+<h3 id="scheduled-components"><a href="#scheduled-components" class="headerlink" title="Scheduled Components"></a>Scheduled Components</h3><p><strong>KubeDNS</strong></p>
+<p>The first of these scheduled components is the KubeDNS server.</p>
+<p>When a Kubernetes Service is created, it gets a virtual IP address, but that IP address is also programmed into a DNS server for easy service discovery. The KubeDNS containers implement this name-service for Kubernetes Service objects.</p>
+<p>The KubeDNS Service is itself expressed as a Kubernetes Service, so the same routing provided by the kube-proxy routes DNS traffic to the KubeDNS containers.</p>
+<p>The one important difference is that the KubeDNS service is given a static virtual IP address. This means that the API server can program the DNS server into all of the containers that it creates, implementing the naming and service discovery for Kubernetes services.</p>
+<blockquote>
+<p>The ability for the DNS service to be swapped out shows both the modularity and the value of using Kubernetes to run components like the DNS server. Replacing KubeDNS with CoreDNS is as easy as stopping one Pod and starting another.</p>
+</blockquote>
+<p><strong>Heapster</strong></p>
+<p>The other scheduled component is a binary called Heapster, which is responsible for collecting metrics like CPU, network, and disk usage from all containers running inside the Kubernetes cluster.</p>
+<p>These metrics can be pushed to a monitoring system, like InfluxDB, for alerting and general monitoring of application health in the cluster.</p>
+<p>Also, importantly, these metrics are used to implement autoscaling of Pods within the Kubernetes cluster. Kubernetes has an autoscaler implementation.</p>
+<p>Heapster is the component that collects and aggregates these metrics to power the reconciliation loop implemented by the autoscaler. The autoscaler observes the current state of the world through API calls to Heapster.</p>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>

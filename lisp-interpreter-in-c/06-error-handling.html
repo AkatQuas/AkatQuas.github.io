@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="document codes:  error-handling.c  CrashesAt the moment the program can produce syntax errors but it still has no functionality for reporting errors in the evaluation of expressions. We need to build">
+<meta property="og:type" content="website">
+<meta property="og:title" content="06 Error Handling">
+<meta property="og:url" content="https://akatquas.github.io/lisp-interpreter-in-c/06-error-handling.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="document codes:  error-handling.c  CrashesAt the moment the program can produce syntax errors but it still has no functionality for reporting errors in the evaluation of expressions. We need to build">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-01-15T10:21:08.394Z">
+<meta property="article:modified_time" content="2021-01-15T10:21:08.394Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="lisp">
+<meta property="article:tag" content="interpreter">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://akatquas.github.io/lisp-interpreter-in-c/06-error-handling.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>06 Error Handling | 🔭
+</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-dateless">
+
+    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#crashes"><span class="nav-text">Crashes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#lisp-value"><span class="nav-text">Lisp Value</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#enumerations"><span class="nav-text">Enumerations</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#lisp-value-function"><span class="nav-text">Lisp Value Function</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#evaluating-errors"><span class="nav-text">Evaluating Errors</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#plumbing"><span class="nav-text">Plumbing</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="en"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">06 Error Handling
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <p><a target="_blank" rel="noopener" href="http://www.buildyourownlisp.com/chapter8_error_handling">document</a></p>
+<p>codes:</p>
+<ul>
+<li><a href="./codes/error-handling.c">error-handling.c</a></li>
+</ul>
+<h2 id="crashes"><a href="#crashes" class="headerlink" title="Crashes"></a>Crashes</h2><p>At the moment the <a href="./codes/parsing-evaluation.c">program</a> can produce syntax errors but it still has no functionality for reporting errors in the evaluation of expressions. We need to build in some kind of error handling functionality to do this. It can be awkward in C, but if we start off on the right track, it will pay off later on when our system gets more complicated.</p>
+<p>C programs crashing is a fact of life. If anything goes wrong the operating system kicks them out. Programs can crash for many different reasons, and in many different ways.</p>
+<h2 id="lisp-value"><a href="#lisp-value" class="headerlink" title="Lisp Value"></a>Lisp Value</h2><p>There are several ways to deal with errors in C, but in this context my preferred method is to make errors a possible result of evaluating an expression. Then we can say that, in Lispy, an expression will evaluate to either a <strong>number</strong>, or an <strong>error</strong>. For example <code>+ 1 2</code> will evaluate to a number, but <code>/ 10 0</code> will evaluate to an error.</p>
+<p>For this we need a data structure that can act as either one thing or anything. For simplicity sake we are just going to use a <code>struct</code> with fields specific to each thing that can be represented, and a special field <code>type</code> to tell us exactly what fields are meaningful to access.</p>
+<p>This we are going to call an <code>lval</code>, which stands for <strong>Lisp Value</strong>.</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">typedef</span> <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">int</span> type<span class="token punctuation">;</span>
+    <span class="token keyword">long</span> num<span class="token punctuation">;</span>
+    <span class="token keyword">int</span> err<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span> lval<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="enumerations"><a href="#enumerations" class="headerlink" title="Enumerations"></a>Enumerations</h2><p>You’ll notice the type of the fields <code>type</code>, and <code>err</code>, is <code>int</code>. This means they are represented by a single integer number.</p>
+<p>The reason we pick <code>int</code> is because we will assign meaning to each integer value, to encode what we require. For example we can make a rule <strong>“If <code>type</code> is <code>0</code> then the structure is a Number.”</strong>, or <strong>“If <code>type</code> is <code>1</code> then the structure is an Error.”</strong> This is a simple and effective way of doing things.</p>
+<p>But if we litter our code with stray <code>0</code> and <code>1</code> then it is going to become increasingly unclear as to what is happening. Instead we can use named constants that have been assigned these integer values. This gives the reader an indication as to <strong>why</strong> one might be comparing a number to <code>0</code> or <code>1</code> and <strong>what</strong> is meant in this context.</p>
+<p>In C this is supported using an <code>enum</code>.</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">/* Create Enumeration of Possible lval Types */</span>
+<span class="token keyword">enum</span> <span class="token punctuation">&#123;</span> LVAL_NUM<span class="token punctuation">,</span> LVAL_ERR <span class="token punctuation">&#125;</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>An <code>enum</code> is a declaration of variables which under the hood are automatically assigned integer constant values. Above describes how we would declare some enumerated values for the <code>type</code> field.</p>
+<p>We also want to declare an enumeration for the <code>error</code> field. We have three error cases in our particular program. There is division by zero, an unknown operator, or being passed a number that is too large to be represented internally using a <code>long</code>. These can be enumerated as follows.</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">/* Create Enumeration of Possible err Types */</span>
+<span class="token keyword">enum</span> <span class="token punctuation">&#123;</span> LERR_DIV_ZERO<span class="token punctuation">,</span> LERR_BAD_OP<span class="token punctuation">,</span> LERR_BAD_NUM <span class="token punctuation">&#125;</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<h2 id="lisp-value-function"><a href="#lisp-value-function" class="headerlink" title="Lisp Value Function"></a>Lisp Value Function</h2><p>Our <code>lval</code> type is almost ready to go. Unlike the previous <code>long</code> type we have no current method for creating new instances of it. To do this we can declare two functions that construct an <code>lval</code> of either an <strong>error</strong> type or a <strong>number</strong> type.</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">/* Create a new number type lval */</span>
+lval <span class="token function">leval_num</span><span class="token punctuation">(</span><span class="token keyword">long</span> x<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    lval v<span class="token punctuation">;</span>
+    v<span class="token punctuation">.</span>type <span class="token operator">=</span> LVAL_NUM<span class="token punctuation">;</span>
+    v<span class="token punctuation">.</span>num <span class="token operator">=</span> x<span class="token punctuation">;</span>
+    <span class="token keyword">return</span> v<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">/* Create a new error type lval */</span>
+lval <span class="token function">lval_err</span><span class="token punctuation">(</span><span class="token keyword">int</span> x<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    lval v<span class="token punctuation">;</span>
+    v<span class="token punctuation">.</span>type <span class="token operator">=</span> LVAL_ERR<span class="token punctuation">;</span>
+    v<span class="token punctuation">.</span>err <span class="token operator">=</span> x<span class="token punctuation">;</span>
+    <span class="token keyword">return</span> v<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>These functions first create an <code>lval</code> called <code>v</code>, and assign the fields before returning it.</p>
+<p>Because our <code>lval</code> function can now be one of two things we can no longer just use <code>printf</code> to output it. We will want to behave differently depending upon the type of the <code>lval</code> that is given. There is a concise way to do this in C using the <code>switch</code> statement. This takes some value as input and compares it to other known values, known as <strong>cases</strong>. When the values are equal it executes the code that follows up until the next <code>break</code> statement.</p>
+<p>Using this we can build a function that can print an <code>lval</code> of any type like this:</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">/* Print an "lval" */</span>
+<span class="token function">lval_print</span><span class="token punctuation">(</span>lval v<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token function">swith</span> <span class="token punctuation">(</span>v<span class="token punctuation">.</span>type<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">case</span> LVAL_NUM<span class="token operator">:</span> <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%li"</span><span class="token punctuation">,</span> v<span class="token punctuation">.</span>num<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token keyword">break</span><span class="token punctuation">;</span>
+
+        <span class="token keyword">case</span> LVAL_ERR<span class="token operator">:</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>v<span class="token punctuation">.</span>err <span class="token operator">==</span> LERR_DIV_ZERO<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"Error: Division by Zero!"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>v<span class="token punctuation">.</span>err <span class="token operator">==</span> LERR_BAD_OP<span class="token punctuation">)</span>   <span class="token punctuation">&#123;</span>
+                <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"Error: Invalid Operator!"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>v<span class="token punctuation">.</span>err <span class="token operator">==</span> LERR_BAD_NUM<span class="token punctuation">)</span>  <span class="token punctuation">&#123;</span>
+                <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"Error: Invalid Number!"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+            <span class="token keyword">break</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">/* Print an "lval" followed by a newline */</span>
+<span class="token keyword">void</span> <span class="token function">lval_println</span><span class="token punctuation">(</span>lavl v<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token function">lval_print</span><span class="token punctuation">(</span>v<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token function">putchar</span><span class="token punctuation">(</span><span class="token string">'\n'</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="evaluating-errors"><a href="#evaluating-errors" class="headerlink" title="Evaluating Errors"></a>Evaluating Errors</h2><p>Now that we know how to work with the <code>lval</code> type, we need to change our evaluation function to use it instead of <code>long</code>.</p>
+<p>As well as changing the type signatures we need to change the functions such that they work correctly upon encountering either an <strong>error</strong> as input, or a <strong>number</strong> as input.</p>
+<p>In our <code>eval_op</code> function, if we encounter an error we should return it right away, and only do computation if both the arguments are numbers. We should modify our code to return an error rather than attempt to divide by zero. This will fix the crash described at the beginning of this chapter.</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">lval <span class="token function">eval_op</span><span class="token punctuation">(</span>lval x<span class="token punctuation">,</span> <span class="token keyword">char</span><span class="token operator">*</span> op<span class="token punctuation">,</span> lval y<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+
+    <span class="token comment">/* If either value is an error return it */</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>x<span class="token punctuation">.</span>type <span class="token operator">==</span> LVAL_ERR<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token keyword">return</span> x<span class="token punctuation">;</span> <span class="token punctuation">&#125;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>y<span class="token punctuation">.</span>type <span class="token operator">==</span> LVAL_ERR<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token keyword">return</span> y<span class="token punctuation">;</span> <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">strcmp</span><span class="token punctuation">(</span>op<span class="token punctuation">,</span> <span class="token string">"+"</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token keyword">return</span> <span class="token function">lval_num</span><span class="token punctuation">(</span>x<span class="token punctuation">.</span>num <span class="token operator">+</span> y<span class="token punctuation">.</span>num<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">&#125;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">strcmp</span><span class="token punctuation">(</span>op<span class="token punctuation">,</span> <span class="token string">"-"</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token keyword">return</span> <span class="token function">lval_num</span><span class="token punctuation">(</span>x<span class="token punctuation">.</span>num <span class="token operator">-</span> y<span class="token punctuation">.</span>num<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">&#125;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">strcmp</span><span class="token punctuation">(</span>op<span class="token punctuation">,</span> <span class="token string">"*"</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token keyword">return</span> <span class="token function">lval_num</span><span class="token punctuation">(</span>x<span class="token punctuation">.</span>num <span class="token operator">*</span> y<span class="token punctuation">.</span>num<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">&#125;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">strcmp</span><span class="token punctuation">(</span>op<span class="token punctuation">,</span> <span class="token string">"/"</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token comment">/* If second operand is zero return error */</span>
+        <span class="token keyword">return</span> y<span class="token punctuation">.</span>num <span class="token operator">==</span> <span class="token number">0</span>
+          <span class="token operator">?</span> <span class="token function">lval_err</span><span class="token punctuation">(</span>LERR_DIV_ZERO<span class="token punctuation">)</span>
+          <span class="token operator">:</span> <span class="token function">lval_num</span><span class="token punctuation">(</span>x<span class="token punctuation">.</span>num <span class="token operator">/</span> y<span class="token punctuation">.</span>num<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">return</span> <span class="token function">lval_err</span><span class="token punctuation">(</span>LERR_BAD_OP<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>We need to give a similar treatment to our <code>eval</code> function. In this case because we’ve defined <code>eval_op</code> to robustly handle errors we just need to add the error conditions to our number conversion function.</p>
+<p>In this case we use the <code>strtol</code> function to convert from <code>string</code> to <code>long</code>. This allows us to check a special variable <code>errno</code> to ensure the conversion goes correctly. This is a more robust way to convert numbers than our previous method using <code>atoi</code>.</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">lval <span class="token function">eval</span><span class="token punctuation">(</span>mpc_ast_t<span class="token operator">*</span> t<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">strstr</span><span class="token punctuation">(</span>t<span class="token operator">-></span>tag<span class="token punctuation">,</span> <span class="token string">"number"</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        errno <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        <span class="token keyword">long</span> x <span class="token operator">=</span> <span class="token function">strtol</span><span class="token punctuation">(</span>t<span class="token operator">-></span>contents<span class="token punctuation">,</span> <span class="token constant">NULL</span><span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> errno <span class="token operator">!=</span> ERANGE <span class="token operator">?</span> <span class="token function">lval_num</span><span class="token punctuation">(</span>x<span class="token punctuation">)</span> <span class="token operator">:</span> <span class="token function">lval_err</span><span class="token punctuation">(</span>LERR_BAD_NUM<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">char</span><span class="token operator">*</span> op <span class="token operator">=</span> t<span class="token operator">-></span>children<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token operator">-></span>contents<span class="token punctuation">;</span>
+    lval x <span class="token operator">=</span> <span class="token function">eval</span><span class="token punctuation">(</span>t<span class="token operator">-></span>children<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">3</span><span class="token punctuation">;</span>
+    <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token function">strstr</span><span class="token punctuation">(</span>t<span class="token operator">-></span>children<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token operator">-></span>tag<span class="token punctuation">,</span> <span class="token string">"expr"</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        x <span class="token operator">=</span> <span class="token function">eval_op</span><span class="token punctuation">(</span>x<span class="token punctuation">,</span> op<span class="token punctuation">,</span> <span class="token function">eval</span><span class="token punctuation">(</span>t<span class="token operator">-></span>children<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        i<span class="token operator">++</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">return</span> x<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>This final small step is to change how we print the result found by our evaluation to use our newly defined printing funciton which can print any type of <code>lval</code>.</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">lval result <span class="token operator">=</span> <span class="token function">eval</span><span class="token punctuation">(</span>r<span class="token punctuation">.</span>output<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">lval_println</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">mpc_ast_delete</span><span class="token punctuation">(</span>r<span class="token punctuation">.</span>output<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<h2 id="plumbing"><a href="#plumbing" class="headerlink" title="Plumbing"></a>Plumbing</h2><p>In programming we call that something is <strong>plumbing</strong>, roughly speaking, we are saying that is to following instructions to try to tie together a bunch of libraries or components, without fully understanding how they work internally.</p>
+<p>It requires <strong>faith</strong> and <strong>intuition</strong>. <strong>Faith</strong> is required to believe that if the stars align, and every incantation is correctly performed for this magical machine, the right thing will really happen. And <strong>intuition</strong> is required to work out what has gone wrong, and how to fix things when they don’t go as planned.</p>
+<p><a href="07-s-expressions.html">Next on S-Expressions</a></p>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+</body>
+</html>
