@@ -21,7 +21,7 @@
 
 <script class="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.2.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
   </script>
 <meta name="description" content="Awesome Assembly! 有一次面试的时候，对方问我为什么学习汇编？那个时候我的回答是出于好奇，纯粹随便学习一下。 但事实上是希望通过 ollydbg 来强行改汇编指令。当然这个计划搁浅了，因为配置环境失败了。 回想起来，有如下收获：  汇编其实是一种 imperative programming 的范式，从指令执行角度去完成所有的任务，这也导致了它的抽象程度是很低的。  汇编作为高级程">
 <meta property="og:type" content="article">
@@ -35,7 +35,7 @@
 <meta property="og:image" content="https://akatquas.github.io/images/assembly/addressing.png">
 <meta property="og:image" content="https://akatquas.github.io/images/assembly/flag-register.png">
 <meta property="article:published_time" content="2018-10-22T19:11:34.000Z">
-<meta property="article:modified_time" content="2021-01-15T10:21:08.366Z">
+<meta property="article:modified_time" content="2021-02-10T02:56:37.414Z">
 <meta property="article:author" content="Akat">
 <meta property="article:tag" content="assembly">
 <meta name="twitter:card" content="summary">
@@ -56,6 +56,7 @@
 </script>
 <title>Assembly | 🔭</title>
   
+
 
 
 
@@ -103,7 +104,7 @@
     <header class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-container">
   <div class="site-nav-toggle">
-    <div class="toggle" aria-label="Toggle navigation bar">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
         <span class="toggle-line"></span>
         <span class="toggle-line"></span>
         <span class="toggle-line"></span>
@@ -130,46 +131,14 @@
 
 <nav class="site-nav">
   <ul class="main-menu menu">
-        <li class="menu-item menu-item-home">
-
-    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
-
-  </li>
-        <li class="menu-item menu-item-about">
-
-    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
-
-  </li>
-        <li class="menu-item menu-item-tags">
-
-    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
-
-  </li>
-        <li class="menu-item menu-item-categories">
-
-    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
-
-  </li>
-        <li class="menu-item menu-item-archives">
-
-    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
-
-  </li>
-        <li class="menu-item menu-item-dateless">
-
-    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
-
-  </li>
-        <li class="menu-item menu-item-sitemap">
-
-    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
-
-  </li>
-        <li class="menu-item menu-item-commonweal">
-
-    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
-
-  </li>
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a></li>
+        <li class="menu-item menu-item-dateless"><a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a></li>
+        <li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a></li>
+        <li class="menu-item menu-item-commonweal"><a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a></li>
   </ul>
 </nav>
 
@@ -179,7 +148,7 @@
 </div>
         
   
-  <div class="toggle sidebar-toggle">
+  <div class="toggle sidebar-toggle" role="button">
     <span class="toggle-line"></span>
     <span class="toggle-line"></span>
     <span class="toggle-line"></span>
@@ -199,12 +168,12 @@
 
       <div class="sidebar-panel-container">
         <!--noindex-->
-        <section class="post-toc-wrap sidebar-panel">
+        <div class="post-toc-wrap sidebar-panel">
             <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#set-up"><span class="nav-text">Set up</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tricks"><span class="nav-text">Tricks</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#debug-commands"><span class="nav-text">Debug Commands</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#addressing-the-memory"><span class="nav-text">Addressing the memory</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#flag-register-in-8086"><span class="nav-text">Flag Register in 8086</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#dosbox-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4-debug-%E6%A8%A1%E5%BC%8F%E4%B8%8B%EF%BC%9A"><span class="nav-text">DOSBox 常用命令 debug 模式下：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#x86-%E5%92%8C-x87-%E6%B1%87%E7%BC%96%E6%8C%87%E4%BB%A4%E5%A4%A7%E5%85%A8%EF%BC%88%E6%9C%89%E6%B3%A8%E9%87%8A%EF%BC%89"><span class="nav-text">X86 和 X87 汇编指令大全（有注释）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#to-be-continued"><span class="nav-text">To be Continued</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#example-codes"><span class="nav-text">Example codes</span></a></li></ol></div>
-        </section>
+        </div>
         <!--/noindex-->
 
-        <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview-wrap sidebar-panel">
           <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
   <p class="site-author-name" itemprop="name">Akat</p>
   <div class="site-description" itemprop="description">Take notes aperiodically</div>
@@ -214,20 +183,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-count">47</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-count">27</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-count">44</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -253,7 +222,7 @@
     </ul>
   </div>
 
-        </section>
+        </div>
       </div>
     </div>
   </aside>
@@ -263,7 +232,7 @@
     </header>
 
     
-  <div class="back-to-top">
+  <div class="back-to-top" role="button">
     <i class="fa fa-arrow-up"></i>
     <span>0%</span>
   </div>
@@ -1714,9 +1683,7 @@ SHL AX,CL<span aria-hidden="true" class="line-numbers-rows"><span></span><span><
 
 
 
-
   
-
 
 
 

@@ -21,17 +21,17 @@
 
 <script class="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.2.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
   </script>
-<meta name="description" content="Project on GitHub Shell scripts examples select job from Procfile: Using scripts to select some job listed in Procfile.  parsing arguments from command line.  secure shell template: Using this templat">
+<meta name="description" content="Shell scripts examples select job from Procfile: Using scripts to select some job listed in Procfile.  parsing arguments from command line.  secure shell template: Using this template to write your sh">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Quick learning on Shells">
 <meta property="og:url" content="https://akatquas.github.io/2020/12/25/shells.html">
 <meta property="og:site_name" content="🔭">
-<meta property="og:description" content="Project on GitHub Shell scripts examples select job from Procfile: Using scripts to select some job listed in Procfile.  parsing arguments from command line.  secure shell template: Using this templat">
+<meta property="og:description" content="Shell scripts examples select job from Procfile: Using scripts to select some job listed in Procfile.  parsing arguments from command line.  secure shell template: Using this template to write your sh">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-12-25T01:45:15.000Z">
-<meta property="article:modified_time" content="2021-01-15T10:21:08.366Z">
+<meta property="article:modified_time" content="2021-02-10T02:56:37.414Z">
 <meta property="article:author" content="Akat">
 <meta property="article:tag" content="shell">
 <meta name="twitter:card" content="summary">
@@ -51,6 +51,7 @@
 </script>
 <title>Quick learning on Shells | 🔭</title>
   
+
 
 
 
@@ -98,7 +99,7 @@
     <header class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-container">
   <div class="site-nav-toggle">
-    <div class="toggle" aria-label="Toggle navigation bar">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
         <span class="toggle-line"></span>
         <span class="toggle-line"></span>
         <span class="toggle-line"></span>
@@ -125,46 +126,14 @@
 
 <nav class="site-nav">
   <ul class="main-menu menu">
-        <li class="menu-item menu-item-home">
-
-    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
-
-  </li>
-        <li class="menu-item menu-item-about">
-
-    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
-
-  </li>
-        <li class="menu-item menu-item-tags">
-
-    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
-
-  </li>
-        <li class="menu-item menu-item-categories">
-
-    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
-
-  </li>
-        <li class="menu-item menu-item-archives">
-
-    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
-
-  </li>
-        <li class="menu-item menu-item-dateless">
-
-    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
-
-  </li>
-        <li class="menu-item menu-item-sitemap">
-
-    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
-
-  </li>
-        <li class="menu-item menu-item-commonweal">
-
-    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
-
-  </li>
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a></li>
+        <li class="menu-item menu-item-dateless"><a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a></li>
+        <li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a></li>
+        <li class="menu-item menu-item-commonweal"><a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a></li>
   </ul>
 </nav>
 
@@ -174,7 +143,7 @@
 </div>
         
   
-  <div class="toggle sidebar-toggle">
+  <div class="toggle sidebar-toggle" role="button">
     <span class="toggle-line"></span>
     <span class="toggle-line"></span>
     <span class="toggle-line"></span>
@@ -194,12 +163,12 @@
 
       <div class="sidebar-panel-container">
         <!--noindex-->
-        <section class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#shell-scripts-examples"><span class="nav-text">Shell scripts examples</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#learning-materials"><span class="nav-text">Learning materials</span></a></li></ol></div>
-        </section>
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#shell-scripts-examples"><span class="nav-text">Shell scripts examples</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#how-does-shell-execute-commands"><span class="nav-text">How does shell execute commands</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#learning-materials"><span class="nav-text">Learning materials</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#makefile"><span class="nav-text">Makefile</span></a></li></ol></div>
+        </div>
         <!--/noindex-->
 
-        <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview-wrap sidebar-panel">
           <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
   <p class="site-author-name" itemprop="name">Akat</p>
   <div class="site-description" itemprop="description">Take notes aperiodically</div>
@@ -209,20 +178,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-count">47</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-count">27</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-count">44</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -248,7 +217,7 @@
     </ul>
   </div>
 
-        </section>
+        </div>
       </div>
     </div>
   </aside>
@@ -258,7 +227,7 @@
     </header>
 
     
-  <div class="back-to-top">
+  <div class="back-to-top" role="button">
     <i class="fa fa-arrow-up"></i>
     <span>0%</span>
   </div>
@@ -326,8 +295,7 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <p><a target="_blank" rel="noopener" href="https://github.com/AkatQuas/kiddo-plays/tree/master/shells">Project on GitHub</a></p>
-<h2 id="shell-scripts-examples"><a href="#shell-scripts-examples" class="headerlink" title="Shell scripts examples"></a>Shell scripts examples</h2><ul>
+        <h2 id="shell-scripts-examples"><a href="#shell-scripts-examples" class="headerlink" title="Shell scripts examples"></a>Shell scripts examples</h2><ul>
 <li><p><a target="_blank" rel="noopener" href="https://github.com/AkatQuas/kiddo-plays/tree/master/shells/select-job-from-procfile">select job from Procfile</a>: Using scripts to select some job listed in Procfile.</p>
 </li>
 <li><p><a target="_blank" rel="noopener" href="https://github.com/AkatQuas/kiddo-plays/blob/master/shells/parsing-arguments.sh">parsing arguments from command line</a>.</p>
@@ -337,6 +305,13 @@
 </ul>
 <a id="more"></a>
 
+<h2 id="how-does-shell-execute-commands"><a href="#how-does-shell-execute-commands" class="headerlink" title="How does shell execute commands"></a>How does shell execute commands</h2><p><strong>TLDR</strong>: When running an external command, the shell has to create a separate process to run that command, and wait for it to exit. When running a built-in command, there is no need to create a new thread of execution: the command is executed inside the main thread.</p>
+<p><strong>detailed</strong>:</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://tldp.org/LDP/Bash-Beginners-Guide/html/sect_01_03.html">Excuting Commands</a></li>
+<li><a target="_blank" rel="noopener" href="http://uw714doc.xinuos.com/en/SHL_custom/How_shell_executes_cmds.html">how shell executes commands</a></li>
+<li><a target="_blank" rel="noopener" href="https://unix.stackexchange.com/a/79920">What happens when a built-in command is running</a>.</li>
+</ul>
 <h2 id="learning-materials"><a href="#learning-materials" class="headerlink" title="Learning materials"></a>Learning materials</h2><ul>
 <li><p><a target="_blank" rel="noopener" href="https://github.com/koalaman/shellcheck">Shell checks</a></p>
 </li>
@@ -348,17 +323,27 @@
 </li>
 <li><p><a target="_blank" rel="noopener" href="https://github.com/tldr-pages/tldr">tldr manpage for command</a></p>
 </li>
+<li><p><a target="_blank" rel="noopener" href="https://tldp.org/LDP/abs/html/index.html">Advanced Bash-Scripting Guide</a>: An in-depth exploration of the art of shell scripting.</p>
+</li>
 <li><p><a target="_blank" rel="noopener" href="https://missing.csail.mit.edu/2020/shell-tools/">Shell basic 101</a></p>
-<p><code>sed</code>, <code>awk</code>, <code>grep</code>, <code>printf</code>, <code>head</code>, <code>tail</code>, <code>sort</code>, <code>cut</code>, <code>tr</code>, <code>wc</code>.</p>
+<p><code>sed</code>, <code>awk</code>, <code>grep</code>, <code>printf</code>, <code>head</code>, <code>tail</code>, <code>sort</code>, <code>less</code>, <code>more</code>, <code>cut</code>, <code>tr</code>, <code>wc</code>.</p>
 <p><code>bg</code>, <code>fg</code>, <code>jobs</code>, <code>kill</code>, <code>command</code>, <code>read</code>, <code>times</code>, <code>sleep</code>.</p>
 <p><code>gzip</code>, <code>tar</code>.</p>
-<p><code>mktemp</code>, <code>find</code>, <code>locate</code>.</p>
+<p><code>mktemp</code>, <code>find</code>, <code>locate</code>, <code>dirname</code>, <code>basename</code>.</p>
 <p><code>ps</code>, <code>top</code>, <code>crontab</code>.</p>
 <p><code>kill</code> ( <code>ABRT</code>, <code>HUP</code>, <code>KILL</code>, <code>TERM</code> ), <code>trap</code>.</p>
-<p><code>set</code>, <code>shopt</code>, <code>getopts</code>.</p>
+<p><code>set</code>, <code>unset</code>, <code>shopt</code>, <code>getopts</code>.</p>
 <details>
 <summary>Expansion</summary>
 
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">echo</span> ~
+<span class="token builtin class-name">echo</span> <span class="token environment constant">$HOME</span>
+
+<span class="token builtin class-name">echo</span> ~+
+<span class="token builtin class-name">echo</span> <span class="token environment constant">$PWD</span>
+
+<span class="token builtin class-name">echo</span> ~-
+<span class="token builtin class-name">echo</span> <span class="token environment constant">$OLDPWD</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># $varname exist and not null, using $varname</span>
 <span class="token comment"># #varname undefined, using `word`</span>
 <span class="token variable">$&#123;varname<span class="token operator">:-</span>word&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
@@ -392,11 +377,14 @@
 <summary>Expanding expressions techniques </summary>
 
 <ul>
-<li>Wildcards - Whenever you want to perform some sort of wildcard matching, you can use <code>?</code> and <code>*</code> to match one or any amount of characters respectively. For instance, given files <code>foo</code>, <code>foo1</code>, <code>foo2</code>, <code>foo10</code> and <code>bar</code>, the command rm <code>foo?</code> will delete <code>foo1</code> and <code>foo2</code> whereas rm <code>foo*</code> will delete all but <code>bar</code>.</li>
-<li>Curly braces <code>&#123;&#125;</code> - Whenever you have a common substring in a series of commands, you can use curly braces for bash to expand this automatically. This comes in very handy when moving or converting files.</li>
-</ul>
+<li><p>Wildcards - Whenever you want to perform some sort of wildcard matching, you can use <code>?</code> and <code>*</code> to match one or any amount of characters respectively. For instance, given files <code>foo</code>, <code>foo1</code>, <code>foo2</code>, <code>foo10</code> and <code>bar</code>, the command rm <code>foo?</code> will delete <code>foo1</code> and <code>foo2</code> whereas rm <code>foo*</code> will delete all but <code>bar</code>.</p>
+</li>
+<li><p>Curly braces <code>&#123;&#125;</code> - Whenever you have a common substring in a series of commands, you can use curly braces for bash to expand this automatically. This comes in very handy when moving or converting files.</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">touch</span> index.<span class="token punctuation">&#123;</span>html,css,js<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 </details>
 
+</li>
+</ul>
 <details>
 <summary>Batch manipulation on files using globbing</summary>
 
@@ -409,16 +397,14 @@
 <span class="token comment"># Find all conf files and back up them</span>
 <span class="token function">find</span> <span class="token builtin class-name">.</span> -name <span class="token string">'*.conf'</span> -exec convert <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>.bak <span class="token punctuation">\</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 </details>
-</li>
-<li><p><a target="_blank" rel="noopener" href="https://github.com/AkatQuas/kiddo-plays/tree/master/shells/makefiles">Makefiles</a>: Several Makefile templates.</p>
-<ul>
-<li><p><a target="_blank" rel="noopener" href="https://github.com/huyubing/books-pdf/blob/master/%E8%B7%9F%E6%88%91%E4%B8%80%E8%B5%B7%E5%86%99makefile.pdf">跟我一起写 makefile.pdf</a></p>
-</li>
-<li><p><a target="_blank" rel="noopener" href="https://github.com/huyubing/books-pdf/blob/master/automake.pdf">GNU Automake</a></p>
+
 </li>
 </ul>
-</li>
-</ul>
+<h2 id="makefile"><a href="#makefile" class="headerlink" title="Makefile"></a>Makefile</h2><p><a target="_blank" rel="noopener" href="https://github.com/AkatQuas/kiddo-plays/tree/master/shells/makefiles">Makefiles</a>: Several Makefile templates.</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/huyubing/books-pdf/blob/master/%E8%B7%9F%E6%88%91%E4%B8%80%E8%B5%B7%E5%86%99makefile.pdf">跟我一起写 makefile.pdf</a>: A book for beginners.</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/huyubing/books-pdf/blob/master/automake.pdf">GNU Automake</a>.</p>
+<hr>
+<p><a target="_blank" rel="noopener" href="https://github.com/AkatQuas/kiddo-plays/tree/master/shells">Demo Project on GitHub</a></p>
 
     </div>
 
@@ -435,6 +421,9 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
+                <a href="/2021/01/21/runtime-performance.html" rel="prev" title="Runtime Performance">
+                  <i class="fa fa-chevron-left"></i> Runtime Performance
+                </a>
             </div>
             <div class="post-nav-item">
                 <a href="/2020/12/06/wander-in-webpack.html" rel="next" title="Wander in webpack">
@@ -508,9 +497,7 @@
 
 
 
-
   
-
 
 
 

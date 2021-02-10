@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.2.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="Why Performance matters &#x2F; google developer What is Performance &#x2F; MDN Runtime performance consists of loading performance and rendering performance.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Runtime Performance">
+<meta property="og:url" content="https://akatquas.github.io/2021/01/21/runtime-performance.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="Why Performance matters &#x2F; google developer What is Performance &#x2F; MDN Runtime performance consists of loading performance and rendering performance.">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://akatquas.github.io/images/runtime-performance/frame-full.jpg">
+<meta property="article:published_time" content="2021-01-21T18:54:16.000Z">
+<meta property="article:modified_time" content="2021-02-10T02:56:37.414Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="performance">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://akatquas.github.io/images/runtime-performance/frame-full.jpg">
+
+
+<link rel="canonical" href="https://akatquas.github.io/2021/01/21/runtime-performance.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>Runtime Performance | 🔭</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a></li>
+        <li class="menu-item menu-item-dateless"><a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a></li>
+        <li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a></li>
+        <li class="menu-item menu-item-commonweal"><a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#loading-performance"><span class="nav-text">Loading Performance</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rendering-performance"><span class="nav-text">Rendering Performance</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#anatomy-of-a-frame"><span class="nav-text">Anatomy of a Frame</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#analyzing-runtime-performance"><span class="nav-text">Analyzing Runtime Performance</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#optiziming-rendering-performance"><span class="nav-text">Optiziming Rendering Performance</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#references"><span class="nav-text">References</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">47</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">44</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://akatquas.github.io/2021/01/21/runtime-performance.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Akat">
+      <meta itemprop="description" content="Take notes aperiodically">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="🔭">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Runtime Performance
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-01-22 02:54:16" itemprop="dateCreated datePublished" datetime="2021-01-22T02:54:16+08:00">2021-01-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/frontend/" itemprop="url" rel="index"><span itemprop="name">frontend</span></a>
+        </span>
+          , 
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/frontend/developer-tools/" itemprop="url" rel="index"><span itemprop="name">developer tools</span></a>
+        </span>
+          , 
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/frontend/developer-tools/performance/" itemprop="url" rel="index"><span itemprop="name">performance</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p><a target="_blank" rel="noopener" href="https://web.dev/why-speed-matters/">Why Performance matters / google developer</a></p>
+<p><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Tools/Performance">What is Performance / MDN</a></p>
+<p>Runtime performance consists of <strong>loading performance</strong> and <strong>rendering performance</strong>.</p>
+<a id="more"></a>
+
+<h2 id="loading-performance"><a href="#loading-performance" class="headerlink" title="Loading Performance"></a>Loading Performance</h2><blockquote>
+<p>Omitted. Feel free to read <a target="_blank" rel="noopener" href="https://developers.google.com/web/fundamentals/performance/get-started">article</a>.</p>
+</blockquote>
+<h2 id="rendering-performance"><a href="#rendering-performance" class="headerlink" title="Rendering Performance"></a>Rendering Performance</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://developers.google.com/web/fundamentals/performance/rendering">overview</a></li>
+</ul>
+<h3 id="anatomy-of-a-frame"><a href="#anatomy-of-a-frame" class="headerlink" title="Anatomy of a Frame"></a>Anatomy of a Frame</h3><p><a target="_blank" rel="noopener" href="https://aerotwist.com/blog/the-anatomy-of-a-frame/">Original article</a></p>
+<p><a target="_blank" rel="noopener" href="https://aerotwist.com/blog/the-anatomy-of-a-frame/#the-flow-of-things">Frame lifespawn in short (in the render process)</a>.</p>
+<pre class="line-numbers language-none"><code class="language-none">Frame start
+
+  Input event handlers
+
+  requestAnimationFrame
+
+  ParseHTML
+
+  Recalculate Styles
+
+  Layout
+
+  Update Layer tree
+
+  Paint
+
+  Composite
+
+  (commit -&gt; raster scheduled)
+
+Frame end
+
+  requestIdleCallback<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><img data-src="/images/runtime-performance/frame-full.jpg"></p>
+<p>You won’t always necessarily touch every part of the pipeline on every frame.</p>
+<blockquote>
+<p>Each of <a target="_blank" rel="noopener" href="https://developers.google.com/web/fundamentals/performance/rendering#the_pixel_pipeline">these parts</a> of the pipeline represents an opportunity to introduce jank.</p>
+</blockquote>
+<h3 id="analyzing-runtime-performance"><a href="#analyzing-runtime-performance" class="headerlink" title="Analyzing Runtime Performance"></a>Analyzing Runtime Performance</h3><p><a target="_blank" rel="noopener" href="https://developers.google.com/web/tools/chrome-devtools/rendering-tools">Tools to analyze runtime performance</a></p>
+<ul>
+<li>Don’t write JavaScript that forces the browser to recalculate layout. Separate read and write functions, and perform reads first.</li>
+<li>Don’t over-complicate your CSS. Use less CSS and keep your CSS selectors simple.</li>
+<li>Avoid layout as much as possible. Choose CSS that doesn’t trigger layout at all.</li>
+<li>Painting can take up more time than any other rendering activity. Watch out for paint bottlenecks.</li>
+</ul>
+<h3 id="optiziming-rendering-performance"><a href="#optiziming-rendering-performance" class="headerlink" title="Optiziming Rendering Performance"></a>Optiziming Rendering Performance</h3><ul>
+<li><p><a target="_blank" rel="noopener" href="https://developers.google.com/web/fundamentals/performance/rendering/optimize-javascript-execution">optimize JavaScript execution</a></p>
+<ul>
+<li>Avoid using <code>setTimeout</code> or <code>setInterval</code> for visual updates; use <code>requestAnimationFrame</code> instead.</li>
+<li>Move long-running JavaScript off the main thread to Web Workers.</li>
+<li>Use micro-tasks to make DOM changes <em>over several frames</em>.</li>
+<li>Leveraging <code>requestIdleCallback</code> if you can.</li>
+</ul>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://developers.google.com/web/fundamentals/performance/rendering/reduce-the-scope-and-complexity-of-style-calculations">Reduce the Scope and Complexity of Style Calculations</a></p>
+<ul>
+<li>Reduce the complexity of your selectors; use a class-centric methodology like <a target="_blank" rel="noopener" href="https://bem.info/">Block-Element-Modifier</a>.</li>
+<li>Reduce the number of elements on which style calculation must be calculated.</li>
+</ul>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://developers.google.com/web/fundamentals/performance/rendering/avoid-large-complex-layouts-and-layout-thrashing">Avoid Large, Complex Layouts and Layout Thrashing</a></p>
+<ul>
+<li>Layout is normally scoped to the whole document.</li>
+<li>The number of DOM elements will affect performance; you should avoid triggering layout wherever possible.</li>
+<li>Assess layout model performance; new Flexbox is typically faster than older Flexbox or float-based layout models.</li>
+<li>Avoid forced synchronous layouts and layout thrashing; read style values first and then make style changes.</li>
+</ul>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://developers.google.com/web/fundamentals/performance/rendering/simplify-paint-complexity-and-reduce-paint-areas">Simplify Paint Complexity and Reduce Paint Areas</a></p>
+<ul>
+<li>Changing any property apart from transforms or opacity always triggers paint.</li>
+<li>Paint is often the most expensive part of the pixel pipeline; avoid it where you can.</li>
+<li>Reduce paint areas through layer promotion and orchestration of animations.</li>
+</ul>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://developers.google.com/web/fundamentals/performance/rendering/stick-to-compositor-only-properties-and-manage-layer-count">Stick to Compositor-Only Properties and Manage Layer Count</a></p>
+<ul>
+<li>Stick to transform and opacity changes for your animations.</li>
+<li>Promote moving elements with will-change or translateZ.</li>
+<li>Avoid overusing promotion rules; layers require memory and management.</li>
+</ul>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://developers.google.com/web/fundamentals/performance/rendering/debounce-your-input-handlers">Debounce the Input Handlers</a></p>
+<ul>
+<li>Avoid long-running input handlers; they can block scrolling.</li>
+<li>Do not make style changes in input handlers, otherwise it will impact <code>requestAnimationFrame</code>.</li>
+<li>Debounce the handlers; store event values and deal with style changes in the next requestAnimationFrame callback.</li>
+</ul>
+</li>
+</ul>
+<h2 id="references"><a href="#references" class="headerlink" title="References"></a>References</h2><p><a target="_blank" rel="noopener" href="https://developers.google.com/web/tools/lighthouse">Lighthouse</a>. Devtools - Lighthouse Panel.</p>
+<p><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/microsoft-edge/devtools-guide-chromium/evaluate-performance/reference">Devtools - Performance Panel</a>:</p>
+<ul>
+<li><p><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Tools/Performance/How_to">Quick started</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Tools/Performance#components_of_the_performance_tool">Components</a> of the Performance tool, and <a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Tools/Performance/UI_Tour">its UI</a></p>
+</li>
+<li><p>Understanding chart after profiling at Performance Panel, <a target="_blank" rel="noopener" href="https://youtu.be/WBmttwfA_k8">youtube video</a></p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/performance/" rel="tag"># performance</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/02/03/file-system.html" rel="prev" title="文件系统札记">
+                  <i class="fa fa-chevron-left"></i> 文件系统札记
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/12/25/shells.html" rel="next" title="Quick learning on Shells">
+                  Quick learning on Shells <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

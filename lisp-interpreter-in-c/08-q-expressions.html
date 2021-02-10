@@ -21,7 +21,7 @@
 
 <script class="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.2.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
   </script>
 <meta name="description" content="document codes:  q-expressions  Adding FeaturesYou’ll notice that the following chapters will all follow a similar pattern. This pattern is the typical approach used to add new features to a language.">
 <meta property="og:type" content="website">
@@ -30,8 +30,8 @@
 <meta property="og:site_name" content="🔭">
 <meta property="og:description" content="document codes:  q-expressions  Adding FeaturesYou’ll notice that the following chapters will all follow a similar pattern. This pattern is the typical approach used to add new features to a language.">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2021-01-15T10:21:08.394Z">
-<meta property="article:modified_time" content="2021-01-15T10:21:08.394Z">
+<meta property="article:published_time" content="2021-02-10T02:56:37.442Z">
+<meta property="article:modified_time" content="2021-02-10T02:56:37.442Z">
 <meta property="article:author" content="Akat">
 <meta property="article:tag" content="lisp">
 <meta property="article:tag" content="interpreter">
@@ -53,6 +53,7 @@
 <title>08 Q-Expressions | 🔭
 </title>
   
+
 
 
 
@@ -100,7 +101,7 @@
     <header class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-container">
   <div class="site-nav-toggle">
-    <div class="toggle" aria-label="Toggle navigation bar">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
         <span class="toggle-line"></span>
         <span class="toggle-line"></span>
         <span class="toggle-line"></span>
@@ -127,46 +128,14 @@
 
 <nav class="site-nav">
   <ul class="main-menu menu">
-        <li class="menu-item menu-item-home">
-
-    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
-
-  </li>
-        <li class="menu-item menu-item-about">
-
-    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
-
-  </li>
-        <li class="menu-item menu-item-tags">
-
-    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
-
-  </li>
-        <li class="menu-item menu-item-categories">
-
-    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
-
-  </li>
-        <li class="menu-item menu-item-archives">
-
-    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
-
-  </li>
-        <li class="menu-item menu-item-dateless">
-
-    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
-
-  </li>
-        <li class="menu-item menu-item-sitemap">
-
-    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
-
-  </li>
-        <li class="menu-item menu-item-commonweal">
-
-    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
-
-  </li>
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a></li>
+        <li class="menu-item menu-item-dateless"><a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a></li>
+        <li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a></li>
+        <li class="menu-item menu-item-commonweal"><a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a></li>
   </ul>
 </nav>
 
@@ -176,7 +145,7 @@
 </div>
         
   
-  <div class="toggle sidebar-toggle">
+  <div class="toggle sidebar-toggle" role="button">
     <span class="toggle-line"></span>
     <span class="toggle-line"></span>
     <span class="toggle-line"></span>
@@ -196,12 +165,12 @@
 
       <div class="sidebar-panel-container">
         <!--noindex-->
-        <section class="post-toc-wrap sidebar-panel">
+        <div class="post-toc-wrap sidebar-panel">
             <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#adding-features"><span class="nav-text">Adding Features</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#quoted-expressions"><span class="nav-text">Quoted Expressions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reading-q-expressions"><span class="nav-text">Reading Q-Expressions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#builtin-functions"><span class="nav-text">Builtin Functions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#first-attempt"><span class="nav-text">First Attempt</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#macros"><span class="nav-text">Macros</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#head-amp-tail"><span class="nav-text">Head &amp; Tail</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#list-amp-eval"><span class="nav-text">List &amp; Eval</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#join"><span class="nav-text">Join</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#builtins-lookup"><span class="nav-text">Builtins Lookup</span></a></li></ol></div>
-        </section>
+        </div>
         <!--/noindex-->
 
-        <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview-wrap sidebar-panel">
           <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
   <p class="site-author-name" itemprop="name">Akat</p>
   <div class="site-description" itemprop="description">Take notes aperiodically</div>
@@ -211,20 +180,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-count">47</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-count">27</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-count">44</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -250,7 +219,7 @@
     </ul>
   </div>
 
-        </section>
+        </div>
       </div>
     </div>
   </aside>
@@ -260,7 +229,7 @@
     </header>
 
     
-  <div class="back-to-top">
+  <div class="back-to-top" role="button">
     <i class="fa fa-arrow-up"></i>
     <span>0%</span>
   </div>
@@ -326,12 +295,12 @@
 <p>This stands for <strong>quoted expression</strong>, and is a type of Lisp Expression that is not evaluated by the standard Lisp mechanics. When encountered by the evaluation function Q-expressions are left exactly as they are. This makes them ideal for a number of purposes. We can use them to store and manipulate other Lisp values such as numbers, symbols, or other S-Expressions themselves.</p>
 <p>After we’ve added Q-Expressions we are going to implement a concise set of operators to manipulate them. Like the arithmetic operators these will prove fundamental in how we think about and play with expressions.</p>
 <p>The syntax for Q-Expressions is very similar to that of S-Expressions. The only difference is that instead of parenthesis <code>()</code> Q-Expressions are surrounded by curly brackets <code>&#123;&#125;</code>. We can add this to our grammar as follows.</p>
-<pre class="line-numbers language-c" data-language="c"><code class="language-c">mpc_parser_t<span class="token operator">*</span> Number <span class="token operator">=</span> <span class="token function">mpc_new</span><span class="token punctuation">(</span><span class="token string">"number"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-mpc_parser_t<span class="token operator">*</span> Symbol <span class="token operator">=</span> <span class="token function">mpc_new</span><span class="token punctuation">(</span><span class="token string">"symbol"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-mpc_parser_t<span class="token operator">*</span> Sexpr <span class="token operator">=</span> <span class="token function">mpc_new</span><span class="token punctuation">(</span><span class="token string">"sexpr"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-mpc_parser_t<span class="token operator">*</span> Qexpr <span class="token operator">=</span> <span class="token function">mpc_new</span><span class="token punctuation">(</span><span class="token string">"qexpr"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-mpc_parser_t<span class="token operator">*</span> Expr <span class="token operator">=</span> <span class="token function">mpc_new</span><span class="token punctuation">(</span><span class="token string">"expr"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-mpc_parser_t<span class="token operator">*</span> Lispy <span class="token operator">=</span> <span class="token function">mpc_new</span><span class="token punctuation">(</span><span class="token string">"lispy"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token class-name">mpc_parser_t</span><span class="token operator">*</span> Number <span class="token operator">=</span> <span class="token function">mpc_new</span><span class="token punctuation">(</span><span class="token string">"number"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">mpc_parser_t</span><span class="token operator">*</span> Symbol <span class="token operator">=</span> <span class="token function">mpc_new</span><span class="token punctuation">(</span><span class="token string">"symbol"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">mpc_parser_t</span><span class="token operator">*</span> Sexpr <span class="token operator">=</span> <span class="token function">mpc_new</span><span class="token punctuation">(</span><span class="token string">"sexpr"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">mpc_parser_t</span><span class="token operator">*</span> Qexpr <span class="token operator">=</span> <span class="token function">mpc_new</span><span class="token punctuation">(</span><span class="token string">"qexpr"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">mpc_parser_t</span><span class="token operator">*</span> Expr <span class="token operator">=</span> <span class="token function">mpc_new</span><span class="token punctuation">(</span><span class="token string">"expr"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">mpc_parser_t</span><span class="token operator">*</span> Lispy <span class="token operator">=</span> <span class="token function">mpc_new</span><span class="token punctuation">(</span><span class="token string">"lispy"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
 <span class="token function">mpca_lang</span><span class="token punctuation">(</span>MPCA_LANG_DEFAULT<span class="token punctuation">,</span>
     <span class="token string">"\
@@ -487,7 +456,7 @@ lval<span class="token operator">*</span> <span class="token function">builtin_t
 <h2 id="macros"><a href="#macros" class="headerlink" title="Macros"></a>Macros</h2><p>These <code>head</code> and <code>tail</code> functions do the correct thing, but the code is pretty unclear, and long. There is so much error checking that the functionality is hard to see. One method we can use to clean it up is to use a <strong>Macro</strong>.</p>
 <p>A Macro is a <strong>preprocessor</strong> statement for creating function-like-things that are evaluated before the program is compiled. It can be used for many different things, one of which is what we need to de her, clean up code.</p>
 <p>We can design a macro to help with our error conditions called <code>LASSERT</code>. Macros are typically given names in capitals to help distinguish them from normal C functions. This marco take in three arguments <code>args</code>, <code>cond</code> and <code>err</code>. It then generates code as shown on the right hand side, but with these variables pasted in at the locations where they are name. This pattern is a good fit for all of our error conditions.</p>
-<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token expression"><span class="token function">LASSERT</span><span class="token punctuation">(</span>args<span class="token punctuation">,</span> cond<span class="token punctuation">,</span> err<span class="token punctuation">)</span> <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token punctuation">(</span>cond<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token function">lval_del</span><span class="token punctuation">(</span>args<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token keyword">return</span> <span class="token function">lval_err</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">&#125;</span></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name function">LASSERT</span><span class="token expression"><span class="token punctuation">(</span>args<span class="token punctuation">,</span> cond<span class="token punctuation">,</span> err<span class="token punctuation">)</span> <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token punctuation">(</span>cond<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token function">lval_del</span><span class="token punctuation">(</span>args<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token keyword">return</span> <span class="token function">lval_err</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">&#125;</span></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>We can use this to change how our above functions are written, without actually changing what code is generated by the compiler. This makes it much easier to read for the programmer, and saves a bit of typing. The rest of the error conditions for our functions should become easy to write too!</p>
 <h2 id="head-amp-tail"><a href="#head-amp-tail" class="headerlink" title="Head &amp; Tail"></a>Head &amp; Tail</h2><p>Using this our <code>head</code> and <code>tail</code> functions are defined as follows. Notice how much clearer their real functionality is.</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c">lval<span class="token operator">*</span> <span class="token function">builtin_head</span><span class="token punctuation">(</span>lval<span class="token operator">*</span> a<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
@@ -635,9 +604,7 @@ lval<span class="token operator">*</span> <span class="token function">builtin_j
 
 
 
-
   
-
 
 
 

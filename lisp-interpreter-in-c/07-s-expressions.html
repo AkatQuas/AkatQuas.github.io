@@ -21,7 +21,7 @@
 
 <script class="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.1.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.2.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
   </script>
 <meta name="description" content="document codes:  s-expressions  Lists and LispsLisps are famous for having little distinction between data and code. They use the same structures to represent both. This allows them to do many powerfu">
 <meta property="og:type" content="website">
@@ -30,8 +30,8 @@
 <meta property="og:site_name" content="🔭">
 <meta property="og:description" content="document codes:  s-expressions  Lists and LispsLisps are famous for having little distinction between data and code. They use the same structures to represent both. This allows them to do many powerfu">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2021-01-15T10:21:08.394Z">
-<meta property="article:modified_time" content="2021-01-15T10:21:08.394Z">
+<meta property="article:published_time" content="2021-02-10T02:56:37.442Z">
+<meta property="article:modified_time" content="2021-02-10T02:56:37.442Z">
 <meta property="article:author" content="Akat">
 <meta property="article:tag" content="lisp">
 <meta property="article:tag" content="interpreter">
@@ -53,6 +53,7 @@
 <title>07 S-Expressions | 🔭
 </title>
   
+
 
 
 
@@ -100,7 +101,7 @@
     <header class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-container">
   <div class="site-nav-toggle">
-    <div class="toggle" aria-label="Toggle navigation bar">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
         <span class="toggle-line"></span>
         <span class="toggle-line"></span>
         <span class="toggle-line"></span>
@@ -127,46 +128,14 @@
 
 <nav class="site-nav">
   <ul class="main-menu menu">
-        <li class="menu-item menu-item-home">
-
-    <a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a>
-
-  </li>
-        <li class="menu-item menu-item-about">
-
-    <a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a>
-
-  </li>
-        <li class="menu-item menu-item-tags">
-
-    <a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a>
-
-  </li>
-        <li class="menu-item menu-item-categories">
-
-    <a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a>
-
-  </li>
-        <li class="menu-item menu-item-archives">
-
-    <a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a>
-
-  </li>
-        <li class="menu-item menu-item-dateless">
-
-    <a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a>
-
-  </li>
-        <li class="menu-item menu-item-sitemap">
-
-    <a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a>
-
-  </li>
-        <li class="menu-item menu-item-commonweal">
-
-    <a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a>
-
-  </li>
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a></li>
+        <li class="menu-item menu-item-dateless"><a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a></li>
+        <li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a></li>
+        <li class="menu-item menu-item-commonweal"><a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a></li>
   </ul>
 </nav>
 
@@ -176,7 +145,7 @@
 </div>
         
   
-  <div class="toggle sidebar-toggle">
+  <div class="toggle sidebar-toggle" role="button">
     <span class="toggle-line"></span>
     <span class="toggle-line"></span>
     <span class="toggle-line"></span>
@@ -196,12 +165,12 @@
 
       <div class="sidebar-panel-container">
         <!--noindex-->
-        <section class="post-toc-wrap sidebar-panel">
+        <div class="post-toc-wrap sidebar-panel">
             <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#lists-and-lisps"><span class="nav-text">Lists and Lisps</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pointers"><span class="nav-text">Pointers</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#the-stack-amp-the-heap"><span class="nav-text">The Stack &amp; The Heap</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#the-stack"><span class="nav-text">The Stack</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#the-heap"><span class="nav-text">The Heap</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#parsing-expressions"><span class="nav-text">Parsing Expressions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#expression-structure"><span class="nav-text">Expression Structure</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#constructors-amp-amp-destructors"><span class="nav-text">Constructors &amp;&amp; Destructors</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reading-expressions"><span class="nav-text">Reading Expressions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#printing-expressions"><span class="nav-text">Printing Expressions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#evaluating-expressions"><span class="nav-text">Evaluating Expressions</span></a></li></ol></div>
-        </section>
+        </div>
         <!--/noindex-->
 
-        <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview-wrap sidebar-panel">
           <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
   <p class="site-author-name" itemprop="name">Akat</p>
   <div class="site-description" itemprop="description">Take notes aperiodically</div>
@@ -211,20 +180,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-count">47</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-count">27</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-count">44</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -250,7 +219,7 @@
     </ul>
   </div>
 
-        </section>
+        </div>
       </div>
     </div>
   </aside>
@@ -260,7 +229,7 @@
     </header>
 
     
-  <div class="back-to-top">
+  <div class="back-to-top" role="button">
     <i class="fa fa-arrow-up"></i>
     <span>0%</span>
   </div>
@@ -318,11 +287,11 @@
 <h3 id="the-heap"><a href="#the-heap" class="headerlink" title="The Heap"></a>The Heap</h3><p>The Heap is a section of memory put aside for storage of objects with a longer lifespan. Memory in this area has to be manually allocated and deallocated. To allocate new memory the <code>malloc</code> function is used. This function takes as input the number of bytes required, and returns back a pointer to a new black of memory with that many bytes set aside.</p>
 <p>When done with the memory at that location it must be released again. To do this the pointer received from <code>malloc</code> should be passed to the <code>free</code> function. Using the Heap is trickier than the Stack because it requires the programmer to remember to call <code>free</code> and to call it correctly. If not, the program may continuously allocate more and more memory. This is called a <strong>memory leak</strong>. An easy rule to avoid this is to ensure for each <code>malloc</code> there is a corresponding (and only one corresponding) <code>free</code>.</p>
 <h2 id="parsing-expressions"><a href="#parsing-expressions" class="headerlink" title="Parsing Expressions"></a>Parsing Expressions</h2><p>We need to update our parser to make it suitable for S-Expressions. The syntax for S-Expressions is simple. It is just a number of other Expressions between parentheses, where an Expression can be a Number, Operator, or other S-Expression. We can modify our existing parse rules to reflect this. We also are going to rename our <code>operator</code> rule to <code>symbol</code>. This is in anticipation of adding more operators, variables and functions later.</p>
-<pre class="line-numbers language-c" data-language="c"><code class="language-c">mpc_parser_t<span class="token operator">*</span> Number <span class="token operator">=</span> <span class="token function">mpc_new</span><span class="token punctuation">(</span><span class="token string">"number"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-mpc_parser_t<span class="token operator">*</span> Symbol <span class="token operator">=</span> <span class="token function">mpc_new</span><span class="token punctuation">(</span><span class="token string">"symbor"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-mpc_parser_t<span class="token operator">*</span> Sexpr <span class="token operator">=</span> <span class="token function">mpc_new</span><span class="token punctuation">(</span><span class="token string">"sexpr"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-mpc_parser_t<span class="token operator">*</span> Expr <span class="token operator">=</span> <span class="token function">mpc_new</span><span class="token punctuation">(</span><span class="token string">"expr"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-mpc_parser_t<span class="token operator">*</span> Lispy <span class="token operator">=</span> <span class="token function">mpc_new</span><span class="token punctuation">(</span><span class="token string">"lispy"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token class-name">mpc_parser_t</span><span class="token operator">*</span> Number <span class="token operator">=</span> <span class="token function">mpc_new</span><span class="token punctuation">(</span><span class="token string">"number"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">mpc_parser_t</span><span class="token operator">*</span> Symbol <span class="token operator">=</span> <span class="token function">mpc_new</span><span class="token punctuation">(</span><span class="token string">"symbor"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">mpc_parser_t</span><span class="token operator">*</span> Sexpr <span class="token operator">=</span> <span class="token function">mpc_new</span><span class="token punctuation">(</span><span class="token string">"sexpr"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">mpc_parser_t</span><span class="token operator">*</span> Expr <span class="token operator">=</span> <span class="token function">mpc_new</span><span class="token punctuation">(</span><span class="token string">"expr"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">mpc_parser_t</span><span class="token operator">*</span> Lispy <span class="token operator">=</span> <span class="token function">mpc_new</span><span class="token punctuation">(</span><span class="token string">"lispy"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
 <span class="token function">mpca_lang</span><span class="token punctuation">(</span>MPCA_LANG_DEFAULT<span class="token punctuation">,</span>
     <span class="token string">"\
@@ -418,13 +387,13 @@ lval<span class="token operator">*</span> <span class="token function">lval_sexp
 <p>To complete the first stage we can recursively look at each node of the tree, and construct different <code>lval*</code> types depending on the <code>tag</code> and <code>contents</code> fields of the node.</p>
 <p>If the given node is tagged as a <code>number</code> or <code>symbol</code>, then we use our constructors to return an <code>lval*</code> directly for those types. If the given node is the <code>root</code>, or an <code>expr</code>, then we create an empty S-Expression <code>lval</code> and slowly add each valid sub-expression contained in the tree.</p>
 <p>To add an element to an S-Expression we can create a function <code>lval_add</code>. This function increases the count of the Expression list by one, and then uses <code>realloc</code> to reallocate the amount of space required by <code>v-&gt;cell</code>. This new space can be used to store the extra <code>lval*</code> required. Using this new space it sets the final value of the list with <code>v-&gt;cell[v-&gt;count-1]</code> to the value <code>lval* x</code> passed in.</p>
-<pre class="line-numbers language-c" data-language="c"><code class="language-c">lval<span class="token operator">*</span> <span class="token function">lval_read_num</span><span class="token punctuation">(</span>mpc_ast_t<span class="token operator">*</span> t<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">lval<span class="token operator">*</span> <span class="token function">lval_read_num</span><span class="token punctuation">(</span><span class="token class-name">mpc_ast_t</span><span class="token operator">*</span> t<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
     errno <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
     <span class="token keyword">long</span> x <span class="token operator">=</span> <span class="token function">strtol</span><span class="token punctuation">(</span>t<span class="token operator">-></span>contents<span class="token punctuation">,</span> <span class="token constant">NULL</span><span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token keyword">return</span> errno <span class="token operator">!=</span> ERANGE <span class="token operator">?</span> <span class="token function">lval_num</span><span class="token punctuation">(</span>x<span class="token punctuation">)</span> <span class="token operator">:</span> <span class="token function">lval_err</span><span class="token punctuation">(</span><span class="token string">"Invalid number"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span>
 
-lval<span class="token operator">*</span> <span class="token function">lval_read</span><span class="token punctuation">(</span>mpc_ast_t<span class="token operator">*</span> t<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+lval<span class="token operator">*</span> <span class="token function">lval_read</span><span class="token punctuation">(</span><span class="token class-name">mpc_ast_t</span><span class="token operator">*</span> t<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
     <span class="token comment">/* If symbol or number return conversion to that type */</span>
     <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">strstr</span><span class="token punctuation">(</span>t<span class="token operator">-></span>tag<span class="token punctuation">,</span> <span class="token string">"number"</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token keyword">return</span> <span class="token function">lval_read_num</span><span class="token punctuation">(</span>t<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">&#125;</span>
     <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">strstr</span><span class="token punctuation">(</span>t<span class="token operator">-></span>tag<span class="token punctuation">,</span> <span class="token string">"symbol"</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token keyword">return</span> <span class="token function">lval_sym</span><span class="token punctuation">(</span>t<span class="token operator">-></span>contents<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">&#125;</span>
@@ -663,9 +632,7 @@ lval<span class="token operator">*</span> <span class="token function">lval_take
 
 
 
-
   
-
 
 
 

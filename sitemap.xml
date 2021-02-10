@@ -4,966 +4,973 @@
   <url>
     <loc>https://akatquas.github.io/schedule/index.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/sicp/01-building-abstractions-with-procedures.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/index.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/sicp/02-building-abstractions-with-data.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/sicp/03-modularity-objects-state.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/sicp/04-metalinguistic-abstraction.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/sicp/05-computing-with-register-machines.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/network-top-down-approach/ch01-network-and-internet.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/network-top-down-approach/ch04-network-layer.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/network-top-down-approach/ch02-application-layer.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/network-top-down-approach/ch03-transport-layer.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
-    <loc>https://akatquas.github.io/lisp-interpreter-in-py/chapter-12.html</loc>
+    <loc>https://akatquas.github.io/network-top-down-approach/ch01-network-and-internet.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/lisp-interpreter-in-py/chapter-11.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
-    <loc>https://akatquas.github.io/lisp-interpreter-in-py/chapter-13.html</loc>
+    <loc>https://akatquas.github.io/network-top-down-approach/ch02-application-layer.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/lisp-interpreter-in-py/chapter-14.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/lisp-interpreter-in-c/01-basic-features.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/lisp-interpreter-in-c/02-interactive-prompt.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/lisp-interpreter-in-c/03-language-grammar.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/lisp-interpreter-in-c/04-parsing.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/lisp-interpreter-in-c/05-evaluation.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/lisp-interpreter-in-c/06-error-handling.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/lisp-interpreter-in-c/08-q-expressions.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/lisp-interpreter-in-c/11-conditionals.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/lisp-interpreter-in-c/12-strings.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/lisp-interpreter-in-c/13-standard-library.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/lisp-interpreter-in-py/chapter-01.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/lisp-interpreter-in-py/chapter-02.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/lisp-interpreter-in-py/chapter-03.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/lisp-interpreter-in-py/chapter-04.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/lisp-interpreter-in-py/chapter-05.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/lisp-interpreter-in-py/chapter-06.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/lisp-interpreter-in-py/chapter-08.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/lisp-interpreter-in-py/chapter-10.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/lisp-interpreter-in-c/07-s-expressions.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/lisp-interpreter-in-c/09-variables.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/lisp-interpreter-in-c/10-functions.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/lisp-interpreter-in-py/chapter-07.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/lisp-interpreter-in-py/chapter-09.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
-    <loc>https://akatquas.github.io/index.html</loc>
+    <loc>https://akatquas.github.io/lisp-interpreter-in-py/chapter-12.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/interpreter-in-js/character-input-stream.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
-    <loc>https://akatquas.github.io/interpreter-in-js/interpreter.html</loc>
+    <loc>https://akatquas.github.io/lisp-interpreter-in-py/chapter-11.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/interpreter-in-js/parser.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
-    <loc>https://akatquas.github.io/interpreter-in-js/token-input-stream.html</loc>
+    <loc>https://akatquas.github.io/lisp-interpreter-in-py/chapter-13.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
-    <loc>https://akatquas.github.io/kubernetes/api-server.html</loc>
+    <loc>https://akatquas.github.io/lisp-interpreter-in-py/chapter-14.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/kubernetes/architecture.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/kubernetes/authentication-authorization.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/kubernetes/cheatsheet.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/kubernetes/configmap-secret.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/kubernetes/index.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/kubernetes/monitoring-n-logging.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/kubernetes/networking.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/kubernetes/scaling.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/kubernetes/scheduler.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/lisp-interpreter-in-c/01-basic-features.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/lisp-interpreter-in-c/02-interactive-prompt.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/lisp-interpreter-in-c/03-language-grammar.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/lisp-interpreter-in-c/04-parsing.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/lisp-interpreter-in-c/05-evaluation.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/lisp-interpreter-in-c/06-error-handling.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/lisp-interpreter-in-c/08-q-expressions.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/lisp-interpreter-in-c/11-conditionals.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/lisp-interpreter-in-c/12-strings.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/lisp-interpreter-in-c/13-standard-library.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/lisp-interpreter-in-py/chapter-01.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/kubernetes/constructs.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/kubernetes/pv-pvc.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/kubernetes/workloads.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
-    <loc>https://akatquas.github.io/data-structure/graph.html</loc>
+    <loc>https://akatquas.github.io/lisp-interpreter-in-c/07-s-expressions.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/data-structure/hash-table.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
-    <loc>https://akatquas.github.io/data-structure/list.html</loc>
+    <loc>https://akatquas.github.io/lisp-interpreter-in-c/09-variables.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/data-structure/priority-queue.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
-    <loc>https://akatquas.github.io/data-structure/set-n-map.html</loc>
+    <loc>https://akatquas.github.io/lisp-interpreter-in-c/10-functions.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/data-structure/sort.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
-    <loc>https://akatquas.github.io/data-structure/tree.html</loc>
+    <loc>https://akatquas.github.io/interpreter-in-js/character-input-stream.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/data-structure/vector.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
-    <loc>https://akatquas.github.io/docker/automation.html</loc>
+    <loc>https://akatquas.github.io/interpreter-in-js/interpreter.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/docker/cheatsheet.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
-    <loc>https://akatquas.github.io/docker/container-monitoring.html</loc>
+    <loc>https://akatquas.github.io/interpreter-in-js/parser.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/docker/docker.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
-    <loc>https://akatquas.github.io/docker/health-checks.html</loc>
+    <loc>https://akatquas.github.io/interpreter-in-js/token-input-stream.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/docker/index.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
-    <loc>https://akatquas.github.io/docker/networking.html</loc>
+    <loc>https://akatquas.github.io/kubernetes/api-server.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/docker/persistent-storage.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/docker/remote-engine.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/docker/security.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/concurrency-in-go/scalability.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/docker/docker-compose.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/docker/production-practices.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/concurrency-in-go/patterns.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/concurrency-in-go/primitives.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/docker/orchestration.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/compiler/in-c-ch01.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/compiler/in-c-ch02.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/compiler/propositional-logic.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/compiler/recursive-description-of-patterns.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/concurrency-in-go/index.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/concurrency-in-go/internal.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/concurrency-in-go/introduction.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/data-structure/graph.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/data-structure/hash-table.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/data-structure/list.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/data-structure/priority-queue.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/data-structure/set-n-map.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/data-structure/sort.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/data-structure/tree.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/data-structure/vector.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/docker/automation.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/docker/cheatsheet.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/docker/container-monitoring.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/docker/docker.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/docker/health-checks.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/docker/index.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/docker/networking.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/docker/persistent-storage.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/docker/remote-engine.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/docker/security.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/concurrency-in-go/scalability.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/docker/docker-compose.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/docker/production-practices.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/concurrency-in-go/patterns.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/concurrency-in-go/primitives.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/docker/orchestration.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/compiler/in-c-ch01.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/compiler/in-c-ch02.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/compiler/propositional-logic.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/compiler/recursive-description-of-patterns.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/compiler/in-c-ch06.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/compiler/pattern-automata-regex.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/2017/03/06/hello-world.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2017/12/07/nativescript.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2018/08/31/build-a-compiler.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2018/02/24/cocos-js-boilerplate.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2018/05/24/data-structure.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2018/11/14/garbage-collector-in-c.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2018/07/07/gulp-vs-grunt.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2018/09/03/interpreter-in-js.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2018/11/07/jquery.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2018/11/05/lisp-interpreter-in-c.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2018/11/25/lisp-interpreter-in-py.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2018/02/24/network-top-down-approach.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2018/12/20/node-argv.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2018/10/07/react-create-cli.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2018/08/14/react-stores.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2018/08/23/super-tiny-interpreter.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2018/09/13/web-server-with-tcp.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2018/07/17/wxma.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2019/12/10/depth-in-event-loop.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2020/03/31/fullstack-starter.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2019/05/04/graphql.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2019/01/24/huaban-pins.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2019/11/20/key-value-editor.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2019/07/15/lite-store-with-hooks.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2019/08/15/mdpress.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2019/05/19/mini-egg.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2019/08/16/mute-body-element-when-popup-shows.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2019/11/29/promise-interception.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2019/10/27/read-from-terminal-in-node.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2019/11/22/tdd-n-bdd.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2019/09/24/traverse-directories-in-node.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2019/11/07/webgl.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2019/02/03/wish-reply.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2019/10/31/zero-width-space.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2020/02/15/class-fc-hooks.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2020/11/28/docker-n-kubernetes.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2020/12/25/shells.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2020/09/10/sicp.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2020/02/13/simple-querybuilder.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2020/12/06/wander-in-webpack.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2018/10/22/assembly.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2020/09/23/golang.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/2020/02/09/redux-source-code-impression.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/about/index.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://akatquas.github.io/categories/index.html</loc>
-    
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/2017/12/03/angular.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/2017/11/06/database-basic-concepts.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2017/12/07/nativescript.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2018/08/31/build-a-compiler.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2018/02/24/cocos-js-boilerplate.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2018/05/24/data-structure.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2018/11/14/garbage-collector-in-c.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2018/07/07/gulp-vs-grunt.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2018/09/03/interpreter-in-js.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2018/11/07/jquery.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2018/11/05/lisp-interpreter-in-c.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2018/11/25/lisp-interpreter-in-py.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2018/02/24/network-top-down-approach.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2018/12/20/node-argv.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2018/10/07/react-create-cli.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2018/08/14/react-stores.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2018/08/23/super-tiny-interpreter.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2018/09/13/web-server-with-tcp.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2018/07/17/wxma.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2019/12/10/depth-in-event-loop.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2020/03/31/fullstack-starter.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2019/05/04/graphql.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2019/01/24/huaban-pins.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2019/11/20/key-value-editor.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2019/07/15/lite-store-with-hooks.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2019/08/15/mdpress.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2019/05/19/mini-egg.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2019/08/16/mute-body-element-when-popup-shows.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2019/11/29/promise-interception.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2019/10/27/read-from-terminal-in-node.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2019/11/22/tdd-n-bdd.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2019/09/24/traverse-directories-in-node.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2019/11/07/webgl.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2019/02/03/wish-reply.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2019/10/31/zero-width-space.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2020/02/15/class-fc-hooks.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2020/11/28/docker-n-kubernetes.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2020/12/25/shells.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2020/09/10/sicp.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2020/02/13/simple-querybuilder.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2020/12/06/wander-in-webpack.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2021/02/03/file-system.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2021/01/21/runtime-performance.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2018/10/22/assembly.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2020/09/23/golang.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/2020/02/09/redux-source-code-impression.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://akatquas.github.io/404.html</loc>
     
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/about/index.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/categories/index.html</loc>
+    
+    <lastmod>2021-02-10</lastmod>
     
   </url>
   
 
   <url>
     <loc>https://akatquas.github.io/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -971,287 +978,308 @@
   
   <url>
     <loc>https://akatquas.github.io/tags/angular/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/nativescript/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/compiler/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/cocosjs/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/javascript/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/garbage-collector/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/gulp/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/grunt/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/interpreter/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/jquery/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/lisp/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/nodejs/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/reactjs/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/tcp/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/taro/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/mpvue/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/event-loop/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/fullstack/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/nest/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/graphql/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/hooks/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/html/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/markdown/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/eggjs/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/promise/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/unit-test/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/jest/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/jasmine/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/mocha/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/webgl/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/python/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/wechat/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/docker/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/kubernetes/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/shell/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/sicp/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/querybuilder/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/webpack/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/tags/file-system/</loc>
+    <lastmod>2021-02-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/tags/unix/</loc>
+    <lastmod>2021-02-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/tags/performance/</loc>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/assembly/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/golang/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/tags/redux/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
@@ -1260,168 +1288,189 @@
   
   <url>
     <loc>https://akatquas.github.io/categories/chatty/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/categories/frontend/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/categories/database/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/categories/programming-language/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/categories/frontend/javascript/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/categories/frontend/angular/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/categories/data-structure/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/categories/programming-language/interpreter/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/categories/programming-language/compiler/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/categories/network/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/categories/command-line/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/categories/frontend/javascript/reactjs/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/categories/web-server/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/categories/programming-language/javascript/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/categories/programming-language/garbage-collector/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/categories/frontend/graphql/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/categories/frontend/javascript/jquery/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/categories/frontend/unit-test/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/categories/computer-graphics/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/categories/devops/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/categories/programming-language/sicp/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/categories/frontend/javascript/webpack/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/categories/file-system/</loc>
+    <lastmod>2021-02-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/categories/frontend/developer-tools/</loc>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/categories/programming-language/assembly/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://akatquas.github.io/categories/programming-language/golang/</loc>
-    <lastmod>2021-01-15</lastmod>
+    <lastmod>2021-02-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://akatquas.github.io/categories/frontend/developer-tools/performance/</loc>
+    <lastmod>2021-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>

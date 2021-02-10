@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"akatquas.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.2.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"width":240},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":null,"post_body":"fadeIn","coll_header":null,"sidebar":null}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta name="description" content="随便记一些有关于文件系统的知识点。  什么是文件一个文件就是存在于计算机系统里的一堆数据，而且可以用单一实体的方式从计算机程序中引用。 文件还提供让进程可以继续执行的数据存储机制，一般用于重新启动计算机。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="文件系统札记">
+<meta property="og:url" content="https://akatquas.github.io/2021/02/03/file-system.html">
+<meta property="og:site_name" content="🔭">
+<meta property="og:description" content="随便记一些有关于文件系统的知识点。  什么是文件一个文件就是存在于计算机系统里的一堆数据，而且可以用单一实体的方式从计算机程序中引用。 文件还提供让进程可以继续执行的数据存储机制，一般用于重新启动计算机。">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-02-03T01:08:16.000Z">
+<meta property="article:modified_time" content="2021-02-10T02:56:37.414Z">
+<meta property="article:author" content="Akat">
+<meta property="article:tag" content="file-system">
+<meta property="article:tag" content="unix">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://akatquas.github.io/2021/02/03/file-system.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+<title>文件系统札记 | 🔭</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">🔭</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Just do it, then perfect it</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fas fa-door-open fa-fw"></i>Home</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fas fa-user-astronaut fa-fw"></i>About</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fas fa-spider fa-fw"></i>Tags</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fas fa-object-group fa-fw"></i>Categories</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fas fa-warehouse fa-fw"></i>Archives</a></li>
+        <li class="menu-item menu-item-dateless"><a href="/dateless/" rel="section"><i class="fa fa-igloo fa-fw"></i>Dateless</a></li>
+        <li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="fas fa-bezier-curve fa-fw"></i>Sitemap</a></li>
+        <li class="menu-item menu-item-commonweal"><a href="/404.html" rel="section"><i class="fas fa-ambulance fa-fw"></i>Commonweal 404</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E6%96%87%E4%BB%B6"><span class="nav-text">什么是文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E5%91%BD%E5%90%8D"><span class="nav-text">文件命名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#unix-%E4%B8%AD%E7%9A%84%E6%96%87%E4%BB%B6"><span class="nav-text">UNIX 中的文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#unix-%E5%B1%82%E7%BA%A7%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F"><span class="nav-text">UNIX 层级式文件系统</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%82%E8%BD%BD%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F"><span class="nav-text">挂载文件系统</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E5%AE%9E%E7%8E%B0%E6%A6%82%E5%86%B5"><span class="nav-text">文件系统实现概况</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BE%E5%A4%87%E4%B9%9F%E6%98%AF-unix-%E6%96%87%E4%BB%B6"><span class="nav-text">设备也是 UNIX 文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#unix-%E6%96%87%E4%BB%B6%E5%B1%9E%E6%80%A7"><span class="nav-text">UNIX 文件属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#inode-%E9%83%A8%E5%88%86%E5%B1%9E%E6%80%A7"><span class="nav-text">inode 部分属性</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Akat</p>
+  <div class="site-description" itemprop="description">Take notes aperiodically</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">47</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">44</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AkatQuas" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AkatQuas" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fas fa-atlas fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/kiddo-plays" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;kiddo-plays" rel="noopener" target="_blank">kiddo plays</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://github.com/AkatQuas/nprogresse" title="https:&#x2F;&#x2F;github.com&#x2F;AkatQuas&#x2F;nprogresse" rel="noopener" target="_blank">nprogresse</a>
+        </li>
+    </ul>
+  </div>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://akatquas.github.io/2021/02/03/file-system.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Akat">
+      <meta itemprop="description" content="Take notes aperiodically">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="🔭">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          文件系统札记
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-02-03 09:08:16" itemprop="dateCreated datePublished" datetime="2021-02-03T09:08:16+08:00">2021-02-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/file-system/" itemprop="url" rel="index"><span itemprop="name">file-system</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <blockquote>
+<p>随便记一些有关于文件系统的知识点。</p>
+</blockquote>
+<h2 id="什么是文件"><a href="#什么是文件" class="headerlink" title="什么是文件"></a>什么是文件</h2><p>一个文件就是存在于计算机系统里的一堆数据，而且可以用单一实体的方式从计算机程序中引用。</p>
+<p>文件还提供让进程可以继续执行的数据存储机制，一般用于重新启动计算机。</p>
+<a id="more"></a>
+
+<h2 id="文件命名"><a href="#文件命名" class="headerlink" title="文件命名"></a>文件命名</h2><p>文件名可以使用的是除了 <em>控制字符 NUL （表示字符串结尾的字符）</em> 和 <em>斜杠 / 字符</em> 以外的合法的字符。</p>
+<p>建议：</p>
+<ul>
+<li>名称使用可视字符，看不到的控制字符不太适合</li>
+<li>名称符合计算机程序读取的规则</li>
+<li>Shell 的 meta 字符，如 <code>! @ # $</code> 等，尽量避免</li>
+<li>初始的连字号会让文件名看起来像 UNIX 命令选项，最好避免</li>
+<li>习惯使用全小写的文件名，除了常见的重要文件名使用约定，如 <code>README</code>, <code>COPYRIGHT</code>, <code>Makefile</code></li>
+</ul>
+<h2 id="unix-中的文件"><a href="#unix-中的文件" class="headerlink" title="UNIX 中的文件"></a>UNIX 中的文件</h2><p>UNIX 的视角下，文件不过是零个或多个不知名的数据字节集结而成的流 (a stream consists of zero byte or more)。</p>
+<p>UNIX 的文件复制逻辑就变得很简单：</p>
+<pre class="line-numbers language-none"><code class="language-none">try-to-get-a-byte
+while (have-a-byte)
+&#123;
+     put-a-byte
+     try-to-get-a-byte
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<blockquote>
+<p><strong>文件换行符</strong>。 UNIX 下的文本文件以 ASCII linefeed (LF) 字符，来表示行的界限，（ ASCII 表里为十进制 10 ）。通常称为换行字符，以 <code>\n</code> 来表示。这种方式比其他系统的一组 <em>carriage-return/linefeed</em> 字符的表示要简单。</p>
+</blockquote>
+<p>UNIX 里所有的其他文件可被认为是二进制文件：每一个包含在其中的字节，都有 256 种可能的值。因此，文本文件可以算是二进制文件的子集。</p>
+<p>不同于某些操作系统的是，没有字符会被强制来表示 <em>end-of-file_，UNIX 文件系统单纯地在文件中保留字节数的计数。尝试读取超越文件字节计数时，会返回一个 _end-of-file</em> 的暗示。</p>
+<h2 id="unix-层级式文件系统"><a href="#unix-层级式文件系统" class="headerlink" title="UNIX 层级式文件系统"></a>UNIX 层级式文件系统</h2><p>大量的文件就可能存在名字冲突的风险。UNIX 文件系统解决这个问题的方法是将独一无二的文件名逻辑式地组合在一起，成为目录 directory 或者文件夹 folder。每个目录形成它自己的名称空间，独立于其他的目录。</p>
+<p>目录可以嵌套配置为任意深度，任意宽度，使得 UNIX 文件系统形成树状结构。</p>
+<blockquote>
+<p>大部分现行 UNIX 文件系统的设计与文件系统程序界面，都假定目录是被连续地查找。因此在大型目录下寻找文件的时间，与目录里的文件数量成正比。</p>
+</blockquote>
+<p>UNIX 目录本身就是文件，只不过它拥有特殊属性且有限访问。所有的目录，即使空目录，也至少包含两个特殊目录，<code>.</code> 目录本身， <code>..</code> 上级目录。</p>
+<p>路径结尾如果是以斜杠结束，则它是一个目录。如果最后字符非斜杠，最后一个组成部分是目录还是其他类型的文件，只能通过咨询文件系统而得知。（某个目录的 link ）</p>
+<h2 id="挂载文件系统"><a href="#挂载文件系统" class="headerlink" title="挂载文件系统"></a>挂载文件系统</h2><p>UNIX 允许将某个文件系统，逻辑性地置于另一个文件系统内一个已存在的任意目录上，mounting 。</p>
+<p>当另一个文件系统加载在一个目录之上时，该目录之前的内容都无法看见也无法访问，直到卸载那个文件系统之后，它们才会出现。</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 显示已加载的文件系统列表</span>
+<span class="token function">mount</span> <span class="token operator">|</span> <span class="token function">sort</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<h2 id="文件系统实现概况"><a href="#文件系统实现概况" class="headerlink" title="文件系统实现概况"></a>文件系统实现概况</h2><blockquote>
+<p>文件系统实现的细节很复杂，我的了解不足以把它说清楚。</p>
+</blockquote>
+<p>当文件系统创建时，同时会创建一个固定大小的保存文件系统中与文件相关信息的表格。某些实现允许这个表格动态增大。</p>
+<p>每个文件都会与这个表格的一个实例相关联，这个实例是一个文件系统的数据结构，称为 <code>inode</code> ，也就是 <code>index node</code> ，发音 <em>eye node</em> 。</p>
+<p>为什么平时都看不到这个数据结构呢？因为都被 <code>stat()</code> 和 <code>fstat()</code> 系统调用屏蔽了，不同文件系统的 inode 不同实现也不需要被关注。搜索 <code>inode struct</code> 可以了解更多信息。</p>
+<p>由于 inode 表格的小是固定的，因此有可能出现文件系统已满，但存储设备仍有大量可用的空间。存储设备有空间存放文件数据，但是没有空间存放它的 metadata 数据。</p>
+<p>在同一个 UNIX 文件系统下，重命名或者移动文件，速度都很快，因为不涉及文件内容块的变化，只是修改的 inode 的信息。如果跨文件系统了， 则需要对文件的所有块进行读取与写入的操作。</p>
+<p><strong>连接</strong></p>
+<p>创建一个硬连接，link ，不会复制出一个 inode，但会指向同一个 inode。</p>
+<p>创建一个软连接，soft link，symbolic link，则不会指向 inode 条目，它只是表示 _这个目录条目指向另一个目录条目_，它可以指向文件系统内任何位置，即使跨加载点。</p>
+<p>复制文件，会产生新的 inode，新的内容块。</p>
+<p>同文件系统下，移动文件，复用已有的 inode，不影响内容块。</p>
+<h2 id="设备也是-unix-文件"><a href="#设备也是-unix-文件" class="headerlink" title="设备也是 UNIX 文件"></a>设备也是 UNIX 文件</h2><p>UNIX 将文件的概念延展到了系统上的设备。所有的 UNIX 系统都拥有名为 <code>/dev</code> 的顶层目录。在该目录下，就是设备文件，这些设备文件由专门的驱动程序控制。</p>
+<p><strong>/dev/null</strong> 是 bit bucket ，所有传送到这个设备文件的数据都会被系统丢掉。从这里读取则会得到文件结束符号 <em>end-of-file</em> 。</p>
+<p><strong>/dev/tty</strong> ，当程序打开这个文件的时候， UNIX 会自动将它重定向到一个终端，如实体的控制台 console ，或串行端口 serial port ，然后再和程序相结合。这在程序必须读取人工输入时很有用。</p>
+<p><strong>/dev/random</strong> ， <strong>/dev/urandom</strong> 是两个随机伪设备，能够提高永不为空的随机字节数据流。这两个设备的差别在于， <strong>/dev/random</strong> 会一直封锁，直到系统所产生的随机数已充分够用，所以它可以保证高品质的随机数。 <strong>/dev/urandom</strong> 不会死锁，数据的随机程度一般，但足够通过大部分随机统计测试。</p>
+<h2 id="unix-文件属性"><a href="#unix-文件属性" class="headerlink" title="UNIX 文件属性"></a>UNIX 文件属性</h2><p>UNIX 的文件拥有所有权和权限的概念。</p>
+<p><strong>所有权</strong></p>
+<p>UNIX 的文件有两种所有权，用户所有 <em>user</em> ，组所有 <em>group</em> ，它们有各自的权限。</p>
+<p>新的文件通常会继承其创造者的所有者与组成员，可以通过 <code>chown</code> 或 <code>chgrp</code> 来改变其属性。</p>
+<p><strong>文件权限</strong></p>
+<p>权限则有三种类型，读取 <em>read</em> ，写入 <em>write</em> ，执行 <em>execute</em> 。它们在 inode 数据结构里面只需要单一位，就可以指出权限的存在与否。</p>
+<p><code>chmod</code> 可以改变权限类型。</p>
+<p><strong>目录权限</strong></p>
+<p>目录权限的解读会由稍微不同。</p>
+<p>目录的读取，就是可以列出它的内容，如 <code>ls</code> 。</p>
+<p>目录的写入，就表示能在当前目录下面建立或删除文件，即便对目录下面的文件，没有写入权限。</p>
+<p>执行访问，可以访问文件以及该目录下的子目录。</p>
+<h2 id="inode-部分属性"><a href="#inode-部分属性" class="headerlink" title="inode 部分属性"></a>inode 部分属性</h2><p><strong>文件时间戳</strong></p>
+<p>UNIX 文件的 inode 条目记录包括三个重要的时间戳：访问时间、inode 变更时间、修改时间。</p>
+<p>访问时间是通过数个系统调用而被更新，包括读取与写入文件的操作。</p>
+<p>inode 变更时间是在文件建立之时，以及 inode metadata 被修改时被设置。</p>
+<p>修改时间的变更是在文件块被修改，而非 metadata （文件名、用户、组、连接计数、权限） 变更时。</p>
+<p><strong>文件大小和类型</strong></p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">ls</span> -l<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>文件类型记录在每行的第一个字符：</p>
+<ul>
+<li><code>-</code> ，一般文件</li>
+<li><code>d</code> ，目录</li>
+<li><code>l</code> ，符号连接</li>
+<li><code>p</code> ，pipe</li>
+<li><code>s</code> ，socket</li>
+</ul>
+<p>每个文件的 inode 实体记录包含了它的字节大小，如果文件为空时，它可以是 0 ，它显示在第 5 行。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/file-system/" rel="tag"># file-system</a>
+              <a href="/tags/unix/" rel="tag"># unix</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/01/21/runtime-performance.html" rel="next" title="Runtime Performance">
+                  Runtime Performance <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fab fa-battle-net"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Akat</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
