@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Draw A Rounded Rectangle in Canvas</title>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1.0, maximum-scale=1.0,user-scalable=0"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css"
+    />
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/dateless/assets/script/ie10-viewport-bug-workaround.js"></script>
+    <script src="https://cdn.bootcss.com/vue/2.4.4/vue.min.js"></script>
+    <style>
+      body {
+        padding-bottom: 100px;
+      }
+
+      canvas {
+        border: 1px solid black;
+      }
+    </style>
+  </head>
+  <body>
+    <h3>Snakes, your score: <span id="score">0</span></h3>
+    <canvas id="canvas1"></canvas>
+    <script>
+      (function () {
+        var cvs = document.querySelector('#canvas1');
+        var ctx = cvs.getContext('2d');
+
+        cvs.width = 800;
+        cvs.height = 600;
+
+        var snakeSize = 20,
+          cvsGridX = cvs.width / snakeSize,
+          cvsGridY = cvs.height / snakeSize,
+          length = 0,
+          skBody = [],
+          food = {},
+          nowDir = 1,
+          dirFlag = 0,
+          moveInterval = null,
+          score = 0;
+
+        // Utility Functions
+        function randomIntFromRange(min, max, ex) {
+          var x = Math.floor(Math.random() * (max - min + 1) + min);
+
+          if (ex) {
+            return x !== ex ? x : randomIntFromRange(min, max, ex);
+          }
+          return x;
+        }
+
+        function randomColor() {
+          var colors = ['#2185C5', '#7ECEFD', '#FFF6E5', '#FF7F66'];
+          return colors[randomIntFromRange(0, colors.length - 1)];
+        }
+
+        function createSnakeNode(x, y) {
+          skBody.push({ x: x, y: y, color: length === 0 ? '#6cf' : '#2185c5' });
+          length++;
+        }
+
+        function drawRect(node) {
+          ctx.beginPath();
+          ctx.fillStyle = node.color;
+          ctx.fillRect(
+            node.x * snakeSize,
+            node.y * snakeSize,
+            snakeSize,
+            snakeSize
+          );
+          ctx.closePath();
+        }
+
+        function drawSnake() {
+          ctx.clearRect(0, 0, cvs.width, cvs.height);
+          skBody.forEach(function (node) {
+            drawRect(node);
+          });
+          drawRect(food);
+        }
+
+        function snakeMove() {
+          var newHead = JSON.parse(JSON.stringify(skBody[0]));
+          switch (nowDir) {
+            case 1:
+              newHead.y -= 1;
+              break;
+            case -1:
+              newHead.y += 1;
+              break;
+            case 2:
+              newHead.x -= 1;
+              break;
+            case -2:
+              newHead.x += 1;
+              break;
+          }
+          for (var i = skBody.length - 1; i > 0; i--) {
+            skBody[i].x = skBody[i - 1].x;
+            skBody[i].y = skBody[i - 1].y;
+            if (skBody[i].x === newHead.x && skBody[i].y === newHead.y) {
+              return gameover();
+            }
+          }
+
+          skBody[0] = newHead;
+          if (isGetFood(skBody[0])) {
+            score++;
+            document.querySelector('#score').innerText = score;
+            putFood();
+            skBody.push({
+              x: skBody[skBody.length - 1].x,
+              y: skBody[skBody.length - 1].y,
+              color: '#2185c5',
+            });
+          }
+          if (checkOutOfBorder(skBody[0])) {
+            gameover();
+          }
+
+          dirFlag = 0;
+          drawSnake();
+        }
+
+        function isGetFood(node) {
+          return node.x === food.x && node.y === food.y;
+        }
+
+        function checkOutOfBorder(node) {
+          return (
+            node.x < 0 ||
+            node.x > cvsGridX - 1 ||
+            node.y < 0 ||
+            node.y > cvsGridY - 1
+          );
+        }
+
+        // Implementation
+
+        function init() {
+          skBody = [];
+          length = 0;
+          nowDir = 2;
+          for (var i = 0; i < 3; i++) {
+            createSnakeNode(
+              Math.floor(cvsGridX / 2) + i,
+              Math.floor(cvsGridY / 2)
+            );
+          }
+          drawSnake();
+          putFood();
+          moveInterval = setInterval(snakeMove, 300);
+        }
+
+        document.onkeydown = function (e) {
+          if (dirFlag) return;
+          e.preventDefault();
+          var c = e.keyCode;
+          switch (c) {
+            case 38:
+              //                    up
+              setDirection(1);
+              break;
+            case 40:
+              //                    down
+              setDirection(-1);
+              break;
+            case 37:
+              //                    left
+              setDirection(2);
+              break;
+            case 39:
+              //                    right
+              setDirection(-2);
+              break;
+          }
+        };
+
+        function putFood() {
+          var flag = 1;
+          while (1) {
+            var foodX = Math.floor(Math.random() * cvsGridX);
+            var foodY = Math.floor(Math.random() * cvsGridY);
+            skBody.forEach(function (node) {
+              if (node.x === foodX && node.y === foodY) flag = 0;
+            });
+            if (flag) {
+              console.log(foodX, foodY);
+              break;
+            }
+          }
+          food = { x: foodX, y: foodY, color: randomColor() };
+          drawRect(food);
+        }
+
+        function gameover() {
+          alert('Game over, restart!');
+          init();
+        }
+
+        function setDirection(dir) {
+          dirFlag = 1;
+          if (Math.abs(dir) === Math.abs(nowDir)) return;
+          nowDir = dir;
+        }
+
+        init();
+      })();
+    </script>
+  </body>
+</html>

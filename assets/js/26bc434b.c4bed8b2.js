@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkblog=self.webpackChunkblog||[]).push([[3063],{75119:a=>{a.exports=JSON.parse('{"label":"nativescript","permalink":"/blog/tags/nativescript","allTagsPath":"/blog/tags","count":1}')}}]);

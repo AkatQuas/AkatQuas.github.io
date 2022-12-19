@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkblog=self.webpackChunkblog||[]).push([[6913],{56492:e=>{e.exports=JSON.parse('{"label":"chrome devtools","permalink":"/blog/tags/chrome-devtools","allTagsPath":"/blog/tags","count":1}')}}]);

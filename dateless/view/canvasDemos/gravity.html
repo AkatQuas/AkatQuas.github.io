@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Draw A Rounded Rectangle in Canvas</title>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1.0, maximum-scale=1.0,user-scalable=0"
+    />
+    <link
+      href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/dateless/assets/script/ie10-viewport-bug-workaround.js"></script>
+    <script src="https://cdn.bootcss.com/vue/2.4.4/vue.min.js"></script>
+    <style>
+      body {
+        padding-bottom: 100px;
+      }
+    </style>
+  </head>
+  <body>
+    <h3>Gravity</h3>
+    <canvas id="canvas1"></canvas>
+    <script>
+      // Utility Functions
+      function randomIntFromRange(min, max, ex) {
+        var x = Math.floor(Math.random() * (max - min + 1) + min);
+
+        if (ex) {
+          return x !== ex ? x : randomIntFromRange(min, max, ex);
+        }
+        return x;
+      }
+
+      function randomColor() {
+        var colors = ['#2185C5', '#7ECEFD', '#FFF6E5', '#FF7F66'];
+        return colors[randomIntFromRange(0, colors.length - 1)];
+      }
+
+      var gravity = 1;
+      var friction = 0.9;
+
+      function Ball(c, x, y, dx, dy, radius, color) {
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+        this.color = color;
+        this.dy = dy;
+        this.dx = dx;
+
+        this.update = function () {
+          if (this.y + this.radius > canvas.height) {
+            this.dy = -this.dy * friction;
+          } else {
+            this.dy += gravity;
+          }
+          this.y += this.dy;
+
+          if (this.x + this.radius > canvas.width || this.x - this.radius < 0) {
+            this.dx = -this.dx;
+          }
+          this.x += this.dx;
+          this.draw();
+        };
+
+        this.draw = function () {
+          c.beginPath();
+          c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+          c.fillStyle = this.color;
+          c.fill();
+          c.closePath();
+        };
+      }
+
+      var canvas = document.querySelector('#canvas1');
+      var ctx = canvas.getContext('2d');
+
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      // Variables
+      var mouse = {
+        x: 2,
+        y: 2,
+      };
+
+      // Event Listeners
+      canvas.addEventListener('mousemove', function (event) {
+        mouse.x = event.offsetX;
+        mouse.y = event.offsetY;
+      });
+
+      window.addEventListener('resize', function () {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        init();
+      });
+
+      canvas.addEventListener('click', function () {
+        init();
+      });
+
+      // Implementation
+      var ballArray = [];
+
+      function init() {
+        ballArray = [];
+        var radius = 30;
+        for (var i = 0; i < 100; i++) {
+          var x = randomIntFromRange(0, canvas.width);
+          var y = randomIntFromRange(0, canvas.height - radius);
+          var color = randomColor();
+          var dx = randomIntFromRange(-2, 2, 0);
+          var dy = 1;
+          ballArray.push(new Ball(ctx, x, y, dx, dy, radius, color));
+        }
+      }
+
+      // Animation Loop
+      function animate() {
+        requestAnimationFrame(animate);
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ballArray.forEach(function (ball) {
+          ball.update();
+        });
+      }
+
+      init();
+      animate();
+    </script>
+  </body>
+</html>

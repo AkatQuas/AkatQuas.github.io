@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkblog=self.webpackChunkblog||[]).push([[7081],{68617:s=>{s.exports=JSON.parse('{"label":"cocosjs","permalink":"/blog/tags/cocosjs","allTagsPath":"/blog/tags","count":1}')}}]);

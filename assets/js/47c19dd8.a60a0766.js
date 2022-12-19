@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkblog=self.webpackChunkblog||[]).push([[1497],{40994:l=>{l.exports=JSON.parse('{"label":"garbage collector","permalink":"/blog/tags/garbage-collector","allTagsPath":"/blog/tags","count":1}')}}]);

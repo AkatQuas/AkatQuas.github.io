@@ -1,0 +1,30 @@
+body {
+    margin-top: 50px;
+}
+.pagination.square {
+    margin:0;
+}
+.pagination.square > li > a,
+.pagination.square > li > span {
+    margin:0 5px;
+}
+.pagination.square > li:first-child > a,
+.pagination.square > li:first-child > span,
+.pagination.square > li:last-child > a,
+.pagination.square > li:last-child > span {
+    margin-left: 0;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+.btn > .glyphicon {
+    margin-right: 3px;
+}
+.main-table thead > tr > th:nth-child(1),
+.main-table thead > tr > th:nth-child(2),
+.main-table tbody > tr > td:nth-child(1),
+.main-table tbody > tr > td:nth-child(2) {
+    text-align: center;
+}
+.panel-footer span {
+    font-size:14px;
+}

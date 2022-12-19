@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkblog=self.webpackChunkblog||[]).push([[3544],{19822:e=>{e.exports=JSON.parse('{"label":"microservice","permalink":"/blog/tags/microservice","allTagsPath":"/blog/tags","count":1}')}}]);

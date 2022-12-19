@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkblog=self.webpackChunkblog||[]).push([[5196],{25677:e=>{e.exports=JSON.parse('{"label":"mpvue","permalink":"/blog/tags/mpvue","allTagsPath":"/blog/tags","count":1}')}}]);

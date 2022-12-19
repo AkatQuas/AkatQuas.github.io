@@ -1,0 +1,1 @@
+function InputStream(n){var r=0,t=1,e=0;function u(){return n.charAt(r)}return{next:function(){var u=n.charAt(r++);return"\n"===u?(t++,e=0):e++,u},peek:u,eof:function(){return""===u()},croak:function(n){throw new Error(n+" ("+t+":"+e+")")}}}

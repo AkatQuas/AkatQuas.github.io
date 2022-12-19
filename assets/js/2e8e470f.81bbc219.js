@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkblog=self.webpackChunkblog||[]).push([[429],{36950:e=>{e.exports=JSON.parse('{"label":"mirco-frontend","permalink":"/blog/tags/mirco-frontend","allTagsPath":"/blog/tags","count":1}')}}]);
