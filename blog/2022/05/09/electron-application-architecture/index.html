@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en" dir="ltr" class="blog-wrapper blog-post-page plugin-blog plugin-id-default" data-has-hydrated="false">
+<head>
+<meta charset="UTF-8">
+<meta name="generator" content="Docusaurus v3.10.2">
+<title data-rh="true">Electron 应用的理想架构设计 | AkatQuas&#x27;s blog</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:url" content="https://akatquas.github.io/blog/2022/05/09/electron-application-architecture"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docusaurus_tag" content="default"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docsearch:docusaurus_tag" content="default"><meta data-rh="true" property="og:title" content="Electron 应用的理想架构设计 | AkatQuas&#x27;s blog"><meta data-rh="true" name="description" content="最近在折腾 Electron 相关的应用，一口气跟着 Udemy 的教程学了一些入门级的开发实践，如 Electron for Desktop Apps Build Desktop Apps With JavaScript 。这些课程通过几个小巧的应用来介绍如何使用 Electron 开发，都是比较适合新手入门。"><meta data-rh="true" property="og:description" content="最近在折腾 Electron 相关的应用，一口气跟着 Udemy 的教程学了一些入门级的开发实践，如 Electron for Desktop Apps Build Desktop Apps With JavaScript 。这些课程通过几个小巧的应用来介绍如何使用 Electron 开发，都是比较适合新手入门。"><meta data-rh="true" property="og:type" content="article"><meta data-rh="true" property="article:published_time" content="2022-05-09T00:00:00.000Z"><meta data-rh="true" property="article:tag" content="electron,architecture"><link data-rh="true" rel="icon" href="/images/favicon.ico"><link data-rh="true" rel="canonical" href="https://akatquas.github.io/blog/2022/05/09/electron-application-architecture"><link data-rh="true" rel="alternate" href="https://akatquas.github.io/blog/2022/05/09/electron-application-architecture" hreflang="en"><link data-rh="true" rel="alternate" href="https://akatquas.github.io/blog/2022/05/09/electron-application-architecture" hreflang="x-default"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","@id":"https://akatquas.github.io/blog/2022/05/09/electron-application-architecture","mainEntityOfPage":"https://akatquas.github.io/blog/2022/05/09/electron-application-architecture","url":"https://akatquas.github.io/blog/2022/05/09/electron-application-architecture","headline":"Electron 应用的理想架构设计","name":"Electron 应用的理想架构设计","description":"最近在折腾 Electron 相关的应用，一口气跟着 Udemy 的教程学了一些入门级的开发实践，如 Electron for Desktop Apps Build Desktop Apps With JavaScript 。这些课程通过几个小巧的应用来介绍如何使用 Electron 开发，都是比较适合新手入门。","datePublished":"2022-05-09T00:00:00.000Z","author":[],"keywords":[],"isPartOf":{"@type":"Blog","@id":"https://akatquas.github.io/blog","name":"Blog"}}</script><link rel="alternate" type="application/rss+xml" href="/blog/rss.xml" title="AkatQuas&#39;s blog RSS Feed">
+<link rel="alternate" type="application/atom+xml" href="/blog/atom.xml" title="AkatQuas&#39;s blog Atom Feed"><link rel="stylesheet" href="/assets/css/styles.cd16f378.css">
+<script src="/assets/js/runtime~main.8fa69736.js" defer="defer"></script>
+<script src="/assets/js/main.106e90f9.js" defer="defer"></script>
+</head>
+<body>
+<svg style="display: none;"><defs>
+<symbol id="theme-svg-external-link" viewBox="0 0 24 24"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"/></symbol>
+</defs></svg>
+<script>!function(){var t=function(){try{return new URLSearchParams(window.location.search).get("docusaurus-theme")}catch(t){}}()||function(){try{return window.localStorage.getItem("theme")}catch(t){}}();document.documentElement.setAttribute("data-theme",t||"light"),document.documentElement.setAttribute("data-theme-choice",t||"light")}(),function(){try{const c=new URLSearchParams(window.location.search).entries();for(var[t,e]of c)if(t.startsWith("docusaurus-data-")){var a=t.replace("docusaurus-data-","data-");document.documentElement.setAttribute(a,e)}}catch(t){}}()</script><div id="__docusaurus"><div role="region" aria-label="Skip to main content"><a class="skipToContent_fXgn" href="#__docusaurus_skipToContent_fallback">Skip to main content</a></div><nav aria-label="Main" class="theme-layout-navbar navbar navbar--fixed-top"><div class="navbar__inner"><div class="theme-layout-navbar-left navbar__items"><button aria-label="Toggle navigation bar" aria-expanded="false" class="navbar__toggle clean-btn" type="button"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"></path></svg></button><a class="navbar__brand" href="/"><div class="navbar__logo"><img src="/images/logo.svg" alt="AkatQuas" class="themedComponent_mlkZ themedComponent--light_NVdE"><img src="/images/logo.svg" alt="AkatQuas" class="themedComponent_mlkZ themedComponent--dark_xIcU"></div><b class="navbar__title text--truncate">AkatQuas 🔭</b></a><a class="navbar__item navbar__link" href="/docs/about">About</a><a aria-current="page" class="navbar__item navbar__link navbar__link--active" href="/blog">Blog</a></div><div class="theme-layout-navbar-right navbar__items navbar__items--right"><a href="https://akatquas.github.io/dateless/" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">Dateless<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a><a href="https://github.com/AkatQuas/AkatQuas.github.io" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">GitHub<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a><div class="toggle_vylO colorModeToggle_DEke"><button class="clean-btn toggleButton_gllP toggleButtonDisabled_aARS" type="button" disabled="" title="system mode" aria-label="Switch between dark and light mode (currently system mode)"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP lightToggleIcon_pyhR"><path fill="currentColor" d="M12,9c1.65,0,3,1.35,3,3s-1.35,3-3,3s-3-1.35-3-3S10.35,9,12,9 M12,7c-2.76,0-5,2.24-5,5s2.24,5,5,5s5-2.24,5-5 S14.76,7,12,7L12,7z M2,13l2,0c0.55,0,1-0.45,1-1s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S1.45,13,2,13z M20,13l2,0c0.55,0,1-0.45,1-1 s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S19.45,13,20,13z M11,2v2c0,0.55,0.45,1,1,1s1-0.45,1-1V2c0-0.55-0.45-1-1-1S11,1.45,11,2z M11,20v2c0,0.55,0.45,1,1,1s1-0.45,1-1v-2c0-0.55-0.45-1-1-1C11.45,19,11,19.45,11,20z M5.99,4.58c-0.39-0.39-1.03-0.39-1.41,0 c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0s0.39-1.03,0-1.41L5.99,4.58z M18.36,16.95 c-0.39-0.39-1.03-0.39-1.41,0c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0c0.39-0.39,0.39-1.03,0-1.41 L18.36,16.95z M19.42,5.99c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06c-0.39,0.39-0.39,1.03,0,1.41 s1.03,0.39,1.41,0L19.42,5.99z M7.05,18.36c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06 c-0.39,0.39-0.39,1.03,0,1.41s1.03,0.39,1.41,0L7.05,18.36z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP darkToggleIcon_wfgR"><path fill="currentColor" d="M9.37,5.51C9.19,6.15,9.1,6.82,9.1,7.5c0,4.08,3.32,7.4,7.4,7.4c0.68,0,1.35-0.09,1.99-0.27C17.45,17.19,14.93,19,12,19 c-3.86,0-7-3.14-7-7C5,9.07,6.81,6.55,9.37,5.51z M12,3c-4.97,0-9,4.03-9,9s4.03,9,9,9s9-4.03,9-9c0-0.46-0.04-0.92-0.1-1.36 c-0.98,1.37-2.58,2.26-4.4,2.26c-2.98,0-5.4-2.42-5.4-5.4c0-1.81,0.89-3.42,2.26-4.4C12.92,3.04,12.46,3,12,3L12,3z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP systemToggleIcon_QzmC"><path fill="currentColor" d="m12 21c4.971 0 9-4.029 9-9s-4.029-9-9-9-9 4.029-9 9 4.029 9 9 9zm4.95-13.95c1.313 1.313 2.05 3.093 2.05 4.95s-0.738 3.637-2.05 4.95c-1.313 1.313-3.093 2.05-4.95 2.05v-14c1.857 0 3.637 0.737 4.95 2.05z"></path></svg></button></div><div class="navbarSearchContainer_Bca1"></div></div></div><div role="presentation" class="navbar-sidebar__backdrop"></div></nav><div id="__docusaurus_skipToContent_fallback" class="theme-layout-main main-wrapper mainWrapper_z2l0"><div class="container margin-vert--lg"><div class="row"><aside class="col col--3"><nav class="sidebar_brwN thin-scrollbar" aria-label="Blog recent posts navigation"><div class="sidebarItemTitle_r4Q1 margin-bottom--md">Recent posts</div><ul class="sidebarItemList_QwSx clean-list"><li class="sidebarItem_lnhn"><a class="sidebarItemLink_yNGZ" href="/blog/2026/09/19/jev-decision-model">Jev：不生成文本的决策模型在 Agent 架构中的位置</a></li><li class="sidebarItem_lnhn"><a class="sidebarItemLink_yNGZ" href="/blog/2026/09/12/vscode-integrated-browser">VS Code Integrated Browser：BrowserView、CDP 与「Add to Chat」</a></li><li class="sidebarItem_lnhn"><a class="sidebarItemLink_yNGZ" href="/blog/2026/08/15/skill-evaluation-and-evolution">Skill 评价与进化：业界评测框架与 WingsApp 运行-评价-优化</a></li><li class="sidebarItem_lnhn"><a class="sidebarItemLink_yNGZ" href="/blog/2026/07/25/nodejs-web-pcm-audio">Node.js / Web 音频 PCM 采集与播放选型</a></li><li class="sidebarItem_lnhn"><a class="sidebarItemLink_yNGZ" href="/blog/2026/07/18/realtime-agent">Realtime Agent 调研：流式交互与桌面语音链路</a></li><li class="sidebarItem_lnhn"><a class="sidebarItemLink_yNGZ" href="/blog/2026/07/11/build-libnut">构建 Libnut：麒麟与 Win7 编译备忘</a></li><li class="sidebarItem_lnhn"><a class="sidebarItemLink_yNGZ" href="/blog/2026/07/04/computer-use-selection">Computer Use 选型札记：从 Codex 复刻到 Node 生态</a></li><li class="sidebarItem_lnhn"><a class="sidebarItemLink_yNGZ" href="/blog/2026/06/27/clawshell-api-key-protection">ClawShell API 密钥保护机制分析</a></li></ul><a class="archiveLink_dflG" href="/blog/archive">Archive</a></nav></aside><main class="col col--7"><article class=""><header><h1 class="title_f1Hy">Electron 应用的理想架构设计</h1><div class="container_mt6G margin-vert--md"><time datetime="2022-05-09T00:00:00.000Z">May 9, 2022</time> · <!-- -->8 min read</div></header><div id="__blog-post-container" class="markdown"><p>最近在折腾 Electron 相关的应用，一口气跟着 Udemy 的教程学了一些入门级的开发实践，如 <a href="https://www.udemy.com/course/electron-react-tutorial/" target="_blank" rel="noopener noreferrer" class="">Electron for Desktop Apps: The Complete Developer&#x27;s Guide</a>，或者 <a href="https://www.udemy.com/course/electron-from-scratch/" target="_blank" rel="noopener noreferrer" class="">Electron From Scratch: Build Desktop Apps With JavaScript</a> 。这些课程通过几个小巧的应用来介绍如何使用 Electron 开发，都是比较适合新手入门。</p>
+<p>但是咱也想达到登堂入室的层次呀，VS Code 的代码实在难啃。所以找了几个项目复杂度中等的开源项目学习了一波。</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="motrix">Motrix<a href="#motrix" class="hash-link" aria-label="Direct link to Motrix" title="Direct link to Motrix" translate="no">​</a></h2>
+<p><a href="https://github.com/agalwood/Motrix" target="_blank" rel="noopener noreferrer" class="">Motrix</a> 是一个界面非常友好的下载器，主要技术栈包括了 Electron 、 Vue 、webpack 等。</p>
+<p>代码结构很清晰，解决问题时使用的 npm package 也很简单。值得学习。</p>
+<p>下面简单说明一下 Motrix 中 Main 和 Renderer 的架构划分。</p>
+<blockquote>
+<p>虽然 Main 里面没采用已有的 DI 框架，但是其中单例模式的使用处处可见。</p>
+<p>扩展 Electron 类型的 <a href="https://github.com/vercel/hyper/blob/canary/app/extend-electron.d.ts" target="_blank" rel="noopener noreferrer" class="">d.ts</a> 。</p>
+</blockquote>
+<p><strong>Main 负责的功能</strong></p>
+<ul>
+<li class="">
+<p>实例化 Launcher ，主要处理 app 层面的事件，如 文件打开，单例窗口 等。</p>
+</li>
+<li class="">
+<p>实例化 Application 应用模块，响应 renderer 的事件，然后交给各个单例去执行。</p>
+</li>
+<li class="">
+<p>Application 继承于 Node 原生的 EventEmitter ，内部维护的单例包括有</p>
+<ul>
+<li class="">配置 Configuration （依赖于 <a href="https://github.com/sindresorhus/electron-store" target="_blank" rel="noopener noreferrer" class="">electron-store</a>）</li>
+<li class="">菜单 Menu</li>
+<li class="">系统托盘 Tray</li>
+<li class="">下载引擎 Aria2 （下载工具）</li>
+<li class="">程序坞 Dock（macOS 专属）</li>
+<li class="">Touch Bar （macOS 专属）</li>
+<li class="">电池模块 （electron 提供的 <a href="https://www.electronjs.org/ru/docs/latest/api/power-save-blocker" target="_blank" rel="noopener noreferrer" class="">powerSaveBlocker</a>）</li>
+<li class="">文件处理 （应用打开 BT 文件直接打开时响应）</li>
+<li class="">窗口管理 （renderer 启动的 BrowserWindow 统一管理）</li>
+</ul>
+</li>
+</ul>
+<p><strong>Renderer 负责的功能</strong></p>
+<p>主要负责用户的交互，主要使用了 Vue 作为 UI library。组件通过 Vuex 触发，再借由 <a href="https://www.electronjs.org/docs/latest/api/ipc-renderer" target="_blank" rel="noopener noreferrer" class="">ipcRenderer</a> 与 Main 进行通信。</p>
+<p>Vuex 承担了状态管理的职责，VueRouter 承担了 SPA 中页面切换的职责。</p>
+<blockquote>
+<p>在 Main 中，<a href="https://www.electronjs.org/docs/latest/api/ipc-main" target="_blank" rel="noopener noreferrer" class="">ipcMain</a> 监听到的事件又回通过 Application 进行 emit ，触发后续动作。</p>
+</blockquote>
+<p><strong>整体</strong></p>
+<p>套用主流 web 应用的视角，就能很容易理解 Motrix 的架构设计。</p>
+<ul>
+<li class="">Main 相当于一个 Server，处理各种涉及 OS 的操作，如数据持久化、系统级的事件响应。</li>
+<li class="">Renderer 相当于 Web 界面，响应绝大部分的用户交互，Renderer 几乎没有任何 OS 相关的工作量。</li>
+<li class="">ipcMain / ipcRenderer 约等于网络，承载了通信职责。</li>
+</ul>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="hyper">Hyper<a href="#hyper" class="hash-link" aria-label="Direct link to Hyper" title="Direct link to Hyper" translate="no">​</a></h2>
+<p><a href="https://github.com/vercel/hyper" target="_blank" rel="noopener noreferrer" class="">hyper</a> 的是一款基于 Electron 的命令行终端。</p>
+<p><strong>Renderer</strong></p>
+<p>可以说是标准的 React 应用了，技术栈主要是 react + redux。</p>
+<p><a href="https://github.com/vercel/hyper/blob/canary/lib/containers/terms.ts" target="_blank" rel="noopener noreferrer" class="">终端实例</a> 则封装了 <a href="https://www.npmjs.com/package/xterm" target="_blank" rel="noopener noreferrer" class="">XTerm</a>。</p>
+<p><strong>Main</strong></p>
+<p>显然，Renderer 不太会执行很重的进程逻辑，它通过 ipcRenderer 向 Main 发送任务消息，Main 进程执行 <code>exec</code> 或者 <code>execFile</code> ，并将结果 <code>stdout</code> 和 <code>stderr</code> 的信息反馈回去。</p>
+<p><strong>通信 Message</strong></p>
+<p>作为一个终端，hyper 免不了要管理多个 <a href="https://www.electronjs.org/docs/latest/api/browser-window" target="_blank" rel="noopener noreferrer" class="">BrowserWindow</a> 实例。为了解决通信问题，hyper 在每个 BrowserWindow 创建的时候，main 进程一方面通过 Set 存储了该实例，另一方面给该实例增加了一个 <a href="https://github.com/vercel/hyper/blob/canary/app/rpc.ts#L40-L46" target="_blank" rel="noopener noreferrer" class="">rpc 属性</a> ，提供了 <em>main-&gt;renderer</em> 消息发送的快捷方式。
+同时在 BrowserWindow 内部，window 全局也挂了一个 <a href="https://github.com/vercel/hyper/blob/canary/lib/utils/rpc.ts" target="_blank" rel="noopener noreferrer" class="">rpc 对象</a>，提供 <em>renderer-&gt;main</em> 消息发送的快捷方式。</p>
+<p><strong>命令 commands</strong></p>
+<p><code>Main</code> 和 <code>Renderer</code> 都维护了的命令集 <code>Map&lt;string,callback&gt;</code> 。这样一来，事件的调用就会变得很容易。</p>
+<p>可能是因为没有具体场景，hyper 并没有实现注册机制。</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="wexond-browser">Wexond Browser<a href="#wexond-browser" class="hash-link" aria-label="Direct link to Wexond Browser" title="Direct link to Wexond Browser" translate="no">​</a></h2>
+<p>这是一个套 Electron 的浏览器。</p>
+<p><strong>Main</strong></p>
+<p>通过阅读 <a href="https://github.com/wexond/browser-base/blob/master/src/main/application.ts#L18-L28" target="_blank" rel="noopener noreferrer" class="">application.ts</a> 的代码，不难发现其采用了单例模式。</p>
+<p>StorageService 负责存储，具体媒介采用了 <a href="https://github.com/louischatriot/nedb" target="_blank" rel="noopener noreferrer" class="">nedb</a> 。</p>
+<p>WindowsService 负责管理多个 <a href="https://github.com/wexond/browser-base/blob/master/src/main/windows/app.ts" target="_blank" rel="noopener noreferrer" class=""><code>AppWindow</code></a> （封装的 BrowserWindow ） 实例，每个 <code>AppWindow</code> 实例通过 <a href="https://github.com/wexond/browser-base/blob/master/src/main/view-manager.ts" target="_blank" rel="noopener noreferrer" class=""><code>ViewManager</code></a> 管理多个 <a href="https://www.electronjs.org/docs/latest/api/browser-view" target="_blank" rel="noopener noreferrer" class="">BrowserView</a> 实例，这些 <a href="https://github.com/wexond/browser-base/blob/master/src/main/view.ts" target="_blank" rel="noopener noreferrer" class=""><code>View</code></a> 就是最终呈现 浏览器地址 内容的页面载体。</p>
+<p>DialogService 则会挂到 BrowserWindow 上，成为一些用户交互组件，例如 搜索框 。</p>
+<p>Main 的 <a href="https://github.com/wexond/browser-base/blob/master/webpack.config.js#L62-L86" target="_blank" rel="noopener noreferrer" class=""><code>webpack.config.js</code></a> 中有关于 Hot Reload Electron 的思路可以借鉴一波。</p>
+<p><strong>Renderer</strong></p>
+<p><code>AppWindow</code> 会载入 app.html ，成为一个具有 Tab 栏 + 工具栏（含地址框） + 书签栏 + 页面载体的 初始化 窗口。app.html 其实占据的内容非常有限，只是窗口顶部一小部分。</p>
+<p>app.html 加载完成后（跳过很多实例化过程），其内在 store service 会 ipcRenderer 发送一条 <code>views-create-${windowId}</code> 的事件，Main 进程中对应 <code>windowId</code> 的 BrowserWindow 会调用其专属的 <code>ViewManager</code> 创建对应的 tab ，创建完之后进行 select ，选择了激活的 tab view 页面 主体，同时会 setBounds 完全占据窗口的下半部分。</p>
+<p><strong>通信</strong></p>
+<p>项目使用了专门封装的 <a href="https://github.com/wexond/rpc" target="_blank" rel="noopener noreferrer" class="">@wexond/rpc-electron</a> 来解决通信问题，这样在 Renderer 和 Main 之间就不需要直接的 send / on 事  件了，而且类型推导变得更加方便。思路是非常好的，具体实现可以看其源码。</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="vs-code">VS Code<a href="#vs-code" class="hash-link" aria-label="Direct link to VS Code" title="Direct link to VS Code" translate="no">​</a></h2>
+<blockquote>
+<p>VS Code 的 Renderer 比 Main 做的事情要重很多，也难怪 VS Code 逐渐开始吃内存了。</p>
+</blockquote>
+<p>关于 VS Code，网上关于 VS Code 架构设计、源码分析的文章一抓一大把，而我鉴于能力有限，只能说一点点皮毛。</p>
+<ul>
+<li class="">VS Code 自己实现了一套依赖注入了，DI 的使用极大地简化了代码之间的引用问题。</li>
+<li class="">Renderer 进程不仅仅是个用户交互响应，还承担了大量的 OS 相关工作，举例如每个编辑器窗口都有自己的插件进程。</li>
+<li class=""><a href="https://github.com/microsoft/vscode/blob/main/src/vs/base/common/event.ts" target="_blank" rel="noopener noreferrer" class="">Event</a> 的设计，使得事件监听变得容易溯源，不再会 on / emit 满天飞了，而且类型推导也变的很容易实现。</li>
+<li class="">命令系统 / Action 的设计，使得 service 的依赖可以在一定程度上解耦，也为后续 extensions 提供命令调用/命令注册的自由带来了可能性。（坏处就是 调用 不能在第一时间溯源到 注册）</li>
+<li class="">ProxyChannel 取代了直接使用 ipcMain / ipcRenderer 的通信，能够支持 browser window 之间的通信。</li>
+<li class="">（想到了再补充，其实就是鸽了的意思）</li>
+</ul>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="重新设计">重新设计<a href="#重新设计" class="hash-link" aria-label="Direct link to 重新设计" title="Direct link to 重新设计" translate="no">​</a></h2>
+<p>下面基于 Electron，设计一款我想要的桌面应用软件架构。</p>
+<p>Main 和 Renderer 均采用某种 DI 框架。不同的 BrowserWindow 中，各自具有独有一颗 DI 树。（我就是这么喜欢依赖注入）</p>
+<p>Main 必要地维护以下功能</p>
+<ul>
+<li class=""><strong>Store</strong> 持久化数据的抽象</li>
+<li class=""><strong>Message</strong> 消息中心，封装 ipcMain 的功能，承担 <em>Main&lt;--&gt;Renderer</em> 之间通信任务</li>
+<li class=""><strong>Command</strong> 以命令系统代替 Service 之间的直接依赖</li>
+<li class=""><strong>Context</strong> Main 执行的上下文，基本上就是 app 相关功能的扩展</li>
+<li class=""><strong>Logger</strong> 日志系统</li>
+<li class=""><strong>Network</strong> 统一的网络基础，方便代理的配置</li>
+<li class=""><strong>WindowManager</strong> 管理各个 BrowserWindow 的实例</li>
+<li class=""><strong>Configuration/Preference</strong> 配置内容</li>
+<li class=""><strong>User</strong> 用户数据</li>
+<li class=""><strong>Menu</strong> 封装 app 相关菜单功能，可以实现菜单的变更</li>
+<li class=""><strong>AutoUpdater</strong> 应用自动更新机制</li>
+</ul>
+<p>Main 可选的功能有</p>
+<ul>
+<li class=""><strong>Metrics</strong> 监控系统</li>
+<li class=""><strong>Theme</strong> 主题配色支持</li>
+<li class=""><strong>Tray</strong> 封装 Electron 的 Tray 功能，实现系统托盘图标相关功能</li>
+<li class=""><strong>Notification</strong> 封装后的通知功能，系统级别的消息通知</li>
+<li class=""><strong>ChildProcess</strong> 某些任务通过子进程的形式去执行，减轻 Main 的压力</li>
+<li class=""><strong>EventEmitter</strong> service 之间可能存在相互监听的需要，通过 生产者-消费者 的模式来解决问题</li>
+</ul>
+<p>Renderer 则响应用户交互，形态为基础 web 应用 + Node features</p>
+<ul>
+<li class="">任意的前端框架、UI 库均可，呈现 web</li>
+<li class=""><strong>Store</strong> 状态管理工具</li>
+<li class=""><strong>Router</strong> 路由，页面动态切换</li>
+<li class=""><strong>Network</strong> 必要的网络请求基础</li>
+<li class=""><strong>Message</strong> 消息中心，与 Main 通信的唯一 “掮客” ，很多功能需要 Main 来执行或分发。</li>
+</ul>
+<p>Renderer 可选的功能</p>
+<ul>
+<li class=""><strong>ChildProcess</strong> BrowserWindow 也是个 Node 环境，因此可以将任务派给子进程。</li>
+<li class=""><strong>Command</strong> 命令系统，解耦 Service，参考 vscode ，每个编辑器 window 都有一块自己的命令系统实例。</li>
+<li class=""><strong>EventEmitter</strong> service 之间可能存在相互监听的需要，通过 生产者-消费者 的模式来解决问题</li>
+</ul>
+<blockquote>
+<p>事实上，上述设计思路可以应用到 Electron 以外的任意桌面应用开发。</p>
+</blockquote>
+<p>那么，你会怎么设计 Electron 应用呢？</p></div><footer class="docusaurus-mt-lg"><div class="row margin-top--sm theme-blog-footer-edit-meta-row"><div class="col"><b>Tags:</b><ul class="tags_jXut padding--none margin-left--sm"><li class="tag_QGVx"><a rel="tag" class="tag_zVej tagRegular_sFm0" href="/blog/tags/electron">electron</a></li><li class="tag_QGVx"><a rel="tag" class="tag_zVej tagRegular_sFm0" href="/blog/tags/architecture">architecture</a></li></ul></div></div></footer></article><nav class="pagination-nav docusaurus-mt-lg" aria-label="Blog post page navigation"><a class="pagination-nav__link pagination-nav__link--prev" href="/blog/2022/05/30/architecture-design-imo"><div class="pagination-nav__sublabel">Newer post</div><div class="pagination-nav__label">架构设计的一些哲学经验</div></a><a class="pagination-nav__link pagination-nav__link--next" href="/blog/2022/04/04/type-vs-interface"><div class="pagination-nav__sublabel">Older post</div><div class="pagination-nav__label">Type vs Interface</div></a></nav></main><div class="col col--2"><div class="tableOfContents_bqdL thin-scrollbar"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#motrix" class="table-of-contents__link toc-highlight">Motrix</a></li><li><a href="#hyper" class="table-of-contents__link toc-highlight">Hyper</a></li><li><a href="#wexond-browser" class="table-of-contents__link toc-highlight">Wexond Browser</a></li><li><a href="#vs-code" class="table-of-contents__link toc-highlight">VS Code</a></li><li><a href="#重新设计" class="table-of-contents__link toc-highlight">重新设计</a></li></ul></div></div></div></div></div><footer class="theme-layout-footer footer footer--dark"><div class="container container-fluid"><div class="row footer__links"><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Recent projects</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://github.com/AkatQuas/ai-dispatch" target="_blank" rel="noopener noreferrer" class="footer__link-item">ai-dispatch<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://github.com/AkatQuas/stock-radar" target="_blank" rel="noopener noreferrer" class="footer__link-item">stock-radar<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://github.com/AkatQuas/kiddo-plays" target="_blank" rel="noopener noreferrer" class="footer__link-item">kiddo-plays<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://github.com/AkatQuas/regexper-ng" target="_blank" rel="noopener noreferrer" class="footer__link-item">regexper-ng<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">More</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://github.com/AkatQuas" target="_blank" rel="noopener noreferrer" class="footer__link-item">GitHub profile<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://github.com/AkatQuas/nprogresse" target="_blank" rel="noopener noreferrer" class="footer__link-item">NProgressE<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://github.com/AkatQuas/svg-diagram-drawer-skill" target="_blank" rel="noopener noreferrer" class="footer__link-item">svg-diagram-drawer-skill<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">On this site</div><ul class="footer__items clean-list"><li class="footer__item"><a class="footer__link-item" href="/blog/archive">Blog archive</a></li><li class="footer__item"><a href="https://akatquas.github.io/dateless/" target="_blank" rel="noopener noreferrer" class="footer__link-item">Dateless<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div></div><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2026 AkatQuas. Built with Docusaurus.</div></div></div></footer></div>
+</body>
+</html>

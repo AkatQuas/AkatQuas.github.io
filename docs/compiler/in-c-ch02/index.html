@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en" dir="ltr" class="docs-wrapper plugin-docs plugin-id-default docs-version-current docs-doc-page docs-doc-id-compiler/in-c-ch02" data-has-hydrated="false">
+<head>
+<meta charset="UTF-8">
+<meta name="generator" content="Docusaurus v3.10.2">
+<title data-rh="true">Chapter 02 - 词法分析 | AkatQuas&#x27;s blog</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:url" content="https://akatquas.github.io/docs/compiler/in-c-ch02"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="Chapter 02 - 词法分析 | AkatQuas&#x27;s blog"><meta data-rh="true" name="description" content="为了将一个程序从一种语言翻译成另一种语言，编译器必须首先把程序的各种成分拆开，并搞清其结构和含义，之后再用另一种方式把这些成分组合起来。编译器的前端执行分析，后端进行合成。"><meta data-rh="true" property="og:description" content="为了将一个程序从一种语言翻译成另一种语言，编译器必须首先把程序的各种成分拆开，并搞清其结构和含义，之后再用另一种方式把这些成分组合起来。编译器的前端执行分析，后端进行合成。"><link data-rh="true" rel="icon" href="/images/favicon.ico"><link data-rh="true" rel="canonical" href="https://akatquas.github.io/docs/compiler/in-c-ch02"><link data-rh="true" rel="alternate" href="https://akatquas.github.io/docs/compiler/in-c-ch02" hreflang="en"><link data-rh="true" rel="alternate" href="https://akatquas.github.io/docs/compiler/in-c-ch02" hreflang="x-default"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Compiler","item":"https://akatquas.github.io/docs/compiler/"},{"@type":"ListItem","position":2,"name":"Chapter 02 - 词法分析","item":"https://akatquas.github.io/docs/compiler/in-c-ch02"}]}</script><link rel="alternate" type="application/rss+xml" href="/blog/rss.xml" title="AkatQuas&#39;s blog RSS Feed">
+<link rel="alternate" type="application/atom+xml" href="/blog/atom.xml" title="AkatQuas&#39;s blog Atom Feed"><link rel="stylesheet" href="/assets/css/styles.cd16f378.css">
+<script src="/assets/js/runtime~main.8fa69736.js" defer="defer"></script>
+<script src="/assets/js/main.106e90f9.js" defer="defer"></script>
+</head>
+<body>
+<svg style="display: none;"><defs>
+<symbol id="theme-svg-external-link" viewBox="0 0 24 24"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"/></symbol>
+</defs></svg>
+<script>!function(){var t=function(){try{return new URLSearchParams(window.location.search).get("docusaurus-theme")}catch(t){}}()||function(){try{return window.localStorage.getItem("theme")}catch(t){}}();document.documentElement.setAttribute("data-theme",t||"light"),document.documentElement.setAttribute("data-theme-choice",t||"light")}(),function(){try{const c=new URLSearchParams(window.location.search).entries();for(var[t,e]of c)if(t.startsWith("docusaurus-data-")){var a=t.replace("docusaurus-data-","data-");document.documentElement.setAttribute(a,e)}}catch(t){}}()</script><div id="__docusaurus"><div role="region" aria-label="Skip to main content"><a class="skipToContent_fXgn" href="#__docusaurus_skipToContent_fallback">Skip to main content</a></div><nav aria-label="Main" class="theme-layout-navbar navbar navbar--fixed-top"><div class="navbar__inner"><div class="theme-layout-navbar-left navbar__items"><button aria-label="Toggle navigation bar" aria-expanded="false" class="navbar__toggle clean-btn" type="button"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"></path></svg></button><a class="navbar__brand" href="/"><div class="navbar__logo"><img src="/images/logo.svg" alt="AkatQuas" class="themedComponent_mlkZ themedComponent--light_NVdE"><img src="/images/logo.svg" alt="AkatQuas" class="themedComponent_mlkZ themedComponent--dark_xIcU"></div><b class="navbar__title text--truncate">AkatQuas 🔭</b></a><a aria-current="page" class="navbar__item navbar__link navbar__link--active" href="/docs/about">About</a><a class="navbar__item navbar__link" href="/blog">Blog</a></div><div class="theme-layout-navbar-right navbar__items navbar__items--right"><a href="https://akatquas.github.io/dateless/" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">Dateless<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a><a href="https://github.com/AkatQuas/AkatQuas.github.io" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">GitHub<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a><div class="toggle_vylO colorModeToggle_DEke"><button class="clean-btn toggleButton_gllP toggleButtonDisabled_aARS" type="button" disabled="" title="system mode" aria-label="Switch between dark and light mode (currently system mode)"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP lightToggleIcon_pyhR"><path fill="currentColor" d="M12,9c1.65,0,3,1.35,3,3s-1.35,3-3,3s-3-1.35-3-3S10.35,9,12,9 M12,7c-2.76,0-5,2.24-5,5s2.24,5,5,5s5-2.24,5-5 S14.76,7,12,7L12,7z M2,13l2,0c0.55,0,1-0.45,1-1s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S1.45,13,2,13z M20,13l2,0c0.55,0,1-0.45,1-1 s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S19.45,13,20,13z M11,2v2c0,0.55,0.45,1,1,1s1-0.45,1-1V2c0-0.55-0.45-1-1-1S11,1.45,11,2z M11,20v2c0,0.55,0.45,1,1,1s1-0.45,1-1v-2c0-0.55-0.45-1-1-1C11.45,19,11,19.45,11,20z M5.99,4.58c-0.39-0.39-1.03-0.39-1.41,0 c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0s0.39-1.03,0-1.41L5.99,4.58z M18.36,16.95 c-0.39-0.39-1.03-0.39-1.41,0c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0c0.39-0.39,0.39-1.03,0-1.41 L18.36,16.95z M19.42,5.99c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06c-0.39,0.39-0.39,1.03,0,1.41 s1.03,0.39,1.41,0L19.42,5.99z M7.05,18.36c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06 c-0.39,0.39-0.39,1.03,0,1.41s1.03,0.39,1.41,0L7.05,18.36z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP darkToggleIcon_wfgR"><path fill="currentColor" d="M9.37,5.51C9.19,6.15,9.1,6.82,9.1,7.5c0,4.08,3.32,7.4,7.4,7.4c0.68,0,1.35-0.09,1.99-0.27C17.45,17.19,14.93,19,12,19 c-3.86,0-7-3.14-7-7C5,9.07,6.81,6.55,9.37,5.51z M12,3c-4.97,0-9,4.03-9,9s4.03,9,9,9s9-4.03,9-9c0-0.46-0.04-0.92-0.1-1.36 c-0.98,1.37-2.58,2.26-4.4,2.26c-2.98,0-5.4-2.42-5.4-5.4c0-1.81,0.89-3.42,2.26-4.4C12.92,3.04,12.46,3,12,3L12,3z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP systemToggleIcon_QzmC"><path fill="currentColor" d="m12 21c4.971 0 9-4.029 9-9s-4.029-9-9-9-9 4.029-9 9 4.029 9 9 9zm4.95-13.95c1.313 1.313 2.05 3.093 2.05 4.95s-0.738 3.637-2.05 4.95c-1.313 1.313-3.093 2.05-4.95 2.05v-14c1.857 0 3.637 0.737 4.95 2.05z"></path></svg></button></div><div class="navbarSearchContainer_Bca1"></div></div></div><div role="presentation" class="navbar-sidebar__backdrop"></div></nav><div id="__docusaurus_skipToContent_fallback" class="theme-layout-main main-wrapper mainWrapper_z2l0"><div class="docsWrapper_hBAB"><button aria-label="Scroll back to top" class="clean-btn theme-back-to-top-button backToTopButton_sjWU" type="button"></button><div class="docRoot_UBD9"><aside class="theme-doc-sidebar-container docSidebarContainer_YfHR"><div class="sidebarViewport_aRkj"><div class="sidebar_njMd"><nav aria-label="Docs sidebar" class="menu thin-scrollbar menu_SIkG"><ul class="theme-doc-sidebar-menu menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/docs/about"><span class="linkLabel_WmDU">Akat</span></a></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist" href="/docs/network-top-down-approach/"><span class="categoryLinkLabel_W154">Computer Network</span></a><button aria-label="Expand sidebar category &#x27;Computer Network&#x27;" aria-expanded="false" type="button" class="clean-btn menu__caret"></button></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist" href="/docs/data-structure/"><span class="categoryLinkLabel_W154">Data Structure</span></a><button aria-label="Expand sidebar category &#x27;Data Structure&#x27;" aria-expanded="false" type="button" class="clean-btn menu__caret"></button></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist menu__link--active" href="/docs/compiler/"><span class="categoryLinkLabel_W154">Compiler</span></a><button aria-label="Collapse sidebar category &#x27;Compiler&#x27;" aria-expanded="true" type="button" class="clean-btn menu__caret"></button></div><ul class="menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/compiler/in-c-ch01"><span class="linkLabel_WmDU">Chapter 01 - 绪论</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link menu__link--active" aria-current="page" tabindex="0" href="/docs/compiler/in-c-ch02"><span class="linkLabel_WmDU">Chapter 02 - 词法分析</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/compiler/in-c-ch06"><span class="linkLabel_WmDU">Chapter 06 -  活动记录</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/compiler/pattern-automata-regex"><span class="linkLabel_WmDU">模式 、自动机、正则表达式</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/compiler/propositional-logic"><span class="linkLabel_WmDU">Propositional Logic 命题逻辑</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/compiler/recursive-description-of-patterns"><span class="linkLabel_WmDU">Recursive Description of Patterns 模式的递归描述</span></a></li></ul></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist" href="/docs/interpreter-in-js/"><span class="categoryLinkLabel_W154">Writing a interpreter in JavaScript</span></a><button aria-label="Expand sidebar category &#x27;Writing a interpreter in JavaScript&#x27;" aria-expanded="false" type="button" class="clean-btn menu__caret"></button></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="false" href="/docs/lisp-interpreter-in-c/index"><span class="categoryLinkLabel_W154">Build Your Own Lisp Interpreter in C</span></a></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="false" href="/docs/lisp-interpreter-in-py/chapter-00"><span class="categoryLinkLabel_W154">Build A Lisp Interpreter in Python</span></a></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="false" href="/docs/sicp/index"><span class="categoryLinkLabel_W154">SICP</span></a></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist" href="/docs/concurrency-in-go/"><span class="categoryLinkLabel_W154">Concurrency in Go</span></a><button aria-label="Expand sidebar category &#x27;Concurrency in Go&#x27;" aria-expanded="false" type="button" class="clean-btn menu__caret"></button></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist" href="/docs/docker/"><span class="categoryLinkLabel_W154">Docker</span></a><button aria-label="Expand sidebar category &#x27;Docker&#x27;" aria-expanded="false" type="button" class="clean-btn menu__caret"></button></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist" href="/docs/kubernetes/"><span class="categoryLinkLabel_W154">Kubernetes</span></a><button aria-label="Expand sidebar category &#x27;Kubernetes&#x27;" aria-expanded="false" type="button" class="clean-btn menu__caret"></button></div></li></ul></nav></div></div></aside><main class="docMainContainer_TBSr"><div class="container padding-top--md padding-bottom--lg"><div class="row"><div class="col docItemCol_VOVn"><div class="docItemContainer_Djhp"><article><nav class="theme-doc-breadcrumbs breadcrumbsContainer_Z_bl" aria-label="Breadcrumbs"><ul class="breadcrumbs"><li class="breadcrumbs__item"><a aria-label="Home page" class="breadcrumbs__link" href="/"><svg viewBox="0 0 24 24" class="breadcrumbHomeIcon_YNFT"><path d="M10 19v-5h4v5c0 .55.45 1 1 1h3c.55 0 1-.45 1-1v-7h1.7c.46 0 .68-.57.33-.87L12.67 3.6c-.38-.34-.96-.34-1.34 0l-8.36 7.53c-.34.3-.13.87.33.87H5v7c0 .55.45 1 1 1h3c.55 0 1-.45 1-1z" fill="currentColor"></path></svg></a></li><li class="breadcrumbs__item"><a class="breadcrumbs__link" href="/docs/compiler/"><span>Compiler</span></a></li><li class="breadcrumbs__item breadcrumbs__item--active"><span class="breadcrumbs__link">Chapter 02 - 词法分析</span></li></ul></nav><div class="tocCollapsible_ETCw theme-doc-toc-mobile tocMobile_ITEo"><button type="button" class="clean-btn tocCollapsibleButton_TO0P">On this page</button></div><div class="theme-doc-markdown markdown"><header><h1>Chapter 02 - 词法分析</h1></header><p>为了将一个程序从一种语言翻译成另一种语言，编译器必须首先把程序的各种成分拆开，并搞清其结构和含义，之后再用另一种方式把这些成分组合起来。编译器的前端执行分析，后端进行合成。</p>
+<p>分析一般分 3 种：</p>
+<ul>
+<li class="">词法分析：将输入分解成一个个独立的词法符号，即“单词符号”token，简称单词。</li>
+<li class="">语法分析：分析程序的短语结构。</li>
+<li class="">语义分析：推算程序的含义。</li>
+</ul>
+<p>语法分析器以字符流作为输入，生成一系列的名字、关键字和标点符号，同时抛弃单词之间的空白符和注释。</p>
+<blockquote>
+<p>如果让语法分析器来处理程序中任意位置都可能出现的空白符和注释会让语法分析变得过于复杂，因此将词法分析从语法分析中分离出来。</p>
+</blockquote>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="词法单词">词法单词<a href="#词法单词" class="hash-link" aria-label="Direct link to 词法单词" title="Direct link to 词法单词" translate="no">​</a></h2>
+<p>词法单词是字符组成的  序列，是程序设计语言的文法单位，可归类为有限的几组单词类型。</p>
+<p>|类型|例子| |:-:||:-:| |ID|foo n14 last| |NUM| 73 0 00 515 082| |REAL|66.1 .5 10. 1e67 5.5e-10| |IF|if| |COMMA|,| |NOTEQ|!=| |LPAREN|(| |RPAREN|)|</p>
+<p>IF、VOID、RETURN 等保留字是不能作为标识符使用的。</p>
+<p>非单词的例子：</p>
+<ul>
+<li class="">注释 /_ try again _/</li>
+<li class="">预处理命令 #include&lt;stdio.h&gt;</li>
+<li class="">预处理命令 #define NUMS 5, 6</li>
+<li class="">宏 NUMS</li>
+<li class="">空格符号、制表符、换行符 \s \t \n</li>
+</ul>
+<p>对 C 或 Java 中标识符的一种描述：</p>
+<blockquote>
+<p>标识符是字母和数字组成的序列，第一个字符必须是字母。下划线<code>_</code>视为字母。大小写字母不同。如果经过若干单词分析后输入流已到达一个给定的字符，则下一个单词将由有可能组成一个单词的最长字符串所组成。其中的空格符、制表符、换行符和注释都将被忽略。另外还需要有某种空白符来分隔相邻的标识符、关键字和常数。</p>
+</blockquote>
+<p>将用<strong>正则表达式</strong>的形式语言来指明<strong>词法单词</strong>，用<strong>确定的有限自动机</strong>来实现<strong>词法分析器</strong>，并用数学方法将两者联系起来得到一个简单且可读性更好的词法分析器。</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="正则表达式">正则表达式<a href="#正则表达式" class="hash-link" aria-label="Direct link to 正则表达式" title="Direct link to 正则表达式" translate="no">​</a></h2>
+<p><strong>语言 language</strong>是<strong>字符串 string</strong>组成的集合，<strong>字符串</strong>是<strong>符号 symbol</strong>的有限序列。<strong>符号</strong>本身来自有限<strong>字母表 alphabet</strong>。</p>
+<p>为了用有限的描述来指明这类（可能是无限）的语言，使用正则表达式的表示法，每个正则 表达式代表一个字符串集合。</p>
+<ul>
+<li class="">
+<p><strong>符号</strong>。对于语言字母表中的每个字符<code>a</code>，正则表达式 <em>a</em> 表示仅包含字符串<code>a</code>的语言。</p>
+</li>
+<li class="">
+<p><strong>可选（并集）</strong>。对于给定的两个正则表达式 <em>M</em> 和 <em>N</em> ，可选操作符 <code>|</code> 形成一个新的正则表达式， <em>M|N</em> 。如果一个字符串属于语言 <em>M</em> 或属于 <em>N</em>，则它属于 <em>M|N</em> 。</p>
+</li>
+<li class="">
+<p><strong>联结（串接）</strong>。对于给定的两个正则表达式 <em>M</em> 和 <em>N</em> ，联结操作符<code>·</code>形成一个醒的正则表达式， <em>M·N</em> 。如果一个字符串由任意两个字符串 α 和 β 的联结，且 α 属于语言 <em>M</em> ，β 属于 <em>N</em> ，则该字符串属于 <em>M·N</em> 组成的语言。</p>
+</li>
+<li class="">
+<p><strong>ϵ</strong>。正则表达式 <em>ϵ</em> 表示仅含一个空字符串的语言。</p>
+</li>
+<li class="">
+<p><strong>重复（闭包）</strong>。对给定的正则表达式，其克林闭包是／ M* ／。如果一个字符串是由 <em>M</em> 中的字符串经过 0 次至多次联结运算的结果，则该字符串属于／ M* ／。</p>
+</li>
+</ul>
+<p>使用时，会省略联结操作符或 ϵ 符号。并假定优先级上 克林闭包 -&gt; 联结运算 -&gt; 可选运算。</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th style="text-align:center">正则</th><th style="text-align:center">意义</th></tr></thead><tbody><tr><td style="text-align:center">a</td><td style="text-align:center">一个表示字符本身的原始字符</td></tr><tr><td style="text-align:center">ϵ</td><td style="text-align:center">空字符串</td></tr><tr><td style="text-align:center"></td><td style="text-align:center">空空字符串的另一种写法</td></tr><tr><td style="text-align:center"><em>M|N</em></td><td style="text-align:center">可选，在 M 和 N 之间选择</td></tr><tr><td style="text-align:center"><em>MN</em></td><td style="text-align:center">联结，M 之后跟随 N</td></tr><tr><td style="text-align:center"><em>M·N</em></td><td style="text-align:center">联结的另一种写法</td></tr><tr><td style="text-align:center">M<sup>*</sup></td><td style="text-align:center">重复 0 次及以上</td></tr><tr><td style="text-align:center">M<sup>+</sup></td><td style="text-align:center">重复 1 次及以上</td></tr><tr><td style="text-align:center">M?</td><td style="text-align:center">选择，M 出现 0 次或 1 次</td></tr><tr><td style="text-align:center">[a-zA-Z]</td><td style="text-align:center">字符集</td></tr><tr><td style="text-align:center">.</td><td style="text-align:center">句点表示除换行符以外的任意单个字符</td></tr><tr><td style="text-align:center">&quot; a. + * &quot;</td><td style="text-align:center">引号中的字符串表示文字字符串本身</td></tr></tbody></table>
+<blockquote>
+<p>问题，对于形如<code>if8</code>这样以保留字开头的字符串看作什么？</p>
+<p>消除二义性的规则：</p>
+<ul>
+<li class="">最长匹配：初始输入子串中，取可与任何正则表达式匹配的那个最长的字符串作为下一个单词</li>
+<li class="">规则有限：对于一个特定的最长初始子串，第一个与之匹配的正则表达式决定了这个子串的单词类型。意味着，正则表达式规则的书写顺序有意义。</li>
+</ul>
+</blockquote>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="有限自动机">有限自动机<a href="#有限自动机" class="hash-link" aria-label="Direct link to 有限自动机" title="Direct link to 有限自动机" translate="no">​</a></h2>
+<p>用<em>正则表达式</em>可以方便的指明词法单词。用<em>有限自动机</em>可以实现形式化方法。</p>
+<p>有限自动机有一个有限<em>状态</em>合集和一些从一个状态通向另一个状态的<em>边</em>，每条边上标记有一个<em>  符号</em>；其中一个状态是<em>初态</em>，某些状态是<em>终态</em>。</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th style="text-align:center">正则</th><th style="text-align:center">意义</th></tr></thead><tbody><tr><td style="text-align:center">if</td><td style="text-align:center">{return IF;}</td></tr><tr><td style="text-align:center">[a-z][a-z0-9]*</td><td style="text-align:center">{return ID;}</td></tr><tr><td style="text-align:center">[1-9][0-9]*</td><td style="text-align:center">{return NUM;}</td></tr><tr><td style="text-align:center">([0-9]+&quot;.&quot;[0-9]_ ) | ([0-9]_&quot;.&quot;[0-9]+)</td><td style="text-align:center">{return REAL;}</td></tr><tr><td style="text-align:center">(&quot;--&quot;[a-z]* &quot;\n&quot;) | (&quot; &quot;|&quot;\n&quot;|&quot;\t&quot; )</td><td style="text-align:center">{ /_ do nothing, space _/}</td></tr><tr><td style="text-align:center">.</td><td style="text-align:center">{error();}</td></tr></tbody></table>
+<p><img decoding="async" loading="lazy" src="/assets/images/in-c-ch02f01-e5ed2ef8971a1cdaa0f70b5b30f3bcba.png" width="775" height="399" class="img_ev3q"></p>
+<p>在<em>确定的</em>有限自动机中，不会有同一状态出发的两条边标记有相同的符号。</p>
+<p>DFA 以如下方式<em>接受</em>或<em>拒绝</em>一个字符串：从初始状态出发，对于输入字符串中的每个字符，自动机都将沿着一条边到达另一状态，这条边必须是标有输入字符的边。对 n 个字符的字符串进行了 n 次状态转换后，如果自动机到达了一个终态，那么自动机将接受这个字符串。若到达的不是终态，或者找不到与输入字符相匹配的边，自动机将拒绝这个字符串。</p>
+<p>由一个自动机识别的<em>语言</em>是该自动机接受的字符串集合。</p>
+<p>将上面的六个自动机合并后可以得到下图。</p>
+<p><img decoding="async" loading="lazy" src="/assets/images/in-c-ch02f02-15d4dc0e9580627c1666f63cfdd963d5.png" width="613" height="324" class="img_ev3q"></p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="识别最长的匹配">识别最长的匹配<a href="#识别最长的匹配" class="hash-link" aria-label="Direct link to 识别最长的匹配" title="Direct link to 识别最长的匹配" translate="no">​</a></h3>
+<p>词法分析器的任务是要找到最长的匹配，因为输入中最长的初始子串才是合法的单词。在进行转换的过程中，词法分析器要一直追踪到迄今见到的最长匹配以及这个最长匹配的位置。</p>
+<p>追踪最长匹配一位置需要用两个变量 Last_Final(最近遇到的终态的编号) 和 Input_Position_at_Last_Final 来记住自动机最后一次处于终态时的时机。每次进入一个终态时，词法分析器都要更新这两个变量；当到达停滞状态(无出口转换的非终态状态)时，从这两个变量就能得知所匹配的单词和它的结束位置。</p>
+<p>下图说明了一个词法分析器识别最长匹配的操作过程。注意，当前输入位置可能相距识别器最近到达终态时的位置已很远。</p>
+<p><img decoding="async" loading="lazy" src="/assets/images/in-c-ch02f03-44405bab2bb77a1e19769166266acba3.png" width="800" height="462" class="img_ev3q"></p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="非确定有限自动机">非确定有限自动机<a href="#非确定有限自动机" class="hash-link" aria-label="Direct link to 非确定有限自动机" title="Direct link to 非确定有限自动机" translate="no">​</a></h2>
+<p>非确定有限自动机是一种需要对从一个状态出发的多条标有相同符号的边进行选择的自动机。它可能存在标有 ϵ 的边，表示空字符串。</p>
+<p>// todo</p></div><footer class="theme-doc-footer docusaurus-mt-lg"><div class="row margin-top--sm theme-doc-footer-tags-row"><div class="col"><b>Tags:</b><ul class="tags_jXut padding--none margin-left--sm"><li class="tag_QGVx"><a rel="tag" class="tag_zVej tagRegular_sFm0" href="/docs/tags/compiler">compiler</a></li></ul></div></div></footer></article><nav class="docusaurus-mt-lg pagination-nav" aria-label="Docs pages"><a class="pagination-nav__link pagination-nav__link--prev" href="/docs/compiler/in-c-ch01"><div class="pagination-nav__sublabel">Previous</div><div class="pagination-nav__label">Chapter 01 - 绪论</div></a><a class="pagination-nav__link pagination-nav__link--next" href="/docs/compiler/in-c-ch06"><div class="pagination-nav__sublabel">Next</div><div class="pagination-nav__label">Chapter 06 -  活动记录</div></a></nav></div></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#词法单词" class="table-of-contents__link toc-highlight">词法单词</a></li><li><a href="#正则表达式" class="table-of-contents__link toc-highlight">正则表达式</a></li><li><a href="#有限自动机" class="table-of-contents__link toc-highlight">有限自动机</a><ul><li><a href="#识别最长的匹配" class="table-of-contents__link toc-highlight">识别最长的匹配</a></li></ul></li><li><a href="#非确定有限自动机" class="table-of-contents__link toc-highlight">非确定有限自动机</a></li></ul></div></div></div></div></main></div></div></div><footer class="theme-layout-footer footer footer--dark"><div class="container container-fluid"><div class="row footer__links"><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Recent projects</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://github.com/AkatQuas/ai-dispatch" target="_blank" rel="noopener noreferrer" class="footer__link-item">ai-dispatch<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://github.com/AkatQuas/stock-radar" target="_blank" rel="noopener noreferrer" class="footer__link-item">stock-radar<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://github.com/AkatQuas/kiddo-plays" target="_blank" rel="noopener noreferrer" class="footer__link-item">kiddo-plays<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://github.com/AkatQuas/regexper-ng" target="_blank" rel="noopener noreferrer" class="footer__link-item">regexper-ng<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">More</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://github.com/AkatQuas" target="_blank" rel="noopener noreferrer" class="footer__link-item">GitHub profile<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://github.com/AkatQuas/nprogresse" target="_blank" rel="noopener noreferrer" class="footer__link-item">NProgressE<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://github.com/AkatQuas/svg-diagram-drawer-skill" target="_blank" rel="noopener noreferrer" class="footer__link-item">svg-diagram-drawer-skill<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">On this site</div><ul class="footer__items clean-list"><li class="footer__item"><a class="footer__link-item" href="/blog/archive">Blog archive</a></li><li class="footer__item"><a href="https://akatquas.github.io/dateless/" target="_blank" rel="noopener noreferrer" class="footer__link-item">Dateless<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div></div><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2026 AkatQuas. Built with Docusaurus.</div></div></div></footer></div>
+</body>
+</html>

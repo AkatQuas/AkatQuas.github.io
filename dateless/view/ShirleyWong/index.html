@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>王菲的演唱会</title>
+    <link rel="stylesheet" href="./css/ShirleyWong.css">
+</head>
+<body>
+<ul>
+    <li><img src="./images/1.png" alt="王菲_暧昧.ogg"><span>暧昧</span></li>
+    <li><img src="./images/2.png" alt="王菲_匆匆那年.ogg"><span>匆匆那年</span></li>
+    <li><img src="./images/3.png" alt="王菲_红豆.ogg"><span>红豆</span></li>
+    <li><img src="./images/4.png" alt="王菲_人间.ogg"><span>人间</span></li>
+    <li><img src="./images/5.png" alt="王菲_约定.ogg"><span>约定</span></li>
+</ul>
+<img src="./images/xin.png" class="heart" alt="">
+<audio src="王菲_矜持.ogg" autoplay="autoplay" loop="loop" id="bgmusic" ></audio>
+<script>
+        var imgs = document.getElementsByTagName("img");
+        var song = document.getElementById("bgmusic");
+        for (var i = 0; i < imgs.length; i++) {
+            imgs[i].onclick = function () {
+                song.src = this.alt;
+                song.currentTime = 0;
+                song.play();
+            }
+        }
+</script>
+</body>
+</html>

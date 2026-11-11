@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en" dir="ltr" class="blog-wrapper blog-post-page plugin-blog plugin-id-default" data-has-hydrated="false">
+<head>
+<meta charset="UTF-8">
+<meta name="generator" content="Docusaurus v3.10.2">
+<title data-rh="true">Skill 评价与进化：业界评测框架与 WingsApp 运行-评价-优化 | AkatQuas&#x27;s blog</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:url" content="https://akatquas.github.io/blog/2026/08/15/skill-evaluation-and-evolution"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docusaurus_tag" content="default"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docsearch:docusaurus_tag" content="default"><meta data-rh="true" property="og:title" content="Skill 评价与进化：业界评测框架与 WingsApp 运行-评价-优化 | AkatQuas&#x27;s blog"><meta data-rh="true" name="description" content="一边看业界 Agent Skill 评测工具怎么分层，一边落 WingsApp（办公智能助理桌面客户端）里「创作期评测 → 运营期质量报告驱动」的进化闭环。两条线拼在一起，才说得清「设计得好不好」和「线上要不要改一个字」。"><meta data-rh="true" property="og:description" content="一边看业界 Agent Skill 评测工具怎么分层，一边落 WingsApp（办公智能助理桌面客户端）里「创作期评测 → 运营期质量报告驱动」的进化闭环。两条线拼在一起，才说得清「设计得好不好」和「线上要不要改一个字」。"><meta data-rh="true" property="og:type" content="article"><meta data-rh="true" property="article:published_time" content="2026-08-15T00:00:00.000Z"><meta data-rh="true" property="article:tag" content="agent,skill,wingsapp,evaluation"><link data-rh="true" rel="icon" href="/images/favicon.ico"><link data-rh="true" rel="canonical" href="https://akatquas.github.io/blog/2026/08/15/skill-evaluation-and-evolution"><link data-rh="true" rel="alternate" href="https://akatquas.github.io/blog/2026/08/15/skill-evaluation-and-evolution" hreflang="en"><link data-rh="true" rel="alternate" href="https://akatquas.github.io/blog/2026/08/15/skill-evaluation-and-evolution" hreflang="x-default"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","@id":"https://akatquas.github.io/blog/2026/08/15/skill-evaluation-and-evolution","mainEntityOfPage":"https://akatquas.github.io/blog/2026/08/15/skill-evaluation-and-evolution","url":"https://akatquas.github.io/blog/2026/08/15/skill-evaluation-and-evolution","headline":"Skill 评价与进化：业界评测框架与 WingsApp 运行-评价-优化","name":"Skill 评价与进化：业界评测框架与 WingsApp 运行-评价-优化","description":"一边看业界 Agent Skill 评测工具怎么分层，一边落 WingsApp（办公智能助理桌面客户端）里「创作期评测 → 运营期质量报告驱动」的进化闭环。两条线拼在一起，才说得清「设计得好不好」和「线上要不要改一个字」。","datePublished":"2026-08-15T00:00:00.000Z","author":[],"keywords":[],"isPartOf":{"@type":"Blog","@id":"https://akatquas.github.io/blog","name":"Blog"}}</script><link rel="alternate" type="application/rss+xml" href="/blog/rss.xml" title="AkatQuas&#39;s blog RSS Feed">
+<link rel="alternate" type="application/atom+xml" href="/blog/atom.xml" title="AkatQuas&#39;s blog Atom Feed"><link rel="stylesheet" href="/assets/css/styles.cd16f378.css">
+<script src="/assets/js/runtime~main.8fa69736.js" defer="defer"></script>
+<script src="/assets/js/main.106e90f9.js" defer="defer"></script>
+</head>
+<body>
+<svg style="display: none;"><defs>
+<symbol id="theme-svg-external-link" viewBox="0 0 24 24"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"/></symbol>
+</defs></svg>
+<script>!function(){var t=function(){try{return new URLSearchParams(window.location.search).get("docusaurus-theme")}catch(t){}}()||function(){try{return window.localStorage.getItem("theme")}catch(t){}}();document.documentElement.setAttribute("data-theme",t||"light"),document.documentElement.setAttribute("data-theme-choice",t||"light")}(),function(){try{const c=new URLSearchParams(window.location.search).entries();for(var[t,e]of c)if(t.startsWith("docusaurus-data-")){var a=t.replace("docusaurus-data-","data-");document.documentElement.setAttribute(a,e)}}catch(t){}}()</script><div id="__docusaurus"><div role="region" aria-label="Skip to main content"><a class="skipToContent_fXgn" href="#__docusaurus_skipToContent_fallback">Skip to main content</a></div><nav aria-label="Main" class="theme-layout-navbar navbar navbar--fixed-top"><div class="navbar__inner"><div class="theme-layout-navbar-left navbar__items"><button aria-label="Toggle navigation bar" aria-expanded="false" class="navbar__toggle clean-btn" type="button"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"></path></svg></button><a class="navbar__brand" href="/"><div class="navbar__logo"><img src="/images/logo.svg" alt="AkatQuas" class="themedComponent_mlkZ themedComponent--light_NVdE"><img src="/images/logo.svg" alt="AkatQuas" class="themedComponent_mlkZ themedComponent--dark_xIcU"></div><b class="navbar__title text--truncate">AkatQuas 🔭</b></a><a class="navbar__item navbar__link" href="/docs/about">About</a><a aria-current="page" class="navbar__item navbar__link navbar__link--active" href="/blog">Blog</a></div><div class="theme-layout-navbar-right navbar__items navbar__items--right"><a href="https://akatquas.github.io/dateless/" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">Dateless<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a><a href="https://github.com/AkatQuas/AkatQuas.github.io" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">GitHub<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a><div class="toggle_vylO colorModeToggle_DEke"><button class="clean-btn toggleButton_gllP toggleButtonDisabled_aARS" type="button" disabled="" title="system mode" aria-label="Switch between dark and light mode (currently system mode)"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP lightToggleIcon_pyhR"><path fill="currentColor" d="M12,9c1.65,0,3,1.35,3,3s-1.35,3-3,3s-3-1.35-3-3S10.35,9,12,9 M12,7c-2.76,0-5,2.24-5,5s2.24,5,5,5s5-2.24,5-5 S14.76,7,12,7L12,7z M2,13l2,0c0.55,0,1-0.45,1-1s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S1.45,13,2,13z M20,13l2,0c0.55,0,1-0.45,1-1 s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S19.45,13,20,13z M11,2v2c0,0.55,0.45,1,1,1s1-0.45,1-1V2c0-0.55-0.45-1-1-1S11,1.45,11,2z M11,20v2c0,0.55,0.45,1,1,1s1-0.45,1-1v-2c0-0.55-0.45-1-1-1C11.45,19,11,19.45,11,20z M5.99,4.58c-0.39-0.39-1.03-0.39-1.41,0 c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0s0.39-1.03,0-1.41L5.99,4.58z M18.36,16.95 c-0.39-0.39-1.03-0.39-1.41,0c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0c0.39-0.39,0.39-1.03,0-1.41 L18.36,16.95z M19.42,5.99c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06c-0.39,0.39-0.39,1.03,0,1.41 s1.03,0.39,1.41,0L19.42,5.99z M7.05,18.36c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06 c-0.39,0.39-0.39,1.03,0,1.41s1.03,0.39,1.41,0L7.05,18.36z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP darkToggleIcon_wfgR"><path fill="currentColor" d="M9.37,5.51C9.19,6.15,9.1,6.82,9.1,7.5c0,4.08,3.32,7.4,7.4,7.4c0.68,0,1.35-0.09,1.99-0.27C17.45,17.19,14.93,19,12,19 c-3.86,0-7-3.14-7-7C5,9.07,6.81,6.55,9.37,5.51z M12,3c-4.97,0-9,4.03-9,9s4.03,9,9,9s9-4.03,9-9c0-0.46-0.04-0.92-0.1-1.36 c-0.98,1.37-2.58,2.26-4.4,2.26c-2.98,0-5.4-2.42-5.4-5.4c0-1.81,0.89-3.42,2.26-4.4C12.92,3.04,12.46,3,12,3L12,3z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP systemToggleIcon_QzmC"><path fill="currentColor" d="m12 21c4.971 0 9-4.029 9-9s-4.029-9-9-9-9 4.029-9 9 4.029 9 9 9zm4.95-13.95c1.313 1.313 2.05 3.093 2.05 4.95s-0.738 3.637-2.05 4.95c-1.313 1.313-3.093 2.05-4.95 2.05v-14c1.857 0 3.637 0.737 4.95 2.05z"></path></svg></button></div><div class="navbarSearchContainer_Bca1"></div></div></div><div role="presentation" class="navbar-sidebar__backdrop"></div></nav><div id="__docusaurus_skipToContent_fallback" class="theme-layout-main main-wrapper mainWrapper_z2l0"><div class="container margin-vert--lg"><div class="row"><aside class="col col--3"><nav class="sidebar_brwN thin-scrollbar" aria-label="Blog recent posts navigation"><div class="sidebarItemTitle_r4Q1 margin-bottom--md">Recent posts</div><ul class="sidebarItemList_QwSx clean-list"><li class="sidebarItem_lnhn"><a class="sidebarItemLink_yNGZ" href="/blog/2026/09/19/jev-decision-model">Jev：不生成文本的决策模型在 Agent 架构中的位置</a></li><li class="sidebarItem_lnhn"><a class="sidebarItemLink_yNGZ" href="/blog/2026/09/12/vscode-integrated-browser">VS Code Integrated Browser：BrowserView、CDP 与「Add to Chat」</a></li><li class="sidebarItem_lnhn"><a aria-current="page" class="sidebarItemLink_yNGZ sidebarItemLinkActive_oSRm" href="/blog/2026/08/15/skill-evaluation-and-evolution">Skill 评价与进化：业界评测框架与 WingsApp 运行-评价-优化</a></li><li class="sidebarItem_lnhn"><a class="sidebarItemLink_yNGZ" href="/blog/2026/07/25/nodejs-web-pcm-audio">Node.js / Web 音频 PCM 采集与播放选型</a></li><li class="sidebarItem_lnhn"><a class="sidebarItemLink_yNGZ" href="/blog/2026/07/18/realtime-agent">Realtime Agent 调研：流式交互与桌面语音链路</a></li><li class="sidebarItem_lnhn"><a class="sidebarItemLink_yNGZ" href="/blog/2026/07/11/build-libnut">构建 Libnut：麒麟与 Win7 编译备忘</a></li><li class="sidebarItem_lnhn"><a class="sidebarItemLink_yNGZ" href="/blog/2026/07/04/computer-use-selection">Computer Use 选型札记：从 Codex 复刻到 Node 生态</a></li><li class="sidebarItem_lnhn"><a class="sidebarItemLink_yNGZ" href="/blog/2026/06/27/clawshell-api-key-protection">ClawShell API 密钥保护机制分析</a></li></ul><a class="archiveLink_dflG" href="/blog/archive">Archive</a></nav></aside><main class="col col--7"><article class=""><header><h1 class="title_f1Hy">Skill 评价与进化：业界评测框架与 WingsApp 运行-评价-优化</h1><div class="container_mt6G margin-vert--md"><time datetime="2026-08-15T00:00:00.000Z">August 15, 2026</time> · <!-- -->5 min read</div></header><div id="__blog-post-container" class="markdown"><p>一边看业界 Agent Skill 评测工具怎么分层，一边落 WingsApp（办公智能助理桌面客户端）里「创作期评测 → 运营期质量报告驱动」的进化闭环。两条线拼在一起，才说得清「设计得好不好」和「线上要不要改一个字」。</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="一业界-skill-evaluation-速览">一、业界 Skill Evaluation 速览<a href="#一业界-skill-evaluation-速览" class="hash-link" aria-label="Direct link to 一、业界 Skill Evaluation 速览" title="Direct link to 一、业界 Skill Evaluation 速览" translate="no">​</a></h2>
+<p>横向看几家开源评测 / 安全扫描方案（维度是静态安全、去重、Agent 真实性、用例格式、baseline、企业/CI）：</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>维度</th><th>SkillEvaluator</th><th>skilljack-evals</th><th>skillet</th><th>nakiros</th></tr></thead><tbody><tr><td>静态安全</td><td>强（SkillSpector）</td><td>弱</td><td>无</td><td>audit 分离</td></tr><tr><td>去重</td><td>Tier 2</td><td>无</td><td>无</td><td>无</td></tr><tr><td>Agent 真实性</td><td>Harbor 沙箱 + 多 CLI</td><td>多 runner，偏 host</td><td>自研 loop</td><td>Claude Code only</td></tr><tr><td>用例格式</td><td>evals/evals.json</td><td>task.md 包</td><td>evals.json</td><td>evals/evals.json</td></tr><tr><td>baseline</td><td>Harbor 数据集</td><td>默认 no-skill</td><td>无（比 provider）</td><td>with/without_skill</td></tr><tr><td>企业/CI</td><td>SARIF、Verified Skills</td><td>GitHub Action</td><td>manifest + workflow</td><td>本地 daemon</td></tr></tbody></table>
+<p>要点摘录：</p>
+<ul>
+<li class=""><strong><a href="https://github.com/NVIDIA/SkillEvaluator" target="_blank" rel="noopener noreferrer" class="">NVIDIA SkillEvaluator</a></strong>：把「静态质量/安全」「语义去重」「真实 Agent 行为」拆成三个 Tier；Tier 3 用 <a href="https://github.com/harbor-framework/harbor" target="_blank" rel="noopener noreferrer" class="">Harbor</a> 沙箱跑测，是层级最全的一条龙。</li>
+<li class=""><strong>skillguard</strong>：纯本地、离线静态扫描，标准库 + 规则，无云端、无 LLM 调用。</li>
+<li class=""><strong>snyk/agent-scan</strong>：本机发现配置后，深度分析走云端，需 Token。</li>
+<li class=""><strong>nakiros</strong>：Audit（文档/最佳实践 lint）与 Eval（真跑 Agent + 断言）两条线；断言优先 script，语义才上 LLM。</li>
+<li class=""><strong>skillet</strong>：多 Provider 真 Agent Loop，偏「哪个模型更适合这个 skill」，不是 Skill Lift。</li>
+<li class=""><strong>skilljack-evals</strong>：真实 CLI/SDK trial + 确定性 verifier，默认同 no-skill 算 Lift，兼顾 TDD 内循环与 CI。</li>
+<li class="">另有 agent-skills-eval、skills-security（轻量版 skillguard）、以及 <a href="https://agentskills.io/skill-creation/evaluating-skills" target="_blank" rel="noopener noreferrer" class="">agentskills.io 对 evals.json 的约定</a>。</li>
+</ul>
+<p>云端免部署的扫描（如部分 skills.sh / Gen Digital 链路）往往 <strong>不支持 Self-host</strong>，企业内网要谨慎。</p>
+<p><strong>共性</strong>：动态评估极度依赖 test cases；<code>evals/evals.json</code> + with/without skill 几乎成事实标准。</p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="二wingsapp-里的三条线如何汇合">二、WingsApp 里的三条线如何汇合<a href="#二wingsapp-里的三条线如何汇合" class="hash-link" aria-label="Direct link to 二、WingsApp 里的三条线如何汇合" title="Direct link to 二、WingsApp 里的三条线如何汇合" translate="no">​</a></h2>
+<p>WingsApp 对用户创作 skill 的长期维护，经历过三次概念迭代：</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>阶段</th><th>核心思路</th><th>输入</th><th>典型动作</th></tr></thead><tbody><tr><td><strong>skill-creator</strong></td><td>创作期主动评测</td><td>人工 eval 集、断言、with/without</td><td>改 SKILL.md / description / benchmark</td></tr><tr><td><strong>Hermes Curator</strong></td><td>日历 + 用量管库</td><td>use_count、stale_after_days</td><td>archive；可选 LLM 合并</td></tr><tr><td><strong>Evolution Loop</strong></td><td>质量报告驱动</td><td>静态 + 运行时 +（规划中）eval 摘要</td><td>单 skill：noop / patch / schedule_eval</td></tr></tbody></table>
+<p><strong>转向</strong>：不再用「多久没用」当主判据，也不默认跨 skill 合并；读的是 <strong>SkillQualityReport</strong>，不是日历。</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="skill-creator设计得好不好">skill-creator：设计得好不好<a href="#skill-creator设计得好不好" class="hash-link" aria-label="Direct link to skill-creator：设计得好不好" title="Direct link to skill-creator：设计得好不好" translate="no">​</a></h3>
+<p>内置创作与评测 skill（<code>wingsapp-default-skills/skill-creator/</code>），人类主导：</p>
+<ol>
+<li class="">触发准确率（description 是否该加载）</li>
+<li class="">任务完成质量（with-skill vs baseline）</li>
+<li class="">可重复 benchmark（pass_rate、耗时、token）</li>
+</ol>
+<p>流水线概要：<code>evals.json</code> → 并行 with_skill / baseline → Grader 断言 → 聚合 benchmark → eval-viewer 反馈再改稿。评委角色含 Grader / Comparator / Analyzer。</p>
+<p>与 Evolution Loop 的分工：skill-creator <strong>重评测、重人工、创作/大改</strong>；Evolution Loop <strong>轻量、后台、单 skill 小 patch</strong>。包内 <code>evals/benchmark.json</code> 与 curator 侧 <code>eval-latest.json</code> 是预留的 ingest 接口。</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="hermes-curator曾用现退场的主线">Hermes Curator：曾用、现退场的主线<a href="#hermes-curator曾用现退场的主线" class="hash-link" aria-label="Direct link to Hermes Curator：曾用、现退场的主线" title="Direct link to Hermes Curator：曾用、现退场的主线" translate="no">​</a></h3>
+<p>触发：空闲 + 间隔（非 cron）。Phase 1 确定性状态机（active → stale → archived）；Phase 2 可选 LLM consolidate。不变量：只动 curator-managed、永不硬删、pinned/cron 豁免、mutating 前 backup。</p>
+<p>WingsApp <strong>保留</strong> ledger、backup、install-guard、contentRevision sync、idle 门控；<strong>移除</strong> stale/archived 生命周期与 consolidate 合并主线。</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="evolution-loop线上要不要改一个字">Evolution Loop：线上要不要改一个字<a href="#evolution-loop线上要不要改一个字" class="hash-link" aria-label="Direct link to Evolution Loop：线上要不要改一个字" title="Direct link to Evolution Loop：线上要不要改一个字" translate="no">​</a></h3>
+<p>仅桌面 Node、仅 <code>curatorManaged</code> 用户 skill。</p>
+<div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_e6Vv"><div class="token-line" style="color:#bfc7d5"><span class="token plain">运行：加载登记 → 引用判定 → task-end 结构化摘要 → runtime-observations</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">评价：静态分析 + runtime rollup +（规划）eval → report-latest / compositeBand</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">优化：空闲调度 → decide → noop | patch | schedule_eval</span><br></div></code></pre></div></div>
+<p>决策直觉：healthy → noop；失败/降级且无 eval → 入队评测；静态 issue 或 runtime 降级 → LLM 只 patch 当前 SKILL.md；unknown 等观测。</p>
+<p><strong>明确不做</strong>：archive、merge、跨 skill batch。<code>compositeBand</code> 不对用户展示。quality 目录不同步，各机本地重建。</p>
+<p>已知缺口：<code>schedule_eval</code> → skill-creator 未闭环；纯语音 realtime 路径缺 finalize；patch 后自动 re-eval 未接。</p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="三对照与结论">三、对照与结论<a href="#三对照与结论" class="hash-link" aria-label="Direct link to 三、对照与结论" title="Direct link to 三、对照与结论" translate="no">​</a></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th></th><th>业界评测框架</th><th>skill-creator</th><th>Hermes Curator</th><th>WingsApp Evolution</th></tr></thead><tbody><tr><td>问题</td><td>框架能力边界</td><td>设计得好不好</td><td>库该不 该瘦身合并</td><td>真实使用要不要改一字</td></tr><tr><td>输入</td><td>evals / 沙箱 / 安全规则</td><td>eval 集 + 人审</td><td>日历 + 用量</td><td>静态 + runtime +（未来）eval</td></tr><tr><td>范围</td><td>单次评测流水线</td><td>单 skill 创作期</td><td>全库</td><td>单 skill 后台</td></tr></tbody></table>
+<p>一句话：</p>
+<ul>
+<li class="">业界方案回答「评测体系怎么搭、安全/沙箱怎么分层」；</li>
+<li class=""><strong>skill-creator</strong> 回答「设计得好不好」——benchmark + 人审；</li>
+<li class=""><strong>Hermes 合并/归档哲学</strong>在本阶段刻意退场，平台能力（ledger/sync/guard）继续服役；</li>
+<li class=""><strong>Evolution Loop</strong> 回答「线上要不要改」——吃真实流量信号，只改自己。</li>
+</ul>
+<p>创作期用评测建基准，运营期用质量报告吃流量；开源评测栈（尤其 SkillEvaluator / Harbor / evals.json 约定）是 skill-creator 与未来 <code>schedule_eval</code> 接线时最值得对齐的外部参照。</p></div><footer class="docusaurus-mt-lg"><div class="row margin-top--sm theme-blog-footer-edit-meta-row"><div class="col"><b>Tags:</b><ul class="tags_jXut padding--none margin-left--sm"><li class="tag_QGVx"><a rel="tag" class="tag_zVej tagRegular_sFm0" href="/blog/tags/agent">agent</a></li><li class="tag_QGVx"><a rel="tag" class="tag_zVej tagRegular_sFm0" href="/blog/tags/skill">skill</a></li><li class="tag_QGVx"><a rel="tag" class="tag_zVej tagRegular_sFm0" href="/blog/tags/wingsapp">wingsapp</a></li><li class="tag_QGVx"><a rel="tag" class="tag_zVej tagRegular_sFm0" href="/blog/tags/evaluation">evaluation</a></li></ul></div></div></footer></article><nav class="pagination-nav docusaurus-mt-lg" aria-label="Blog post page navigation"><a class="pagination-nav__link pagination-nav__link--prev" href="/blog/2026/09/12/vscode-integrated-browser"><div class="pagination-nav__sublabel">Newer post</div><div class="pagination-nav__label">VS Code Integrated Browser：BrowserView、CDP 与「Add to Chat」</div></a><a class="pagination-nav__link pagination-nav__link--next" href="/blog/2026/07/25/nodejs-web-pcm-audio"><div class="pagination-nav__sublabel">Older post</div><div class="pagination-nav__label">Node.js / Web 音频 PCM 采集与播放选型</div></a></nav></main><div class="col col--2"><div class="tableOfContents_bqdL thin-scrollbar"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#一业界-skill-evaluation-速览" class="table-of-contents__link toc-highlight">一、业界 Skill Evaluation 速览</a></li><li><a href="#二wingsapp-里的三条线如何汇合" class="table-of-contents__link toc-highlight">二、WingsApp 里的三条线如何汇合</a><ul><li><a href="#skill-creator设计得好不好" class="table-of-contents__link toc-highlight">skill-creator：设计得好不好</a></li><li><a href="#hermes-curator曾用现退场的主线" class="table-of-contents__link toc-highlight">Hermes Curator：曾用、现退场的主线</a></li><li><a href="#evolution-loop线上要不要改一个字" class="table-of-contents__link toc-highlight">Evolution Loop：线上要不要改一个字</a></li></ul></li><li><a href="#三对照与结论" class="table-of-contents__link toc-highlight">三、对照与结论</a></li></ul></div></div></div></div></div><footer class="theme-layout-footer footer footer--dark"><div class="container container-fluid"><div class="row footer__links"><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Recent projects</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://github.com/AkatQuas/ai-dispatch" target="_blank" rel="noopener noreferrer" class="footer__link-item">ai-dispatch<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://github.com/AkatQuas/stock-radar" target="_blank" rel="noopener noreferrer" class="footer__link-item">stock-radar<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://github.com/AkatQuas/kiddo-plays" target="_blank" rel="noopener noreferrer" class="footer__link-item">kiddo-plays<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://github.com/AkatQuas/regexper-ng" target="_blank" rel="noopener noreferrer" class="footer__link-item">regexper-ng<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">More</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://github.com/AkatQuas" target="_blank" rel="noopener noreferrer" class="footer__link-item">GitHub profile<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://github.com/AkatQuas/nprogresse" target="_blank" rel="noopener noreferrer" class="footer__link-item">NProgressE<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://github.com/AkatQuas/svg-diagram-drawer-skill" target="_blank" rel="noopener noreferrer" class="footer__link-item">svg-diagram-drawer-skill<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">On this site</div><ul class="footer__items clean-list"><li class="footer__item"><a class="footer__link-item" href="/blog/archive">Blog archive</a></li><li class="footer__item"><a href="https://akatquas.github.io/dateless/" target="_blank" rel="noopener noreferrer" class="footer__link-item">Dateless<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div></div><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2026 AkatQuas. Built with Docusaurus.</div></div></div></footer></div>
+</body>
+</html>

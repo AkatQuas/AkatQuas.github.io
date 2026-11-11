@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en" dir="ltr" class="blog-wrapper blog-post-page plugin-blog plugin-id-default" data-has-hydrated="false">
+<head>
+<meta charset="UTF-8">
+<meta name="generator" content="Docusaurus v3.10.2">
+<title data-rh="true">Realtime Agent 调研：流式交互与桌面语音链路 | AkatQuas&#x27;s blog</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:url" content="https://akatquas.github.io/blog/2026/07/18/realtime-agent"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docusaurus_tag" content="default"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docsearch:docusaurus_tag" content="default"><meta data-rh="true" property="og:title" content="Realtime Agent 调研：流式交互与桌面语音链路 | AkatQuas&#x27;s blog"><meta data-rh="true" name="description" content="Realtime Agent 要的是边听边想边说、可打断、低时延。下面整理能力定义、与现有 Agent Loop 的平行接入，以及桌面端双向语音通话的分层参考。"><meta data-rh="true" property="og:description" content="Realtime Agent 要的是边听边想边说、可打断、低时延。下面整理能力定义、与现有 Agent Loop 的平行接入，以及桌面端双向语音通话的分层参考。"><meta data-rh="true" property="og:type" content="article"><meta data-rh="true" property="article:published_time" content="2026-07-18T00:00:00.000Z"><meta data-rh="true" property="article:tag" content="agent,realtime,electron"><link data-rh="true" rel="icon" href="/images/favicon.ico"><link data-rh="true" rel="canonical" href="https://akatquas.github.io/blog/2026/07/18/realtime-agent"><link data-rh="true" rel="alternate" href="https://akatquas.github.io/blog/2026/07/18/realtime-agent" hreflang="en"><link data-rh="true" rel="alternate" href="https://akatquas.github.io/blog/2026/07/18/realtime-agent" hreflang="x-default"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","@id":"https://akatquas.github.io/blog/2026/07/18/realtime-agent","mainEntityOfPage":"https://akatquas.github.io/blog/2026/07/18/realtime-agent","url":"https://akatquas.github.io/blog/2026/07/18/realtime-agent","headline":"Realtime Agent 调研：流式交互与桌面语音链路","name":"Realtime Agent 调研：流式交互与桌面语音链路","description":"Realtime Agent 要的是边听边想边说、可打断、低时延。下面整理能力定义、与现有 Agent Loop 的平行接入，以及桌面端双向语音通话的分层参考。","datePublished":"2026-07-18T00:00:00.000Z","author":[],"keywords":[],"isPartOf":{"@type":"Blog","@id":"https://akatquas.github.io/blog","name":"Blog"}}</script><link rel="alternate" type="application/rss+xml" href="/blog/rss.xml" title="AkatQuas&#39;s blog RSS Feed">
+<link rel="alternate" type="application/atom+xml" href="/blog/atom.xml" title="AkatQuas&#39;s blog Atom Feed"><link rel="stylesheet" href="/assets/css/styles.cd16f378.css">
+<script src="/assets/js/runtime~main.8fa69736.js" defer="defer"></script>
+<script src="/assets/js/main.106e90f9.js" defer="defer"></script>
+</head>
+<body>
+<svg style="display: none;"><defs>
+<symbol id="theme-svg-external-link" viewBox="0 0 24 24"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"/></symbol>
+</defs></svg>
+<script>!function(){var t=function(){try{return new URLSearchParams(window.location.search).get("docusaurus-theme")}catch(t){}}()||function(){try{return window.localStorage.getItem("theme")}catch(t){}}();document.documentElement.setAttribute("data-theme",t||"light"),document.documentElement.setAttribute("data-theme-choice",t||"light")}(),function(){try{const c=new URLSearchParams(window.location.search).entries();for(var[t,e]of c)if(t.startsWith("docusaurus-data-")){var a=t.replace("docusaurus-data-","data-");document.documentElement.setAttribute(a,e)}}catch(t){}}()</script><div id="__docusaurus"><div role="region" aria-label="Skip to main content"><a class="skipToContent_fXgn" href="#__docusaurus_skipToContent_fallback">Skip to main content</a></div><nav aria-label="Main" class="theme-layout-navbar navbar navbar--fixed-top"><div class="navbar__inner"><div class="theme-layout-navbar-left navbar__items"><button aria-label="Toggle navigation bar" aria-expanded="false" class="navbar__toggle clean-btn" type="button"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"></path></svg></button><a class="navbar__brand" href="/"><div class="navbar__logo"><img src="/images/logo.svg" alt="AkatQuas" class="themedComponent_mlkZ themedComponent--light_NVdE"><img src="/images/logo.svg" alt="AkatQuas" class="themedComponent_mlkZ themedComponent--dark_xIcU"></div><b class="navbar__title text--truncate">AkatQuas 🔭</b></a><a class="navbar__item navbar__link" href="/docs/about">About</a><a aria-current="page" class="navbar__item navbar__link navbar__link--active" href="/blog">Blog</a></div><div class="theme-layout-navbar-right navbar__items navbar__items--right"><a href="https://akatquas.github.io/dateless/" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">Dateless<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a><a href="https://github.com/AkatQuas/AkatQuas.github.io" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">GitHub<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a><div class="toggle_vylO colorModeToggle_DEke"><button class="clean-btn toggleButton_gllP toggleButtonDisabled_aARS" type="button" disabled="" title="system mode" aria-label="Switch between dark and light mode (currently system mode)"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP lightToggleIcon_pyhR"><path fill="currentColor" d="M12,9c1.65,0,3,1.35,3,3s-1.35,3-3,3s-3-1.35-3-3S10.35,9,12,9 M12,7c-2.76,0-5,2.24-5,5s2.24,5,5,5s5-2.24,5-5 S14.76,7,12,7L12,7z M2,13l2,0c0.55,0,1-0.45,1-1s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S1.45,13,2,13z M20,13l2,0c0.55,0,1-0.45,1-1 s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S19.45,13,20,13z M11,2v2c0,0.55,0.45,1,1,1s1-0.45,1-1V2c0-0.55-0.45-1-1-1S11,1.45,11,2z M11,20v2c0,0.55,0.45,1,1,1s1-0.45,1-1v-2c0-0.55-0.45-1-1-1C11.45,19,11,19.45,11,20z M5.99,4.58c-0.39-0.39-1.03-0.39-1.41,0 c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0s0.39-1.03,0-1.41L5.99,4.58z M18.36,16.95 c-0.39-0.39-1.03-0.39-1.41,0c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0c0.39-0.39,0.39-1.03,0-1.41 L18.36,16.95z M19.42,5.99c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06c-0.39,0.39-0.39,1.03,0,1.41 s1.03,0.39,1.41,0L19.42,5.99z M7.05,18.36c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06 c-0.39,0.39-0.39,1.03,0,1.41s1.03,0.39,1.41,0L7.05,18.36z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP darkToggleIcon_wfgR"><path fill="currentColor" d="M9.37,5.51C9.19,6.15,9.1,6.82,9.1,7.5c0,4.08,3.32,7.4,7.4,7.4c0.68,0,1.35-0.09,1.99-0.27C17.45,17.19,14.93,19,12,19 c-3.86,0-7-3.14-7-7C5,9.07,6.81,6.55,9.37,5.51z M12,3c-4.97,0-9,4.03-9,9s4.03,9,9,9s9-4.03,9-9c0-0.46-0.04-0.92-0.1-1.36 c-0.98,1.37-2.58,2.26-4.4,2.26c-2.98,0-5.4-2.42-5.4-5.4c0-1.81,0.89-3.42,2.26-4.4C12.92,3.04,12.46,3,12,3L12,3z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP systemToggleIcon_QzmC"><path fill="currentColor" d="m12 21c4.971 0 9-4.029 9-9s-4.029-9-9-9-9 4.029-9 9 4.029 9 9 9zm4.95-13.95c1.313 1.313 2.05 3.093 2.05 4.95s-0.738 3.637-2.05 4.95c-1.313 1.313-3.093 2.05-4.95 2.05v-14c1.857 0 3.637 0.737 4.95 2.05z"></path></svg></button></div><div class="navbarSearchContainer_Bca1"></div></div></div><div role="presentation" class="navbar-sidebar__backdrop"></div></nav><div id="__docusaurus_skipToContent_fallback" class="theme-layout-main main-wrapper mainWrapper_z2l0"><div class="container margin-vert--lg"><div class="row"><aside class="col col--3"><nav class="sidebar_brwN thin-scrollbar" aria-label="Blog recent posts navigation"><div class="sidebarItemTitle_r4Q1 margin-bottom--md">Recent posts</div><ul class="sidebarItemList_QwSx clean-list"><li class="sidebarItem_lnhn"><a class="sidebarItemLink_yNGZ" href="/blog/2026/09/19/jev-decision-model">Jev：不生成文本的决策模型在 Agent 架构中的位置</a></li><li class="sidebarItem_lnhn"><a class="sidebarItemLink_yNGZ" href="/blog/2026/09/12/vscode-integrated-browser">VS Code Integrated Browser：BrowserView、CDP 与「Add to Chat」</a></li><li class="sidebarItem_lnhn"><a class="sidebarItemLink_yNGZ" href="/blog/2026/08/15/skill-evaluation-and-evolution">Skill 评价与进化：业界评测框架与 WingsApp 运行-评价-优化</a></li><li class="sidebarItem_lnhn"><a class="sidebarItemLink_yNGZ" href="/blog/2026/07/25/nodejs-web-pcm-audio">Node.js / Web 音频 PCM 采集与播放选型</a></li><li class="sidebarItem_lnhn"><a aria-current="page" class="sidebarItemLink_yNGZ sidebarItemLinkActive_oSRm" href="/blog/2026/07/18/realtime-agent">Realtime Agent 调研：流式交互与桌面语音链路</a></li><li class="sidebarItem_lnhn"><a class="sidebarItemLink_yNGZ" href="/blog/2026/07/11/build-libnut">构建 Libnut：麒麟与 Win7 编译备忘</a></li><li class="sidebarItem_lnhn"><a class="sidebarItemLink_yNGZ" href="/blog/2026/07/04/computer-use-selection">Computer Use 选型札记：从 Codex 复刻到 Node 生态</a></li><li class="sidebarItem_lnhn"><a class="sidebarItemLink_yNGZ" href="/blog/2026/06/27/clawshell-api-key-protection">ClawShell API 密钥保护机制分析</a></li></ul><a class="archiveLink_dflG" href="/blog/archive">Archive</a></nav></aside><main class="col col--7"><article class=""><header><h1 class="title_f1Hy">Realtime Agent 调研：流式交互与桌面语音链路</h1><div class="container_mt6G margin-vert--md"><time datetime="2026-07-18T00:00:00.000Z">July 18, 2026</time> · <!-- -->12 min read</div></header><div id="__blog-post-container" class="markdown"><p>Realtime Agent 要的是边听边想边说、可打断、低时延。下面整理能力定义、与现有 Agent Loop 的平行接入，以及桌面端双向语音通话的分层参考。</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="核心定义">核心定义<a href="#核心定义" class="hash-link" aria-label="Direct link to 核心定义" title="Direct link to 核心定义" translate="no">​</a></h2>
+<p>普通传统 Agent：<strong>一问一答、单次轮次、等待完整输入才开始思考输出</strong>，用户说完一整段话才回复，有明显延迟。</p>
+<p>Realtime Agent（实时 Agent）：<strong>流式、边听 / 边读、边思考、边输出，全程低延迟，支持中途打断、实时感知上下文变化</strong>，和人实时对话几乎无割裂，核心关键词：<strong>低时延、流式交互、中断 响应、实时状态感知</strong>。</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="realtime-的核心功能">Realtime 的核心功能<a href="#realtime-的核心功能" class="hash-link" aria-label="Direct link to Realtime 的核心功能" title="Direct link to Realtime 的核心功能" translate="no">​</a></h2>
+<ol>
+<li class=""><strong>流式输入输出</strong> 文本 / 语音边输入边解析，AI 边思考边分段返回，消除等待空白； ← 依赖 real-time 的模型，例如 <code>gpt-4o-realtime-mini</code> </li>
+<li class=""><strong>支持实时打断</strong> 用户中途修改指令、打断 AI 输出，Agent 立刻终止当前推理，切换新需求；</li>
+<li class=""><strong>实时动态工具调用</strong> 不用等完整提问，识别到半句话里需要工具，就实时调用工作流 / 接口；</li>
+<li class=""><strong>实时状态同步</strong> 实时展示 Agent 当前步骤：正在理解、正在拉取数据、正在编排动态 workflow、正在逼近目标；</li>
+</ol>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="基于现有-agent-loop">基于现有 Agent Loop<a href="#基于现有-agent-loop" class="hash-link" aria-label="Direct link to 基于现有 Agent Loop" title="Direct link to 基于现有 Agent Loop" translate="no">​</a></h2>
+<p>不能重做一套独立框架，要做成<strong>平行模式</strong>：</p>
+<ul>
+<li class="">原有普通轮询 Agent、goal 目标 Agent、dynamic 动态工作流、realtime 实时 Agent 四种模式共存；</li>
+<li class="">复用统一的工具调用、记忆存储、任务调度、上下文管理底层能力；</li>
+<li class="">Realtime 只是上层交互通道改造，核心任务执行逻辑复用现有代码，降低改造成本、方便迭代滚雪球。</li>
+</ul>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="和另外两个模块联动">和另外两个模块联动<a href="#和另外两个模块联动" class="hash-link" aria-label="Direct link to 和另外两个模块联动" title="Direct link to 和另外两个模块联动" translate="no">​</a></h2>
+<ul>
+<li class="">Realtime + goal 模式：实时同步目标进度，中途改目标自动重新拆解步骤；</li>
+<li class="">Realtime + dynamic-workflow：用户实时变更需求，动态刷新任务链路，不用重新发起会话。</li>
+</ul>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="开源方案">开源方案<a href="#开源方案" class="hash-link" aria-label="Direct link to 开源方案" title="Direct link to 开源方案" translate="no">​</a></h2>
+<p>OpenAI Realtime API 完整链路：音频 / 文本实时流、会话状态管理、实时 Function Calling、中断机制；</p>
+<ul>
+<li class=""><a href="https://github.com/openai/openai-node/blob/HEAD/realtime.md" target="_blank" rel="noopener noreferrer" class="">https://github.com/openai/openai-node/blob/HEAD/realtime.md</a></li>
+</ul>
+<p>核心能力：</p>
+<ol>
+<li class="">原生融合标准 Agent Loop，<strong>普通 Agent/RealtimeAgent 平行共存</strong></li>
+<li class="">内置实时打断、流式工具调用、多 Agent 会话交接、长上下文增量更新</li>
+<li class="">同时支持<strong>文本实时流 + OpenAI Realtime 语音音频流</strong>双模式</li>
+<li class="">工具、记忆、路由、防护护栏完全复用普通 Agent 底层逻辑</li>
+</ol>
+<ul>
+<li class=""><a href="https://openai.github.io/openai-agents-js/guides/voice-agents/quickstart/" target="_blank" rel="noopener noreferrer" class="">https://openai.github.io/openai-agents-js/guides/voice-agents/quickstart/</a></li>
+</ul>
+<p>基于 @openai/agents 库，使用real-time能力，创建一个 语音Agent。</p>
+<p>一个语音 Agent 需要的能力包括添加<a href="https://openai.github.io/openai-agents-js/zh/guides/voice-agents/build#tools" target="_blank" rel="noopener noreferrer" style="text-decoration:none" class="">工具</a>、<a href="https://openai.github.io/openai-agents-js/zh/guides/voice-agents/build#handoffs" target="_blank" rel="noopener noreferrer" style="text-decoration:none" class="">交接</a>和<a href="https://openai.github.io/openai-agents-js/zh/guides/voice-agents/build#guardrails" target="_blank" rel="noopener noreferrer" style="text-decoration:none" class="">护栏</a>。</p>
+<p>支持 <a href="https://openai.github.io/openai-agents-js/zh/guides/voice-agents/build#turn-detection-and-voice-activity-detection" target="_blank" rel="noopener noreferrer" style="text-decoration:none" class="">轮次检测和语音活动检测</a>、<a href="https://openai.github.io/openai-agents-js/zh/guides/voice-agents/build#interruptions" target="_blank" rel="noopener noreferrer" style="text-decoration:none" class="">打断</a>以及<a href="https://openai.github.io/openai-agents-js/zh/guides/voice-agents/build#manual-response-control" target="_blank" rel="noopener noreferrer" style="text-decoration:none" class="">手动响应控制</a>，控制对话循环。</p>
+<p>支持添加<a href="https://openai.github.io/openai-agents-js/zh/guides/voice-agents/build#text-input" target="_blank" rel="noopener noreferrer" style="text-decoration:none" class="">文本输入</a>、<a href="https://openai.github.io/openai-agents-js/zh/guides/voice-agents/build#image-input" target="_blank" rel="noopener noreferrer" style="text-decoration:none" class="">图像输入</a>和<a href="https://openai.github.io/openai-agents-js/zh/guides/voice-agents/build#conversation-history-management" target="_blank" rel="noopener noreferrer" style="text-decoration:none" class="">会话历史管理</a>。</p>
+<ul>
+<li class=""><a href="https://github.com/openai/openai-realtime-agents" target="_blank" rel="noopener noreferrer" class="">https://github.com/openai/openai-realtime-agents</a></li>
+</ul>
+<p>官方多实时 Agent 编排 Demo ，Next.js 完整前端 + 后端参考实现，展示两大生产范式</p>
+<ol>
+<li class="">Sequential Handoff 顺序交接：实时会话自动切换 goal 任务 Agent</li>
+<li class="">Chat-Supervisor 主管调度：单实时会话动态调度 dynamic-workflow 子流程</li>
+</ol>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="开源-realtime-agent-标准范式架构设计">开源 Realtime Agent 标准范式（架构设计）<a href="#开源-realtime-agent-标准范式架构设计" class="hash-link" aria-label="Direct link to 开源 Realtime Agent 标准范式（架构设计）" title="Direct link to 开源 Realtime Agent 标准范式（架构设计）" translate="no">​</a></h2>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="范式-1外挂并行实时层范式openai-agents-sdk推荐你们采用">范式 1：外挂并行实时层范式（OpenAI Agents SDK，推荐你们采用）<a href="#范式-1外挂并行实时层范式openai-agents-sdk推荐你们采用" class="hash-link" aria-label="Direct link to 范式 1：外挂并行实时层范式（OpenAI Agents SDK，推荐你们采用）" title="Direct link to 范式 1：外挂并行实时层范式（OpenAI Agents SDK，推荐你们采用）" translate="no">​</a></h3>
+<ol>
+<li class="">底层统一：原有 Agent Loop、动态工作流、Goal 规划完全不动</li>
+<li class="">上层包装：新增 <code>RealtimeWrapper/RealtimeAgent</code> 包装器，做长连接 / 流 / 打断处理</li>
+<li class="">运行模式：同一套系统可切换「普通轮询」/「实时流式」双模式，代码复用 90%+</li>
+</ol>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="范式-2事件驱动状态机实时循环pipecat--livekit">范式 2：事件驱动状态机实时循环（Pipecat / LiveKit）<a href="#范式-2事件驱动状态机实时循环pipecat--livekit" class="hash-link" aria-label="Direct link to 范式 2：事件驱动状态机实时循环（Pipecat / LiveKit）" title="Direct link to 范式 2：事件驱动状态机实时循环（Pipecat / LiveKit）" translate="no">​</a></h2>
+<ul>
+<li class="">核心：会话拆分为 <code>Listening→Thinking→Speaking→Interrupted</code> 状态机</li>
+<li class="">用户每输入片段触发一次增量推理，中途打断直接重置状态，终止当前 LLM 生成</li>
+<li class="">适合强交互语音场景</li>
+</ul>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="范式-3流式-graph-分支循环langgraph-realtime">范式 3：流式 Graph 分支循环（LangGraph Realtime）<a href="#范式-3流式-graph-分支循环langgraph-realtime" class="hash-link" aria-label="Direct link to 范式 3：流式 Graph 分支循环（LangGraph Realtime）" title="Direct link to 范式 3：流式 Graph 分支循环（LangGraph Realtime）" translate="no">​</a></h2>
+<ul>
+<li class="">在 Agent 有向图中增加<strong>实时流并行分支</strong>，同步执行任务规划 + 实时交互输出</li>
+<li class="">Goal 目标变更、动态工作流更新实时同步到流式输出</li>
+</ul>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="范式-4多-agent-实时会话交接范式openai-realtime-agents-demo">范式 4：多 Agent 实时会话交接范式（OpenAI Realtime Agents Demo）<a href="#范式-4多-agent-实时会话交接范式openai-realtime-agents-demo" class="hash-link" aria-label="Direct link to 范式 4：多 Agent 实时会话交接范式（OpenAI Realtime Agents Demo）" title="Direct link to 范式 4：多 Agent 实时会话交接范式（OpenAI Realtime Agents Demo）" translate="no">​</a></h2>
+<ul>
+<li class="">单个长连接会话内部，根据用户实时意图自动切换不同专用 Agent（目标 Agent / 动态工作流 Agent）</li>
+<li class="">无需重建 WebSocket，上下文无缝继承</li>
+</ul>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="豆包桌面端-real-time-模式体验">豆包桌面端 real-time 模式体验<a href="#豆包桌面端-real-time-模式体验" class="hash-link" aria-label="Direct link to 豆包桌面端 real-time 模式体验" title="Direct link to 豆包桌面端 real-time 模式体验" translate="no">​</a></h2>
+<ol>
+<li class="">开启 realtime 模式，等同于增加一个 channel 输入来源，为 audio 输入。</li>
+<li class="">对话输出含文本（先进会话记录）与语音推流；文字通常更  快，语音可中断停止播放。</li>
+<li class="">历史回溯主要是文本：用户 ASR 文本 + 助手回复文本；语音本身不进历史、无需回放。</li>
+<li class="">UI 随语音输入模式变化（波形、状态等）。</li>
+<li class="">多模态：文字历史 + 当次语音输入一起送模型。</li>
+<li class="">停顿会导致 ASR 中断或变更，用户 prompt 可能随之变化。</li>
+</ol>
+<p>豆包 / 讯飞星火 / 通义千问 / 智谱清言 / Kimi 桌面端都试过：当时只有豆包支持双向语音通话，其余多为语音转文字。</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="豆包桌面端语音通话electron-分层与时序">豆包桌面端语音通话：Electron 分层与时序<a href="#豆包桌面端语音通话electron-分层与时序" class="hash-link" aria-label="Direct link to 豆包桌面端语音通话：Electron 分层与时序" title="Direct link to 豆包桌面端语音通话：Electron 分层与时序" translate="no">​</a></h2>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="前置基础架构">前置基础架构<a href="#前置基础架构" class="hash-link" aria-label="Direct link to 前置基础架构" title="Direct link to 前置基础架构" translate="no">​</a></h3>
+<p>豆包桌面端基于 <strong>Electron = Node.js 主进程 + Chromium 渲染进程</strong>，语音通话依赖：</p>
+<ol>
+<li class=""><strong>WebRTC</strong>：麦克风实时采集、本地音频流</li>
+<li class=""><strong>流式 ASR + TTS</strong>：云端识别与合成、本地播放</li>
+</ol>
+<p>分层结构（三层）：</p>
+<ol>
+<li class=""><strong>主进程（Main，Node.js）</strong> 系统硬件权限管理者：麦克风、扬声器、全局权限、网络长连接、IPC中转； 控制音频设备抢占、降噪、多音色调度、后台播放。</li>
+<li class=""><strong>渲染进程（Renderer，Chromium Web）</strong> UI交互层：通话界面、按钮、波形动画、音色选择、状态展示； 通过 WebRTC 获取原始音频流，推送至主进程转发云端。</li>
+<li class=""><strong>云端语音服务集群</strong> ASR实时语音识别、大模型对话推理、TTS流式语音合成、音频编解码。</li>
+</ol>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="分层职责简表">分层职责简表<a href="#分层职责简表" class="hash-link" aria-label="Direct link to 分层职责简表" title="Direct link to 分层职责简表" translate="no">​</a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>层级</th><th>核心语音相关职责</th></tr></thead><tbody><tr><td>Electron 主进程</td><td>麦克风权限校验、音频设备管理、WebSocket长连接、音频流转发、TTS音频播放、异常兜底断连</td></tr><tr><td>Chromium渲染进程</td><td>WebRTC采集麦克风PCM音频、UI交互（按住说话/免提切换）、波形渲染、通话状态展示</td></tr><tr><td>云端语音服务</td><td>实时流式ASR转文字、LLM连续对话推理、流式TTS音频分片下发、降噪算法</td></tr></tbody></table>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="二完整语音通话交互流程两种模式按住说话--免提连续对话">二、完整语音通话交互流程（两种模式：按住说话 / 免提连续对话）<a href="#二完整语音通话交互流程两种模式按住说话--免提连续对话" class="hash-link" aria-label="Direct link to 二、完整语音通话交互流程（两种模式：按住说话 / 免提连续对话）" title="Direct link to 二、完整语音通话交互流程（两种模式：按住说话 / 免提连续对话）" translate="no">​</a></h2>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="交互逻辑简述">交互逻辑简述<a href="#交互逻辑简述" class="hash-link" aria-label="Direct link to 交互逻辑简述" title="Direct link to 交互逻辑简述" translate="no">​</a></h3>
+<ol>
+<li class="">用户左侧「更多」打开<strong>语音通话</strong>，独立弹窗启动；</li>
+<li class="">首次触发请求麦克风权限，主进程拦截权限申请并持久化授权；</li>
+<li class="">两种交互模式：
+<ul>
+<li class="">按住说话：长按麦克风按钮才采集音频，松开终止上传；</li>
+<li class="">免提连续对话：持续拾音，VAD人声检测自动切分语句，无需手动按键；</li>
+</ul>
+</li>
+<li class="">本地音频实时分片上传云端 ASR，边说边转文字；</li>
+<li class="">ASR文本实时送入大模型流式推理；</li>
+<li class="">LLM输出文字同步送入TTS，分段下发合成音频流；</li>
+<li class="">客户端边接收TTS音频边播放，支持打断（用户说话立刻终止当前AI语音）；</li>
+<li class="">支持切换音色、实时波形可视化、通话中断恢复、后台播报。</li>
+</ol>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="三mermaid-时序图完整语音通话链路时序">三、Mermaid 时序图：完整语音通话链路时序<a href="#三mermaid-时序图完整语音通话链路时序" class="hash-link" aria-label="Direct link to 三、Mermaid 时序图：完整语音通话链路时序" title="Direct link to 三、Mermaid 时序图：完整语音通话链路时序" translate="no">​</a></h2>
+<div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#bfc7d5;--prism-background-color:#292d3e"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#bfc7d5;background-color:#292d3e"><code class="codeBlockLines_e6Vv"><div class="token-line" style="color:#bfc7d5"><span class="token plain">sequenceDiagram</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    participant User as 用户</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    participant Render as Chromium渲染进程(UI/WebRTC)</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    participant Main as Electron主进程(Node)</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    participant Cloud as 云端语音&amp;大模型服务</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain" style="display:inline-block"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    Note over User,Cloud: 阶段1：初始化通话、授权麦克风</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    User-&gt;&gt;Render: 点击「语音通话」打开通话窗口</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    Render-&gt;&gt;Main: IPC请求麦克风权限 + 建立语音WebSocket长连接</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    Main-&gt;&gt;OS: 请求麦克风硬件权限</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    OS--&gt;&gt;Main: 返回授权结果</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    Main--&gt;&gt;Render: IPC推送权限成功/失败</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    Render-&gt;&gt;Render: 初始化WebRTC AudioContext，准备音频采集</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain" style="display:inline-block"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    Note over User,Cloud: 阶段2：用户持续说话（免提VAD/按住说话）</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    loop 实时音频分片采集上传</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">        User-&gt;&gt;Render: 持续人声输入麦克风</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">        Render-&gt;&gt;Render: WebRTC采集PCM原始音频帧，做本地降噪</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">        Render-&gt;&gt;Main: IPC转发音频分片二进制流</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">        Main-&gt;&gt;Cloud: WebSocket流式上传音频包</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">        Cloud-&gt;&gt;Cloud: ASR实时识别，输出增量文本</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">        Cloud--&gt;&gt;Main: 下发实时转文字结果</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">        Main--&gt;&gt;Render: IPC回传识别文本，UI展示实时字幕</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    end</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain" style="display:inline-block"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    Note over User,Cloud: 阶段3：云端推理+流式TTS返回语音</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    Cloud-&gt;&gt;Cloud: ASR完整句子送入LLM流式生成回复文本</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    loop TTS流式分片下发</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">        Cloud-&gt;&gt;Cloud: 分段生成TTS音频二进制片段</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">        Cloud--&gt;&gt;Main: WebSocket下发合成音频流</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">        Main-&gt;&gt;Main: 音频缓冲、扬声器调度</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">        Main--&gt;&gt;Render: 同步推送AI回复文字用于UI展示</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">        Main-&gt;&gt;OS: 扬声器播放TTS音频</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    end</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain" style="display:inline-block"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    Note over User,Cloud: 阶段4：打断机制（用户再次说话）</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    User-&gt;&gt;Render: 用户重新开口说话</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    Render-&gt;&gt;Main: IPC发送「打断指令」</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    Main-&gt;&gt;Cloud: 发送终止当前TTS会话信号</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    Main-&gt;&gt;OS: 立刻停止扬声器播放AI语音</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    Note over Main,Cloud: 回到阶段2，重新采集用户音频循环</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain" style="display:inline-block"></span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    Note over User,Cloud: 阶段5：关闭通话</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    User-&gt;&gt;Render: 关闭语音通话窗口</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    Render-&gt;&gt;Main: IPC发送关闭会话指令</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    Main-&gt;&gt;Cloud: WebSocket关闭语音连接</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    Main-&gt;&gt;OS: 释放麦克风硬件占用</span><br></div><div class="token-line" style="color:#bfc7d5"><span class="token plain">    Render-&gt;&gt;Render: 销毁WebRTC音频上下文，清空通话UI</span><br></div></code></pre></div></div>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="四关键架构设计亮点针对语音通话场景">四、关键架构设计亮点（针对语音通话场景）<a href="#四关键架构设计亮点针对语音通话场景" class="hash-link" aria-label="Direct link to 四、关键架构设计亮点（针对语音通话场景）" title="Direct link to 四、关键架构设计亮点（针对语音通话场景）" translate="no">​</a></h2>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="1-主进程统一接管硬件解决-chromium-内核碎片化问题">1. 主进程统一接管硬件，解决 Chromium 内核碎片化问题<a href="#1-主进程统一接管硬件解决-chromium-内核碎片化问题" class="hash-link" aria-label="Direct link to 1. 主进程统一接管硬件，解决 Chromium 内核碎片化问题" title="Direct link to 1. 主进程统一接管硬件，解决 Chromium 内核碎片化问题" translate="no">​</a></h3>
+<p>纯网页端WebRTC会受浏览器、系统版本限制，Electron主进程统一封装麦克风/扬声器：</p>
+<ul>
+<li class="">避免多软件抢占麦克风冲突；</li>
+<li class="">Windows/macOS 音频设备差异由Node层统一兼容，渲染层只处理标准音频流；</li>
+<li class="">后台通话播报、最小化窗口持续收音依赖主进程后台常驻能力。</li>
+</ul>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="2-ipc-分层解耦安全隔离">2. IPC 分层解耦，安全隔离<a href="#2-ipc-分层解耦安全隔离" class="hash-link" aria-label="Direct link to 2. IPC 分层解耦，安全隔离" title="Direct link to 2. IPC 分层解耦，安全隔离" translate="no">​</a></h3>
+<ul>
+<li class="">渲染进程（网页沙箱）只负责采集音频、UI展示，<strong>不直接操作硬件、不直连云端WebSocket</strong>；</li>
+<li class="">所有网络、硬件操作收敛到主进程，防止前端JS漏洞劫持音频流；</li>
+<li class="">音频二进制流通过IPC中转，统一加解密、校验。</li>
+</ul>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="3-流式双向链路低延迟核心设计">3. 流式双向链路，低延迟核心设计<a href="#3-流式双向链路低延迟核心设计" class="hash-link" aria-label="Direct link to 3. 流式双向链路，低延迟核心设计" title="Direct link to 3. 流式双向链路，低延迟核心设计" translate="no">​</a></h3>
+<ol>
+<li class="">上行（用户→云端）：音频分片 20–40ms 小包上传，ASR边收边识别，实现“边说边出字”；</li>
+<li class="">下行（云端→用户）：LLM 输出一段文字立刻触发一段TTS合成，分段下发音频，不用等完整回答再播放；</li>
+<li class="">打断机制：用户人声检测触发指令，立刻切断TTS播放，做到自然对话感。</li>
+</ol>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="4-webrtc-本地音频预处理放在渲染层复用网页能力">4. WebRTC 本地音频预处理放在渲染层复用网页能力<a href="#4-webrtc-本地音频预处理放在渲染层复用网页能力" class="hash-link" aria-label="Direct link to 4. WebRTC 本地音频预处理放在渲染层复用网页能力" title="Direct link to 4. WebRTC 本地音频预处理放在渲染层复用网页能力" translate="no">​</a></h3>
+<p>网页端早已成熟的音频降噪、音量波形计算、VAD人声检测全部复用，不用在主进程用C++重写音频算法，大幅降低开发成本。</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="5-与普通文字播报的区别">5. 与普通文字播报的区别<a href="#5-与普通文字播报的区别" class="hash-link" aria-label="Direct link to 5. 与普通文字播报的区别" title="Direct link to 5. 与普通文字播报的区别" translate="no">​</a></h3>
+<p>普通“消息语音朗读”是一次性拉取完整文本合成； 语音通话模式是<strong>长连接流式实时双向音频流</strong>，独立WebSocket通道，优先级高于普通对话消息，单独做音频缓冲、人声打断、硬件独占逻辑。</p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="五极简交互总结">五、极简交互总结<a href="#五极简交互总结" class="hash-link" aria-label="Direct link to 五、极简交互总结" title="Direct link to 五、极简交互总结" translate="no">​</a></h2>
+<ol>
+<li class="">用户打开语音通话窗口 → 主进程申请麦克风、建立专属语音长连接；</li>
+<li class="">WebRTC采集人声，分片经IPC传给主进程上传云端ASR；</li>
+<li class="">云端实时转文字+大模型推理+流式TTS；</li>
+<li class="">TTS音频流回传客户端，主进程控制扬声器播放；</li>
+<li class="">用户新说话自动打断AI语音，循环往复；</li>
+<li class="">关闭窗口释放麦克风、断开语音连接。</li>
+</ol></div><footer class="docusaurus-mt-lg"><div class="row margin-top--sm theme-blog-footer-edit-meta-row"><div class="col"><b>Tags:</b><ul class="tags_jXut padding--none margin-left--sm"><li class="tag_QGVx"><a rel="tag" class="tag_zVej tagRegular_sFm0" href="/blog/tags/agent">agent</a></li><li class="tag_QGVx"><a rel="tag" class="tag_zVej tagRegular_sFm0" href="/blog/tags/realtime">realtime</a></li><li class="tag_QGVx"><a rel="tag" class="tag_zVej tagRegular_sFm0" href="/blog/tags/electron">electron</a></li></ul></div></div></footer></article><nav class="pagination-nav docusaurus-mt-lg" aria-label="Blog post page navigation"><a class="pagination-nav__link pagination-nav__link--prev" href="/blog/2026/07/25/nodejs-web-pcm-audio"><div class="pagination-nav__sublabel">Newer post</div><div class="pagination-nav__label">Node.js / Web 音频 PCM 采集与播放选型</div></a><a class="pagination-nav__link pagination-nav__link--next" href="/blog/2026/07/11/build-libnut"><div class="pagination-nav__sublabel">Older post</div><div class="pagination-nav__label">构建 Libnut：麒麟与 Win7 编译备忘</div></a></nav></main><div class="col col--2"><div class="tableOfContents_bqdL thin-scrollbar"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#核心定义" class="table-of-contents__link toc-highlight">核心定义</a></li><li><a href="#realtime-的核心功能" class="table-of-contents__link toc-highlight">Realtime 的核心功能</a></li><li><a href="#基于现有-agent-loop" class="table-of-contents__link toc-highlight">基于现有 Agent Loop</a></li><li><a href="#和另外两个模块联动" class="table-of-contents__link toc-highlight">和另外两个模块联动</a></li><li><a href="#开源方案" class="table-of-contents__link toc-highlight">开源方案</a></li><li><a href="#开源-realtime-agent-标准范式架构设计" class="table-of-contents__link toc-highlight">开源 Realtime Agent 标准范式（架构设计）</a><ul><li><a href="#范式-1外挂并行实时层范式openai-agents-sdk推荐你们采用" class="table-of-contents__link toc-highlight">范式 1：外挂并行实时层范式（OpenAI Agents SDK，推荐你们采用）</a></li></ul></li><li><a href="#范式-2事件驱动状态机实时循环pipecat--livekit" class="table-of-contents__link toc-highlight">范式 2：事件驱动状态机实时循环（Pipecat / LiveKit）</a></li><li><a href="#范式-3流式-graph-分支循环langgraph-realtime" class="table-of-contents__link toc-highlight">范式 3：流式 Graph 分支循环（LangGraph Realtime）</a></li><li><a href="#范式-4多-agent-实时会话交接范式openai-realtime-agents-demo" class="table-of-contents__link toc-highlight">范式 4：多 Agent 实时会话交接范式（OpenAI Realtime Agents Demo）</a></li><li><a href="#豆包桌面端-real-time-模式体验" class="table-of-contents__link toc-highlight">豆包桌面端 real-time 模式体验</a></li><li><a href="#豆包桌面端语音通话electron-分层与时序" class="table-of-contents__link toc-highlight">豆包桌面端语音通话：Electron 分层与时序</a><ul><li><a href="#前置基础架构" class="table-of-contents__link toc-highlight">前置基础架构</a></li><li><a href="#分层职责简表" class="table-of-contents__link toc-highlight">分层职责简表</a></li></ul></li><li><a href="#二完整语音通话交互流程两种模式按住说话--免提连续对话" class="table-of-contents__link toc-highlight">二、完整语音通话交互流程（两种模式：按住说话 / 免提连续对话）</a><ul><li><a href="#交互逻辑简述" class="table-of-contents__link toc-highlight">交互逻辑简述</a></li></ul></li><li><a href="#三mermaid-时序图完整语音通话链路时序" class="table-of-contents__link toc-highlight">三、Mermaid 时序图：完整语音通话链路时序</a></li><li><a href="#四关键架构设计亮点针对语音通话场景" class="table-of-contents__link toc-highlight">四、关键架构设计亮点（针对语音通话场景）</a><ul><li><a href="#1-主进程统一接管硬件解决-chromium-内核碎片化问题" class="table-of-contents__link toc-highlight">1. 主进程统一接管硬件，解决 Chromium 内核碎片化问题</a></li><li><a href="#2-ipc-分层解耦安全隔离" class="table-of-contents__link toc-highlight">2. IPC 分层解耦，安全隔离</a></li><li><a href="#3-流式双向链路低延迟核心设计" class="table-of-contents__link toc-highlight">3. 流式双向链路，低延迟核心设计</a></li><li><a href="#4-webrtc-本地音频预处理放在渲染层复用网页能力" class="table-of-contents__link toc-highlight">4. WebRTC 本地音频预处理放在渲染层复用网页能力</a></li><li><a href="#5-与普通文字播报的区别" class="table-of-contents__link toc-highlight">5. 与普通文字播报的区别</a></li></ul></li><li><a href="#五极简交互总结" class="table-of-contents__link toc-highlight">五、极简交互总结</a></li></ul></div></div></div></div></div><footer class="theme-layout-footer footer footer--dark"><div class="container container-fluid"><div class="row footer__links"><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Recent projects</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://github.com/AkatQuas/ai-dispatch" target="_blank" rel="noopener noreferrer" class="footer__link-item">ai-dispatch<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://github.com/AkatQuas/stock-radar" target="_blank" rel="noopener noreferrer" class="footer__link-item">stock-radar<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://github.com/AkatQuas/kiddo-plays" target="_blank" rel="noopener noreferrer" class="footer__link-item">kiddo-plays<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://github.com/AkatQuas/regexper-ng" target="_blank" rel="noopener noreferrer" class="footer__link-item">regexper-ng<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">More</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://github.com/AkatQuas" target="_blank" rel="noopener noreferrer" class="footer__link-item">GitHub profile<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://github.com/AkatQuas/nprogresse" target="_blank" rel="noopener noreferrer" class="footer__link-item">NProgressE<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://github.com/AkatQuas/svg-diagram-drawer-skill" target="_blank" rel="noopener noreferrer" class="footer__link-item">svg-diagram-drawer-skill<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">On this site</div><ul class="footer__items clean-list"><li class="footer__item"><a class="footer__link-item" href="/blog/archive">Blog archive</a></li><li class="footer__item"><a href="https://akatquas.github.io/dateless/" target="_blank" rel="noopener noreferrer" class="footer__link-item">Dateless<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div></div><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2026 AkatQuas. Built with Docusaurus.</div></div></div></footer></div>
+</body>
+</html>

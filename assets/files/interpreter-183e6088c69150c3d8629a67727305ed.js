@@ -1,0 +1,1 @@
+const tokenizer=require("./tokenizer"),parser=require("./parser"),transformer=require("./transformer"),codeGenerator=require("./generator"),compiler=r=>{const e=tokenizer(r),o=parser(e),t=transformer(o);return codeGenerator(t)};module.exports=compiler;

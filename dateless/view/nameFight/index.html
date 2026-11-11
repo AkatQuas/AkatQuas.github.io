@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1.0, maximum-scale=1.0,user-scalable=no"
+    />
+    <title>Name Fight | Beat it!</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css"
+    />
+    <style>
+      .container-fluid {
+        margin: 10px auto;
+      }
+    </style>
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/dateless/assets/script/ie10-viewport-bug-workaround.js"></script>
+  </head>
+  <body>
+    <div id="app" class="container text-center">
+      <div class="panel panel-primary">
+        <div class="panel-heading">Name Fight</div>
+        <div class="panel-body">
+          <!--            names-->
+          <div class="container-fluid" v-if="!gameRunning">
+            <div class="col-xs-12">
+              <div class="input-group">
+                <span class="input-group-addon">Player</span>
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Name..."
+                  v-model="player"
+                  @keyup.enter="start"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!--start button-->
+          <div class="container-fluid" v-if="!gameRunning">
+            <div class="col-xs-12">
+              <button class="btn btn-success btn-lg" @click="start">
+                Start
+              </button>
+            </div>
+            <div class="col-xs-12">
+              <p class="h3">Some tips:</p>
+              <p>
+                Before your game, just input your name or any nick name you
+                want!<br />
+                Then tap "Start" to begin the battle!
+              </p>
+              <p>
+                During the battle you can choose to attack the monster by
+                "Physical Attack" or "Magic Attack".<br />You can just tap the
+                "Ultimate" to release your ultimate skill, which cause much more
+                damage to the monster.
+              </p>
+              <p>
+                You might as well tap the heal button to get healed when your hp
+                getting low.
+              </p>
+            </div>
+          </div>
+
+          <!--            hp display-->
+          <div class="container-fluid" v-if="gameRunning">
+            <div class="col-xs-6">
+              <p>{{ player }}'s hp<br />{{ playerHp }}%</p>
+              <div class="progress">
+                <div
+                  class="progress-bar progress-bar-success"
+                  role="progressbar"
+                  :style="{width: playerHp+'%'}"
+                ></div>
+              </div>
+            </div>
+            <div class="col-xs-6">
+              <p>Monster's hp<br />{{ monsterHp }}%</p>
+              <div class="progress">
+                <div
+                  class="progress-bar progress-bar-success"
+                  role="progressbar"
+                  :style="{width: monsterHp+'%'}"
+                ></div>
+              </div>
+            </div>
+
+            <button class="btn btn-primary btn-lg" @click="playerAttack(0)">
+              Physical Attack
+            </button>
+            <button class="btn btn-info btn-lg" @click="playerAttack(1)">
+              Magic Attack
+            </button>
+            <button class="btn btn-success btn-lg" @click="healingPower">
+              Healing
+            </button>
+            <button class="btn btn-warning btn-lg" @click="ultimate">
+              Ultimate
+            </button>
+            <button class="btn btn-danger btn-lg" @click="newGame">
+              New Game
+            </button>
+          </div>
+          <!--            combat log-->
+          <div class="containe-fluid">
+            <ul v-if="combatLog.length != 0" class="list-group">
+              <li
+                class="list-group-item"
+                v-for="item in combatLog"
+                :class="{'list-group-item-info':item.isPlayer,'list-group-item-danger':!item.isPlayer,'list-group-item-success':item.heal}"
+              >
+                {{item.text}}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdn.bootcss.com/vue/2.4.4/vue.min.js"></script>
+    <script src="script/main.js"></script>
+  </body>
+</html>
